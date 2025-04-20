@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    /* Emit JavaScript into dist/ and read sources from src/ */
+    "rootDir": "src",
+    "outDir": "dist",
+
+    /* Language and Module */
+    "target": "ESNext",
+    "module": "commonjs",
+
+    /* Strictness */
+    "strict": true,
+    "noImplicitAny": true,
+
+    /* Interop */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Skip type‑checking .d.ts files */
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
