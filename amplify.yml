@@ -1,28 +1,25 @@
 version: 1
-applications:
-  - appRoot: .
-    backend:
-      phases:
-        preBuild:
-          commands:
-            - npm install -g @aws-amplify/cli@10.3.1
-        build:
-          commands:
-            - amplifyPush --simple
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - cd app
-            - npm ci
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: app/dist
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - node_modules/**/*
-          - app/node_modules/**/*
+appRoot: .
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd app
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: app/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - app/node_modules/**/*
+# 👇 this line disables the backend build
+backend:
+  phases:
+    build:
+      commands:
+        - echo "Skipping backend build (already deployed)"
