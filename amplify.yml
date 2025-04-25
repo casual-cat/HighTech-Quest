@@ -1,0 +1,27 @@
+version: 1
+
+backend:
+  phases:
+    preBuild:
+      # Downgrade the CLI to 9.1.0 so it doesn’t hit the nested‐project bug
+      - npm install -g @aws-amplify/cli@9.1.0
+    build:
+      # This runs the backend “pull” / “push” steps in simple mode
+      - amplifyPush --simple
+
+frontend:
+  phases:
+    preBuild:
+      - cd app
+      - npm ci
+    build:
+      - npm run build
+  artifacts:
+    # Where your built static files live
+    baseDirectory: app/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - app/node_modules/**/*
+      - node_modules/**/*
