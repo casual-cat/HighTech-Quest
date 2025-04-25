@@ -15,19 +15,15 @@ app.use(cors(corsOptions));
 app.use(json());
 
 app.get("/check-api", (_, res) => {
-  res.status(200);
-  res.send("Working!");
+  res.status(200).send("Working!");
 });
 
 app.get("/check-db", async (_, res) => {
   try {
     const user = await User.findOne({ username: "test" });
-
-    res.status(200);
-    res.json(user);
+    res.status(200).json(user);
   } catch (error) {
-    res.status(500);
-    res.json({ error: error });
+    res.status(500).json({ error });
   }
 });
 
@@ -43,3 +39,4 @@ async function startServer() {
 }
 
 startServer();
+export default app;          // <-- required for serverless-express
