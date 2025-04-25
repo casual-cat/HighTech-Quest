@@ -1,19 +1,22 @@
 {
   "compilerOptions": {
+    /* Where TS lives and where JS goes */
     "rootDir": "src",
     "outDir": "dist",
 
+    /* Language & module system */
     "target": "ES2020",
     "module": "commonjs",
     "moduleResolution": "node",
 
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-
+    /* Safety & interop */
     "strict": true,
     "noImplicitAny": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "lambda.ts"],
+  /* Only your src/ folder */
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

@@ -20,8 +20,13 @@
       },
       "function": {
         "hightechquestcb53df76": {
-          "connString": "mongodb+srv://vioriiiee:IJD4aE9uaX17Vbdm@cluster.g1eamdh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster"
+          "connString": "mongodb+srv://vioriiiee:IJD4aE9uaX17Vbdm@cluster.g1eamdh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster",
+          "deploymentBucketName": "amplify-hightechquest-dev-9061f-deployment",
+          "s3Key": "amplify-builds/hightechquestcb53df76-365941476f3143377051-build.zip"
         }
+      },
+      "api": {
+        "htqapi": {}
       }
     }
   }

@@ -5,12 +5,13 @@
   "scripts": {
     "dev": "ts-node-dev --transpile-only src/index.ts",
     "build": "tsc",
-    "bundle": "npm run build && cp dist/lambda.js .",
+    "bundle": "npm run build && cp dist/lambda.js . && cp dist/index.js .",
+    "bundle": "npm run build && cp -r dist/* .",
     "start": "node dist/index.js",
     "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
-    "@vendia/serverless-express": "^4.16.0",
+    "@vendia/serverless-express": "^4.12.6",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",

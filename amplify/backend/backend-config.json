@@ -39,6 +39,22 @@
         }
       ]
     },
+    "AMPLIFY_function_hightechquestcb53df76_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hightechquestcb53df76"
+        }
+      ]
+    },
+    "AMPLIFY_function_hightechquestcb53df76_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hightechquestcb53df76"
+        }
+      ]
+    },
     "AMPLIFY_hosting_amplifyhosting_appId": {
       "usedBy": [
         {
