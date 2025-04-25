@@ -4,18 +4,20 @@ applications:
     backend:
       phases:
         preBuild:
-          # pin the CLI so we don’t hit the nested-project bug
-          - npm install -g @aws-amplify/cli@9.1.0
+          commands:
+            - npm install -g @aws-amplify/cli@9.1.0
         build:
-          # simple backend push
-          - amplifyPush --simple
+          commands:
+            - amplifyPush --simple
     frontend:
       phases:
         preBuild:
-          - cd app
-          - npm ci
+          commands:
+            - cd app
+            - npm ci
         build:
-          - npm run build
+          commands:
+            - npm run build
       artifacts:
         baseDirectory: app/dist
         files:
