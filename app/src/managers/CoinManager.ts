@@ -38,7 +38,7 @@ export class CoinManager {
   }
 
   handlePlayerCollision(
-    player: Phaser.GameObjects.GameObject,
+    _player: Phaser.GameObjects.GameObject,
     coinObject: Phaser.GameObjects.GameObject
   ) {
     const coin = coinObject as Coin;
