@@ -1,11 +1,12 @@
 version: 1
 appRoot: .
+
 frontend:
   phases:
     preBuild:
       commands:
         - cd app
-        - npm ci
+        - npm ci       # install front-end deps
     build:
       commands:
         - npm run build
@@ -17,9 +18,3 @@ frontend:
     paths:
       - node_modules/**/*
       - app/node_modules/**/*
-# 👇 this line disables the backend build
-backend:
-  phases:
-    build:
-      commands:
-        - echo "Skipping backend build (already deployed)"
