@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-hightechquest-dev-9061f-authRole",
+      "UnauthRoleArn": "arn:aws:iam::221082167707:role/amplify-hightechquest-dev-9061f-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::221082167707:role/amplify-hightechquest-dev-9061f-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-hightechquest-dev-9061f-deployment",
+      "UnauthRoleName": "amplify-hightechquest-dev-9061f-unauthRole",
+      "StackName": "amplify-hightechquest-dev-9061f",
+      "StackId": "arn:aws:cloudformation:us-east-1:221082167707:stack/amplify-hightechquest-dev-9061f/0ef7e660-2190-11f0-a138-0affcc39382d",
+      "AmplifyAppId": "d33mbla2rkkdlv"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d33mbla2rkkdlv",
+          "type": "cicd"
+        }
+      }
+    }
+  }
+}
