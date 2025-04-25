@@ -17,6 +17,11 @@
           "appId": "d33mbla2rkkdlv",
           "type": "cicd"
         }
+      },
+      "function": {
+        "hightechquestcb53df76": {
+          "connString": "mongodb+srv://vioriiiee:IJD4aE9uaX17Vbdm@cluster.g1eamdh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster"
+        }
       }
     }
   }

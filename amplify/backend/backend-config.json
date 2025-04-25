@@ -1,4 +1,28 @@
 {
+  "api": {
+    "htqapi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "hightechquestcb53df76"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "function": {
+    "hightechquestcb53df76": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
   "hosting": {
     "amplifyhosting": {
       "lastPushTimeStamp": "2025-04-25T04:58:11.804Z",
@@ -7,6 +31,14 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_hightechquestcb53df76_connString": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hightechquestcb53df76"
+        }
+      ]
+    },
     "AMPLIFY_hosting_amplifyhosting_appId": {
       "usedBy": [
         {

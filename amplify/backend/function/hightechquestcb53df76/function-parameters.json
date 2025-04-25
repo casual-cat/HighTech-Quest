@@ -1,0 +1,9 @@
+{
+  "lambdaLayers": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "connString",
+      "environmentVariableName": "CONN_STRING"
+    }
+  ]
+}
