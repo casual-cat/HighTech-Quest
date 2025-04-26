@@ -5,7 +5,7 @@
 Clone files
 
 ```
-git clone https://github.com/Lulzies87/HighTechQuest.git
+git clone https://github.com/casual-cat/HighTech-Quest
 ```
 
 ### Frontend - /app:
