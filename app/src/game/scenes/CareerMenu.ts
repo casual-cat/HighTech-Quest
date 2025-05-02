@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 
-export default class CarrerMenu extends Phaser.Scene {
+export default class CareerMenu extends Phaser.Scene {
   constructor() {
-    super("CarrerMenu");
+    super("CareerMenu");
   }
 
   create() {

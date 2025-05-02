@@ -31,7 +31,7 @@ export default class OpeningScene extends Phaser.Scene {
     text.on("pointerout", () => text.setStyle({ backgroundColor: "none" }));
 
     text.on("pointerdown", () => {
-      this.scene.start("CarrerMenu");
+      this.scene.start("CareerMenu");
     });
   }
 }
