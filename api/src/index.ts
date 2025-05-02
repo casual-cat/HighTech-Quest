@@ -20,7 +20,7 @@ app.get("/check-api", (_, res) => {
 
 app.get("/check-db", async (_, res) => {
   try {
-    const user = await User.findOne({ username: "test" });
+    const user = await User.findOne({ username: "test-username" });
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error });
