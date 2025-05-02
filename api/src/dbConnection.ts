@@ -5,5 +5,7 @@ export async function connectToDB() {
     throw new Error("Must provide a connection string");
   }
 
-  await mongoose.connect(process.env.CONN_STRING);
+  await mongoose.connect(process.env.CONN_STRING, {
+    dbName: process.env.DB_NAME,
+  });
 }
