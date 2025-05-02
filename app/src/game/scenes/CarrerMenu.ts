@@ -17,7 +17,7 @@ export default class CarrerMenu extends Phaser.Scene {
     const centerY = this.cameras.main.centerY;
 
     this.add
-      .text(centerX, centerY - 200, "Choose Your Carrer Path:", {
+      .text(centerX, centerY - 115, "Character Selection Screen", {
         fontSize: "28px",
         color: "#fff",
       })
@@ -25,7 +25,7 @@ export default class CarrerMenu extends Phaser.Scene {
 
     options.forEach((option, index) => {
       const text = this.add
-        .text(centerX, centerY + index * 50, option, {
+        .text(centerX, centerY - 60 + index * 50, option, {
           fontSize: "24px",
           color: "#0077cc",
           padding: { x: 10, y: 5 },

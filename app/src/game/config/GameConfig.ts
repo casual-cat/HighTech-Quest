@@ -1,6 +1,7 @@
 import Phaser from "phaser";
-import MainScene from "../scenes/MainScene";
+import OpeningScene from "../scenes/OpeningScene";
 import CarrerMenu from "../scenes/CarrerMenu";
+import MainScene from "../scenes/MainScene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -9,7 +10,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   physics: {
     default: "arcade",
   },
-  scene: [CarrerMenu, MainScene],
+  scene: [OpeningScene, CarrerMenu, MainScene],
   pixelArt: true,
   roundPixels: true,
   scale: {
