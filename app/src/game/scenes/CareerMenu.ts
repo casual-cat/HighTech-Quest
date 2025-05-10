@@ -9,7 +9,8 @@ export default class CareerMenu extends Phaser.Scene {
   ];
 
   private currentIndex = 0;
-  private characterSprite!: Phaser.GameObjects.Sprite;
+  private characterSprites: Phaser.GameObjects.Sprite[] = [];
+  private characterBackgrounds: Phaser.GameObjects.Image[] = [];
   private titleText!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -21,7 +22,7 @@ export default class CareerMenu extends Phaser.Scene {
     this.load.image(
       "characterBackground",
       "/assets/careerMenu/characterBackground.png"
-    );
+    ); // ask tal to size down the asset
     this.load.image("button", "/assets/buttons/button.png"); // need to get the separated green button from Tal
 
     this.load.spritesheet(
@@ -62,8 +63,10 @@ export default class CareerMenu extends Phaser.Scene {
 
     this.cameras.main.fadeIn(250);
 
-    const background = this.add.image(0, 0, "background").setOrigin(0);
-    background.setDisplaySize(width, height);
+    this.add
+      .image(0, 0, "background")
+      .setOrigin(0)
+      .setDisplaySize(width, height);
 
     this.titleText = this.add
       .text(width / 2, height / 8, "", {
@@ -72,30 +75,10 @@ export default class CareerMenu extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add
-      .image(width / 2, height / 2, "characterBackground")
-      .setOrigin(0.5)
-      .setScale(0.6); // ask tal to size down the asset
-
-    this.characterSprite = this.add.sprite(width / 2, height / 2, "fullstack");
-
-    this.anims.create({
-      key: "characterAnim",
-      frames: this.anims.generateFrameNumbers("fullstack", {
-        start: 0,
-        end: 2,
-      }),
-      frameRate: 5,
-      repeat: -1,
-    });
-
-    this.characterSprite.play("fullstackAnim");
-
-    this.updateDisplay();
+    this.renderCharacters();
 
     this.input.keyboard!.on("keydown-LEFT", () => this.scroll(-1));
     this.input.keyboard!.on("keydown-A", () => this.scroll(-1));
-
     this.input.keyboard!.on("keydown-RIGHT", () => this.scroll(1));
     this.input.keyboard!.on("keydown-D", () => this.scroll(1));
 
@@ -105,12 +88,12 @@ export default class CareerMenu extends Phaser.Scene {
       else if (swipe < -50) this.scroll(1);
     });
 
-    const selectedCareer = () => this.careers[this.currentIndex].key;
-
     const handleContinue = () => {
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("IntroScene", { selectedCareer: selectedCareer() });
+        this.scene.start("IntroScene", {
+          selectedCareer: this.careers[this.currentIndex].key,
+        });
       });
     };
 
@@ -132,36 +115,112 @@ export default class CareerMenu extends Phaser.Scene {
       .on("pointerdown", handleContinue);
   }
 
-  private scroll(direction: number) {
-    const newIndex = Phaser.Math.Clamp(
-      this.currentIndex + direction,
-      0,
-      this.careers.length - 1
-    );
-    if (newIndex !== this.currentIndex) {
-      this.currentIndex = newIndex;
-      this.updateDisplay();
+  private renderCharacters() {
+    const { width, height } = this.scale;
+
+    this.characterSprites.forEach((sprite) => sprite.destroy());
+    this.characterBackgrounds.forEach((bg) => bg.destroy());
+    this.characterSprites = [];
+    this.characterBackgrounds = [];
+
+    this.titleText.setText(this.careers[this.currentIndex].title);
+    const spacing = 200;
+
+    for (let offset = -2; offset <= 2; offset++) {
+      const index = this.currentIndex + offset;
+      if (index < 0 || index >= this.careers.length) continue;
+
+      const career = this.careers[index];
+      const key = career.key;
+      const animKey = `${key}Anim`;
+
+      if (!this.anims.exists(animKey)) {
+        this.anims.create({
+          key: animKey,
+          frames: this.anims.generateFrameNumbers(key, { start: 0, end: 2 }),
+          frameRate: 5,
+          repeat: -1,
+        });
+      }
+
+      const xPosition = width / 2 + offset * spacing;
+      let scale = 1;
+      let alpha = 1;
+
+      switch (Math.abs(offset)) {
+        case 1:
+          scale = 0.6;
+          alpha = 0.7;
+          break;
+        case 2:
+          scale = 0.5;
+          alpha = 0.4;
+          break;
+      }
+
+      const bg = this.add
+        .image(xPosition, height / 2, "characterBackground")
+        .setScale(scale * 0.6)
+        .setAlpha(alpha)
+        .setDepth(10 - Math.abs(offset) - 1);
+
+      const sprite = this.add
+        .sprite(xPosition, height / 2, key)
+        .setScale(scale)
+        .setAlpha(alpha)
+        .setDepth(10 - Math.abs(offset));
+
+      if (offset === 0) {
+        sprite.play(animKey);
+      } else {
+        sprite.setFrame(0);
+      }
+
+      this.characterSprites.push(sprite);
+      this.characterBackgrounds.push(bg);
     }
   }
 
-  private updateDisplay() {
-    const { key, title } = this.careers[this.currentIndex];
-    this.titleText.setText(title);
+  private scroll(direction: number) {
+    this.characterSprites.forEach((sprite) => {
+      const newX = sprite.x - direction * 200;
+      const newScale = sprite.scale * 0.8;
+      const newAlpha = 0.3;
 
-    this.characterSprite.anims.stop();
-    this.characterSprite.setTexture(key);
-
-    const animKey = `${key}Anim`;
-
-    if (!this.anims.exists(animKey)) {
-      this.anims.create({
-        key: animKey,
-        frames: this.anims.generateFrameNumbers(key, { start: 0, end: 2 }),
-        frameRate: 5,
-        repeat: -1,
+      this.tweens.add({
+        targets: sprite,
+        x: newX,
+        scale: newScale,
+        alpha: newAlpha,
+        duration: 250,
+        ease: "Sine.easeInOut",
+        onComplete: () => sprite.destroy(),
       });
-    }
+    });
 
-    this.characterSprite.play(animKey);
+    this.characterBackgrounds.forEach((bg) => {
+      const newX = bg.x - direction * 200;
+      const newScale = bg.scale * 0.8;
+      const newAlpha = 0.3;
+
+      this.tweens.add({
+        targets: bg,
+        x: newX,
+        scale: newScale,
+        alpha: newAlpha,
+        duration: 250,
+        ease: "Sine.easeInOut",
+        onComplete: () => bg.destroy(),
+      });
+    });
+
+    this.time.delayedCall(250, () => {
+      this.currentIndex = Phaser.Math.Clamp(
+        this.currentIndex + direction,
+        0,
+        this.careers.length - 1
+      );
+      this.renderCharacters();
+    });
   }
 }
