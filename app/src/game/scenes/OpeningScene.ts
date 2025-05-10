@@ -51,7 +51,7 @@ export default class OpeningScene extends Phaser.Scene {
 
   private playSplashScreen() {
     const frameCount = 37;
-    const frameDuration = 70;
+    const frameDuration = 120;
     let currentFrame = 1;
 
     const image = this.add
