@@ -9,7 +9,7 @@ export default class CareerMenu extends Phaser.Scene {
   ];
 
   private currentIndex = 0;
-  private characterImage!: Phaser.GameObjects.Image;
+  private characterSprite!: Phaser.GameObjects.Sprite;
   private titleText!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -17,11 +17,39 @@ export default class CareerMenu extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("background", "/assets/characterSelection/background.png");
-    this.load.image("fullstack", "/assets/fullstack.png");
-    this.load.image("devops", "/assets/devops.png");
-    this.load.image("uxui", "/assets/uxui.png");
-    this.load.image("projectmanager", "/assets/projectmanager.png");
+    this.load.image("background", "/assets/careerMenu/background.png");
+
+    this.load.spritesheet(
+      "fullstack",
+      "/assets/careerMenu/fullstackDeveloper.png",
+      {
+        frameWidth: 192,
+        frameHeight: 288,
+        endFrame: 2,
+      }
+    );
+
+    this.load.spritesheet("devops", "/assets/careerMenu/devopsEngineer.png", {
+      frameWidth: 192,
+      frameHeight: 288,
+      endFrame: 2,
+    });
+
+    this.load.spritesheet("uxui", "/assets/careerMenu/uxuiDesigner.png", {
+      frameWidth: 192,
+      frameHeight: 288,
+      endFrame: 2,
+    });
+
+    this.load.spritesheet(
+      "projectmanager",
+      "/assets/careerMenu/projectManager.png",
+      {
+        frameWidth: 192,
+        frameHeight: 288,
+        endFrame: 2,
+      }
+    );
   }
 
   create() {
@@ -39,9 +67,19 @@ export default class CareerMenu extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.characterImage = this.add
-      .image(width / 2, height / 2, this.careers[0].key)
-      .setOrigin(0.5);
+    this.characterSprite = this.add.sprite(width / 2, height / 2, "fullstack");
+
+    this.anims.create({
+      key: "characterAnim",
+      frames: this.anims.generateFrameNumbers("fullstack", {
+        start: 0,
+        end: 2,
+      }),
+      frameRate: 8,
+      repeat: -1,
+    });
+
+    this.characterSprite.play("characterAnim");
 
     this.updateDisplay();
 
@@ -96,6 +134,21 @@ export default class CareerMenu extends Phaser.Scene {
   private updateDisplay() {
     const { key, title } = this.careers[this.currentIndex];
     this.titleText.setText(title);
-    this.characterImage.setTexture(key);
+
+    this.characterSprite.anims.stop();
+    this.characterSprite.setTexture(key);
+
+    const animKey = `${key}Anim`;
+
+    if (!this.anims.exists(animKey)) {
+      this.anims.create({
+        key: animKey,
+        frames: this.anims.generateFrameNumbers(key, { start: 0, end: 2 }),
+        frameRate: 8,
+        repeat: -1,
+      });
+    }
+
+    this.characterSprite.play(animKey);
   }
 }
