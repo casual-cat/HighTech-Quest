@@ -26,6 +26,9 @@ export default class CareerMenu extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale;
+
+    this.cameras.main.fadeIn(250);
+
     const background = this.add.image(0, 0, "background").setOrigin(0);
     background.setDisplaySize(width, height);
 
