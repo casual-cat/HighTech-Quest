@@ -105,29 +105,31 @@ export default class CareerMenu extends Phaser.Scene {
       else if (swipe < -50) this.scroll(1);
     });
 
+    const selectedCareer = () => this.careers[this.currentIndex].key;
+
+    const handleContinue = () => {
+      this.cameras.main.fadeOut(250);
+      this.cameras.main.once("camerafadeoutcomplete", () => {
+        this.scene.start("MainScene", { selectedCareer: selectedCareer() });
+      });
+    };
+
     this.add
       .image(width / 2, height - 100, "button")
       .setOrigin(0.5)
       .setScale(0.6)
       .setInteractive({ useHandCursor: true })
-      .on("pointerdown", () => {
-        const selectedCareer = this.careers[this.currentIndex].key;
-        this.scene.start("MainScene", { selectedCareer });
-      });
+      .on("pointerdown", handleContinue);
 
-    const buttonText = this.add
+    this.add
       .text(width / 2, height - 100, "Continue", {
         fontSize: "28px",
         color: "#fff",
         padding: { x: 20, y: 10 },
       })
       .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
-
-    buttonText.on("pointerdown", () => {
-      const selectedCareer = this.careers[this.currentIndex].key;
-      this.scene.start("MainScene", { selectedCareer });
-    });
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", handleContinue);
   }
 
   private scroll(direction: number) {
