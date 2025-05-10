@@ -22,7 +22,7 @@ export default class CareerMenu extends Phaser.Scene {
       "characterBackground",
       "/assets/careerMenu/characterBackground.png"
     );
-    this.load.image("button", "/assets/buttons/button.png");
+    this.load.image("button", "/assets/buttons/button.png"); // need to get the separated green button from Tal
 
     this.load.spritesheet(
       "fullstack",
@@ -85,7 +85,7 @@ export default class CareerMenu extends Phaser.Scene {
         start: 0,
         end: 2,
       }),
-      frameRate: 8,
+      frameRate: 5,
       repeat: -1,
     });
 
@@ -105,25 +105,26 @@ export default class CareerMenu extends Phaser.Scene {
       else if (swipe < -50) this.scroll(1);
     });
 
-    const continueButton = this.add
+    this.add
+      .image(width / 2, height - 100, "button")
+      .setOrigin(0.5)
+      .setScale(0.6)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", () => {
+        const selectedCareer = this.careers[this.currentIndex].key;
+        this.scene.start("MainScene", { selectedCareer });
+      });
+
+    const buttonText = this.add
       .text(width / 2, height - 100, "Continue", {
         fontSize: "28px",
-        backgroundColor: "#6AE491",
-        color: "#000",
+        color: "#fff",
         padding: { x: 20, y: 10 },
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    continueButton.on("pointerover", () => {
-      continueButton.setStyle({ backgroundColor: "#57C87B" });
-    });
-
-    continueButton.on("pointerout", () => {
-      continueButton.setStyle({ backgroundColor: "#6AE491" });
-    });
-
-    continueButton.on("pointerdown", () => {
+    buttonText.on("pointerdown", () => {
       const selectedCareer = this.careers[this.currentIndex].key;
       this.scene.start("MainScene", { selectedCareer });
     });
@@ -154,7 +155,7 @@ export default class CareerMenu extends Phaser.Scene {
       this.anims.create({
         key: animKey,
         frames: this.anims.generateFrameNumbers(key, { start: 0, end: 2 }),
-        frameRate: 8,
+        frameRate: 5,
         repeat: -1,
       });
     }
