@@ -17,7 +17,7 @@ export default class CareerMenu extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("background", "/assets/background.png");
+    this.load.image("background", "/assets/characterSelection/background.png");
     this.load.image("fullstack", "/assets/fullstack.png");
     this.load.image("devops", "/assets/devops.png");
     this.load.image("uxui", "/assets/uxui.png");
@@ -26,8 +26,6 @@ export default class CareerMenu extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale;
-    this.cameras.main.setBackgroundColor("#fff"); // ask tal to add the white background in the asset itself
-
     const background = this.add.image(0, 0, "background").setOrigin(0);
     background.setDisplaySize(width, height);
 
