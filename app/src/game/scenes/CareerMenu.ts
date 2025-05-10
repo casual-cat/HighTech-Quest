@@ -18,6 +18,11 @@ export default class CareerMenu extends Phaser.Scene {
 
   preload() {
     this.load.image("background", "/assets/careerMenu/background.png");
+    this.load.image(
+      "characterBackground",
+      "/assets/careerMenu/characterBackground.png"
+    );
+    this.load.image("button", "/assets/buttons/button.png");
 
     this.load.spritesheet(
       "fullstack",
@@ -27,19 +32,19 @@ export default class CareerMenu extends Phaser.Scene {
         frameHeight: 288,
         endFrame: 2,
       }
-    );
+    ); // animation is not smooth, need to fix asset
 
     this.load.spritesheet("devops", "/assets/careerMenu/devopsEngineer.png", {
       frameWidth: 192,
       frameHeight: 288,
       endFrame: 2,
-    });
+    }); // animation is not smooth, need to fix asset
 
     this.load.spritesheet("uxui", "/assets/careerMenu/uxuiDesigner.png", {
       frameWidth: 192,
       frameHeight: 288,
       endFrame: 2,
-    });
+    }); // animation is not smooth, need to fix asset
 
     this.load.spritesheet(
       "projectmanager",
@@ -49,7 +54,7 @@ export default class CareerMenu extends Phaser.Scene {
         frameHeight: 288,
         endFrame: 2,
       }
-    );
+    ); // animation is not smooth, need to fix asset
   }
 
   create() {
@@ -67,6 +72,11 @@ export default class CareerMenu extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
+    this.add
+      .image(width / 2, height / 2, "characterBackground")
+      .setOrigin(0.5)
+      .setScale(0.6); // ask tal to size down the asset
+
     this.characterSprite = this.add.sprite(width / 2, height / 2, "fullstack");
 
     this.anims.create({
@@ -79,7 +89,7 @@ export default class CareerMenu extends Phaser.Scene {
       repeat: -1,
     });
 
-    this.characterSprite.play("characterAnim");
+    this.characterSprite.play("fullstackAnim");
 
     this.updateDisplay();
 
