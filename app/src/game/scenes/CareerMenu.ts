@@ -110,7 +110,7 @@ export default class CareerMenu extends Phaser.Scene {
     const handleContinue = () => {
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("MainScene", { selectedCareer: selectedCareer() });
+        this.scene.start("IntroScene", { selectedCareer: selectedCareer() });
       });
     };
 
