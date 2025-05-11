@@ -92,7 +92,7 @@ export default class OpeningScene extends Phaser.Scene {
 
             this.input.once("pointerdown", () => {
               this.cameras.main.once("camerafadeoutcomplete", () => {
-                this.scene.start("CareerMenu");
+                this.scene.start("InfoScene");
               });
               this.cameras.main.fadeOut(250);
             });
