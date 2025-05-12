@@ -97,12 +97,12 @@ export default class CareerMenu extends Phaser.Scene {
       });
     };
 
-    const buttonBackground = this.add
+    const btnBg = this.add
       .image(0, 0, "button")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    const buttonText = this.add
+    const btnTxt = this.add
       .text(0, 0, "Continue", {
         fontSize: "28px",
         color: "#fff",
@@ -110,17 +110,17 @@ export default class CareerMenu extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add.container(width / 2, height - 100, [buttonBackground, buttonText]);
+    this.add.container(width / 2, height - 100, [btnBg, btnTxt]);
 
-    buttonBackground.on("pointerdown", () => {
-      buttonBackground.setTexture("buttonPressed");
+    btnBg.on("pointerdown", () => {
+      btnBg.setTexture("buttonPressed");
     });
-    buttonBackground.on("pointerup", () => {
-      buttonBackground.setTexture("button");
+    btnBg.on("pointerup", () => {
+      btnBg.setTexture("button");
       handleContinue();
     });
-    buttonBackground.on("pointerout", () => {
-      buttonBackground.setTexture("button");
+    btnBg.on("pointerout", () => {
+      btnBg.setTexture("button");
     });
   }
 

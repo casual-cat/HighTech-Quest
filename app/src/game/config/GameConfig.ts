@@ -3,6 +3,7 @@ import OpeningScene from "../scenes/OpeningScene";
 import InfoScene from "../scenes/InfoScene";
 import CareerMenu from "../scenes/CareerMenu";
 import IntroScene from "../scenes/IntroScene";
+import MainMenu from "../scenes/MainMenu";
 import MainScene from "../scenes/MainScene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -12,7 +13,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   physics: {
     default: "arcade",
   },
-  scene: [OpeningScene, InfoScene, CareerMenu, IntroScene, MainScene],
+  scene: [OpeningScene, InfoScene, CareerMenu, IntroScene, MainMenu, MainScene],
   pixelArt: true,
   roundPixels: true,
   scale: {

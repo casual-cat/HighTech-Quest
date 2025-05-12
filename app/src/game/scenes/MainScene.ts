@@ -36,7 +36,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const careerPath = this.registry.get("careerPath");
+    const careerPath = this.registry.get("selectedCareer");
     console.log(careerPath);
 
     this.createWorld();

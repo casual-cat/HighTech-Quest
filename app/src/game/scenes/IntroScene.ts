@@ -10,6 +10,7 @@ export default class IntroScene extends Phaser.Scene {
   }
 
   create() {
+    const careerPath = this.registry.get("selectedCareer");
     const { width, height } = this.scale;
 
     const video = this.add.video(width / 2, height / 2, "intro").setOrigin(0.5);
@@ -23,7 +24,7 @@ export default class IntroScene extends Phaser.Scene {
 
       this.cameras.main.fadeOut(1000);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("MainScene");
+        this.scene.start("MainMenu", careerPath);
       });
     };
 
