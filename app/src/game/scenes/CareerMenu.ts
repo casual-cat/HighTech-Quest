@@ -9,8 +9,7 @@ export default class CareerMenu extends Phaser.Scene {
   ];
 
   private currentIndex = 0;
-  private characterSprites: Phaser.GameObjects.Sprite[] = [];
-  private characterBackgrounds: Phaser.GameObjects.Image[] = [];
+  private characterContainers: Phaser.GameObjects.Container[] = [];
   private titleText!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -23,7 +22,8 @@ export default class CareerMenu extends Phaser.Scene {
       "characterBackground",
       "/assets/careerMenu/characterBackground.png"
     ); // ask tal to size down the asset
-    this.load.image("button", "/assets/buttons/button.png"); // need to get the separated green button from Tal
+    this.load.image("button", "/assets/buttons/Button_LightGreen.png");
+    this.load.image("buttonPressed", "/assets/buttons/Button_DarkGreen.png");
 
     this.load.spritesheet(
       "fullstack",
@@ -33,19 +33,19 @@ export default class CareerMenu extends Phaser.Scene {
         frameHeight: 288,
         endFrame: 2,
       }
-    ); // animation is not smooth, need to fix asset
+    ); // animation is not smooth, check with Tal
 
     this.load.spritesheet("devops", "/assets/careerMenu/devopsEngineer.png", {
       frameWidth: 192,
       frameHeight: 288,
       endFrame: 2,
-    }); // animation is not smooth, need to fix asset
+    }); // animation is not smooth, check with Tal
 
     this.load.spritesheet("uxui", "/assets/careerMenu/uxuiDesigner.png", {
       frameWidth: 192,
       frameHeight: 288,
       endFrame: 2,
-    }); // animation is not smooth, need to fix asset
+    }); // animation is not smooth, check with Tal
 
     this.load.spritesheet(
       "projectmanager",
@@ -55,7 +55,7 @@ export default class CareerMenu extends Phaser.Scene {
         frameHeight: 288,
         endFrame: 2,
       }
-    ); // animation is not smooth, need to fix asset
+    ); // animation is not smooth, check with Tal
   }
 
   create() {
@@ -97,31 +97,38 @@ export default class CareerMenu extends Phaser.Scene {
       });
     };
 
-    this.add
-      .image(width / 2, height - 100, "button")
+    const buttonBackground = this.add
+      .image(0, 0, "button")
       .setOrigin(0.5)
-      .setScale(0.6)
-      .setInteractive({ useHandCursor: true })
-      .on("pointerdown", handleContinue);
+      .setInteractive({ useHandCursor: true });
 
-    this.add
-      .text(width / 2, height - 100, "Continue", {
+    const buttonText = this.add
+      .text(0, 0, "Continue", {
         fontSize: "28px",
         color: "#fff",
         padding: { x: 20, y: 10 },
       })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .on("pointerdown", handleContinue);
+      .setOrigin(0.5);
+
+    this.add.container(width / 2, height - 100, [buttonBackground, buttonText]);
+
+    buttonBackground.on("pointerdown", () => {
+      buttonBackground.setTexture("buttonPressed");
+    });
+    buttonBackground.on("pointerup", () => {
+      buttonBackground.setTexture("button");
+      handleContinue();
+    });
+    buttonBackground.on("pointerout", () => {
+      buttonBackground.setTexture("button");
+    });
   }
 
   private renderCharacters() {
     const { width, height } = this.scale;
 
-    this.characterSprites.forEach((sprite) => sprite.destroy());
-    this.characterBackgrounds.forEach((bg) => bg.destroy());
-    this.characterSprites = [];
-    this.characterBackgrounds = [];
+    this.characterContainers.forEach((container) => container.destroy());
+    this.characterContainers = [];
 
     this.titleText.setText(this.careers[this.currentIndex].title);
     const spacing = 200;
@@ -158,17 +165,9 @@ export default class CareerMenu extends Phaser.Scene {
           break;
       }
 
-      const bg = this.add
-        .image(xPosition, height / 2, "characterBackground")
-        .setScale(scale * 0.6)
-        .setAlpha(alpha)
-        .setDepth(10 - Math.abs(offset) - 1);
+      const bg = this.add.image(0, 0, "characterBackground").setScale(0.6);
 
-      const sprite = this.add
-        .sprite(xPosition, height / 2, key)
-        .setScale(scale)
-        .setAlpha(alpha)
-        .setDepth(10 - Math.abs(offset));
+      const sprite = this.add.sprite(0, 0, key);
 
       if (offset === 0) {
         sprite.play(animKey);
@@ -176,41 +175,40 @@ export default class CareerMenu extends Phaser.Scene {
         sprite.setFrame(0);
       }
 
-      this.characterSprites.push(sprite);
-      this.characterBackgrounds.push(bg);
+      const container = this.add
+        .container(xPosition, height / 2, [bg, sprite])
+        .setScale(scale)
+        .setAlpha(alpha)
+        .setDepth(10 - Math.abs(offset));
+
+      this.characterContainers.push(container);
     }
   }
 
   private scroll(direction: number) {
-    this.characterSprites.forEach((sprite) => {
-      const newX = sprite.x - direction * 200;
-      const newScale = sprite.scale * 0.8;
-      const newAlpha = 0.3;
+    const newIndex = this.currentIndex + direction;
+    if (
+      newIndex < 0 ||
+      newIndex >= this.careers.length ||
+      newIndex === this.currentIndex
+    )
+      return;
+
+    const spacing = 200;
+
+    this.characterContainers.forEach((container) => {
+      const newX = container.x - direction * spacing;
+      const newScale = container.scale * 0.8;
+      const newAlpha = container.alpha * 0.5;
 
       this.tweens.add({
-        targets: sprite,
+        targets: container,
         x: newX,
-        scale: newScale,
+        scaleX: newScale,
         alpha: newAlpha,
         duration: 250,
         ease: "Sine.easeInOut",
-        onComplete: () => sprite.destroy(),
-      });
-    });
-
-    this.characterBackgrounds.forEach((bg) => {
-      const newX = bg.x - direction * 200;
-      const newScale = bg.scale * 0.8;
-      const newAlpha = 0.3;
-
-      this.tweens.add({
-        targets: bg,
-        x: newX,
-        scale: newScale,
-        alpha: newAlpha,
-        duration: 250,
-        ease: "Sine.easeInOut",
-        onComplete: () => bg.destroy(),
+        onComplete: () => container.destroy(),
       });
     });
 
