@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { CareerStore } from "../../stores/CareerStore";
 
 export default class MainMenu extends Phaser.Scene {
   constructor() {
@@ -21,7 +22,12 @@ export default class MainMenu extends Phaser.Scene {
   }
 
   create() {
-    const careerPath = this.registry.get("selectedCareer");
+    const career = CareerStore.getCareer();
+    if (!career) {
+      console.warn("No career selected");
+      return;
+    }
+
     this.cameras.main.fadeIn(250);
 
     const { width, height } = this.scale;
@@ -55,8 +61,7 @@ export default class MainMenu extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add
-      .container(width / 8.6, height - 160, [playBtnBg, playBtnTxt]);
+    this.add.container(width / 8.6, height - 160, [playBtnBg, playBtnTxt]);
 
     playBtnBg.on("pointerdown", () => {
       playBtnBg.setTexture("button2");
@@ -66,7 +71,7 @@ export default class MainMenu extends Phaser.Scene {
       playBtnBg.setTexture("button");
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("MainScene", careerPath);
+        this.scene.start("MainScene");
       });
     });
 
@@ -85,8 +90,7 @@ export default class MainMenu extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add
-      .container(width / 8.6, height - 80, [returnBtnBg, returnBtnTxt]);
+    this.add.container(width / 8.6, height - 80, [returnBtnBg, returnBtnTxt]);
 
     returnBtnBg.on("pointerdown", () => {
       returnBtnBg.setTexture("button");

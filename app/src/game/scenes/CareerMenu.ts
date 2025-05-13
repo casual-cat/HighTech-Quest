@@ -1,7 +1,8 @@
 import Phaser from "phaser";
+import { CareerKey, CareerStore } from "../../stores/CareerStore";
 
 export default class CareerMenu extends Phaser.Scene {
-  private careers = [
+  private careers: { key: CareerKey; title: string }[] = [
     { key: "fullstack", title: "Full Stack Developer" },
     { key: "devops", title: "DevOps Engineer" },
     { key: "uxui", title: "UX/UI Designer" },
@@ -89,11 +90,12 @@ export default class CareerMenu extends Phaser.Scene {
     });
 
     const handleContinue = () => {
+      const selectedKey = this.careers[this.currentIndex].key;
+      CareerStore.setCareer(selectedKey);
+
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("IntroScene", {
-          selectedCareer: this.careers[this.currentIndex].key,
-        });
+        this.scene.start("IntroScene");
       });
     };
 

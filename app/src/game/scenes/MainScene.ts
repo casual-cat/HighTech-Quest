@@ -9,6 +9,7 @@ import {
   WORLD_WIDTH,
 } from "../utils/Constants";
 import { ScoreDisplay } from "../ui/ScoreDisplay";
+import { CareerStore } from "../../stores/CareerStore";
 
 export default class MainScene extends Phaser.Scene {
   private walls?: Phaser.Physics.Arcade.StaticGroup;
@@ -36,8 +37,13 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const careerPath = this.registry.get("selectedCareer");
-    console.log(careerPath);
+    const career = CareerStore.getCareer();
+    if (!career) {
+      console.warn("No career selected");
+      return;
+    }
+
+    console.log(career);
 
     this.createWorld();
 

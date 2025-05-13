@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { CareerStore } from "../../stores/CareerStore";
 
 export default class IntroScene extends Phaser.Scene {
   constructor() {
@@ -10,7 +11,12 @@ export default class IntroScene extends Phaser.Scene {
   }
 
   create() {
-    const careerPath = this.registry.get("selectedCareer");
+    const career = CareerStore.getCareer();
+    if (!career) {
+      console.warn("No career selected");
+      return;
+    }
+
     const { width, height } = this.scale;
 
     const video = this.add.video(width / 2, height / 2, "intro").setOrigin(0.5);
@@ -24,7 +30,7 @@ export default class IntroScene extends Phaser.Scene {
 
       this.cameras.main.fadeOut(1000);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("MainMenu", careerPath);
+        this.scene.start("MainMenu");
       });
     };
 
