@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 
 export default class InfoScene extends Phaser.Scene {
+  private nextScene: string = "OpeningScene";
   constructor() {
     super("InfoScene");
   }
@@ -35,7 +36,7 @@ export default class InfoScene extends Phaser.Scene {
     this.input.once("pointerdown", () => {
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("CareerMenu");
+        this.scene.start(this.nextScene);
       });
     });
   }

@@ -13,7 +13,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   physics: {
     default: "arcade",
   },
-  scene: [OpeningScene, InfoScene, CareerMenu, IntroScene, MainMenu, MainScene],
+  scene: [InfoScene, OpeningScene, CareerMenu, IntroScene, MainMenu, MainScene],
   pixelArt: true,
   roundPixels: true,
   scale: {
