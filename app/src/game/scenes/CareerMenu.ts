@@ -28,7 +28,7 @@ export default class CareerMenu extends Phaser.Scene {
 
     this.load.spritesheet(
       "fullstack",
-      "/assets/careerMenu/fullstackDeveloper.png",
+      "/assets/careerMenu/fullstack.png",
       {
         frameWidth: 192,
         frameHeight: 288,
@@ -36,13 +36,13 @@ export default class CareerMenu extends Phaser.Scene {
       }
     ); // animation is not smooth, check with Tal
 
-    this.load.spritesheet("devops", "/assets/careerMenu/devopsEngineer.png", {
+    this.load.spritesheet("devops", "/assets/careerMenu/devops.png", {
       frameWidth: 192,
       frameHeight: 288,
       endFrame: 2,
     }); // animation is not smooth, check with Tal
 
-    this.load.spritesheet("uxui", "/assets/careerMenu/uxuiDesigner.png", {
+    this.load.spritesheet("uxui", "/assets/careerMenu/uxui.png", {
       frameWidth: 192,
       frameHeight: 288,
       endFrame: 2,
@@ -50,7 +50,7 @@ export default class CareerMenu extends Phaser.Scene {
 
     this.load.spritesheet(
       "projectmanager",
-      "/assets/careerMenu/projectManager.png",
+      "/assets/careerMenu/projectmanager.png",
       {
         frameWidth: 192,
         frameHeight: 288,
@@ -90,8 +90,8 @@ export default class CareerMenu extends Phaser.Scene {
     });
 
     const handleContinue = () => {
-      const selectedKey = this.careers[this.currentIndex].key;
-      CareerStore.setCareer(selectedKey);
+      const selectedCareerKey = this.careers[this.currentIndex].key;
+      CareerStore.setCareer(selectedCareerKey);
 
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
