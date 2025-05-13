@@ -15,9 +15,9 @@ export default class InfoScene extends Phaser.Scene {
       .text(
         width / 2,
         height / 2,
-        "This is the info screen\nhere we insert information about the game",
+        "Born out of a personal experience of searching for a first job in high-tech,\nthe idea to develop a game was created -\na game that reflects this journey: one filled with continuous learning,\nreal challenges, and quite a few rejections along the way.\n\nIn the game, you play as a junior trying to break into the high-tech world,\nembarking on a challenging and relatable journey toward landing your first job.\nYou'll go through various stages - from rewriting your résumé,\nto technical tests and stressful interviews,\nall the way to the final battle against the CEO.\n\nEach stage presents a unique mission,\nand every success brings you one step closer to your ultimate goal.\n\nGood luck!",
         {
-          fontSize: "24px",
+          fontSize: "20px",
           color: "#fff",
           align: "center",
           lineSpacing: 6,
