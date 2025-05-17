@@ -6,11 +6,20 @@ export default class InfoScene extends Phaser.Scene {
     super("InfoScene");
   }
 
+  preload() {
+    this.load.image("background", "/assets/backgrounds/purpleBackground.png");
+    this.load.image("button", "/assets/buttons/Button_LightGreen.png");
+    this.load.image("buttonPressed", "/assets/buttons/Button_DarkGreen.png");
+  }
+
   create() {
     const { width, height } = this.scale;
 
     this.cameras.main.fadeIn(250);
-    this.cameras.main.setBackgroundColor("#965CDB");
+    this.add
+      .image(0, 0, "background")
+      .setOrigin(0)
+      .setDisplaySize(width, height);
 
     this.add
       .text(
@@ -26,18 +35,37 @@ export default class InfoScene extends Phaser.Scene {
       )
       .setOrigin(0.5);
 
-    this.add
-      .text(width / 2, height - 50, "Click anywhere to continue", {
-        fontSize: "18px",
-        color: "#fff",
-      })
-      .setOrigin(0.5);
-
-    this.input.once("pointerdown", () => {
+    const handleContinue = () => {
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
         this.scene.start(this.nextScene);
       });
+    };
+
+    const btnBg = this.add
+      .image(0, 0, "button")
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    const btnTxt = this.add
+      .text(0, 0, "Continue", {
+        fontSize: "28px",
+        color: "#fff",
+        padding: { x: 20, y: 10 },
+      })
+      .setOrigin(0.5);
+
+    this.add.container(width / 2, height - 100, [btnBg, btnTxt]);
+
+    btnBg.on("pointerdown", () => {
+      btnBg.setTexture("buttonPressed");
+    });
+    btnBg.on("pointerup", () => {
+      btnBg.setTexture("button");
+      handleContinue();
+    });
+    btnBg.on("pointerout", () => {
+      btnBg.setTexture("button");
     });
   }
 }

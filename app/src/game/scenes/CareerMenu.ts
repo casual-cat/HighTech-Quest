@@ -18,7 +18,7 @@ export default class CareerMenu extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("background", "/assets/careerMenu/background.png");
+    this.load.image("background", "/assets/backgrounds/purpleBackground.png");
     this.load.image(
       "characterBackground",
       "/assets/careerMenu/characterBackground.png"
