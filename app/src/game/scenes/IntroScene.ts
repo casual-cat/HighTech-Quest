@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { CareerStore } from "../../stores/CareerStore";
 
 export default class IntroScene extends Phaser.Scene {
   constructor() {
