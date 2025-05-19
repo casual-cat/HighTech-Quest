@@ -1,22 +1,18 @@
 import Phaser from "phaser";
 import { Player } from "../objects/Player";
 import { HealthBar } from "../ui/HealthBar";
-import { CoinManager } from "../../managers/CoinManager";
 import {
   TILE_HEIGHT,
   TILE_WIDTH,
   WORLD_HEIGHT,
   WORLD_WIDTH,
 } from "../utils/Constants";
-import { ScoreDisplay } from "../ui/ScoreDisplay";
 import { CareerStore } from "../../stores/CareerStore";
 
 export default class MainScene extends Phaser.Scene {
   private walls?: Phaser.Physics.Arcade.StaticGroup;
   private player?: Player;
   private healthBar?: HealthBar;
-  private coinManager?: CoinManager;
-  private scoreDisplay?: ScoreDisplay;
 
   constructor() {
     super({ key: "MainScene" });
@@ -29,10 +25,6 @@ export default class MainScene extends Phaser.Scene {
     this.load.spritesheet("character", "/assets/ben-resized.png", {
       frameWidth: 42,
       frameHeight: 64,
-    });
-    this.load.spritesheet("coin", "/assets/coin.png", {
-      frameWidth: TILE_WIDTH,
-      frameHeight: TILE_HEIGHT,
     });
   }
 
@@ -47,9 +39,6 @@ export default class MainScene extends Phaser.Scene {
 
     this.createWorld();
 
-    this.coinManager = new CoinManager(this);
-    this.coinManager.createDefaultCoins();
-
     this.player = new Player(this, 21 * TILE_WIDTH, 12 * TILE_HEIGHT, 100);
 
     this.healthBar = new HealthBar(
@@ -61,17 +50,8 @@ export default class MainScene extends Phaser.Scene {
     );
     this.healthBar.setHealth(this.player.getHealth());
 
-    this.scoreDisplay = new ScoreDisplay(this, 992, 16);
-
     if (!this.walls) return;
     this.physics.add.collider(this.player, this.walls);
-    this.physics.add.overlap(
-      this.player,
-      this.coinManager.getCoins(),
-      this.collectCoin,
-      undefined,
-      this
-    );
 
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
@@ -100,13 +80,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     this.createObstacles();
-  }
-
-  collectCoin(player: any, coin: any) {
-    if (!this.coinManager || !this.scoreDisplay) return;
-
-    const value = this.coinManager.handlePlayerCollision(player, coin);
-    this.scoreDisplay?.addScore(value);
   }
 
   createObstacles() {
