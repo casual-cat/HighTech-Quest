@@ -62,8 +62,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.create({
       key: "walk_down",
       frames: this.anims.generateFrameNumbers("character", {
-        start: 1,
-        end: 2,
+        start: 0,
+        end: 1,
       }),
       frameRate: 10,
       repeat: -1, // loop animation
@@ -72,8 +72,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.create({
       key: "walk_horizontal",
       frames: this.anims.generateFrameNumbers("character", {
-        start: 1,
-        end: 2,
+        start: 6,
+        end: 7,
       }),
       frameRate: 10,
       repeat: -1,
@@ -82,8 +82,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.create({
       key: "walk_up",
       frames: this.anims.generateFrameNumbers("character", {
-        start: 4,
-        end: 5,
+        start: 3,
+        end: 4,
       }),
       frameRate: 10,
       repeat: -1,
@@ -91,22 +91,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.anims.create({
       key: "idle-down",
-      frames: [{ key: "character", frame: 0 }],
+      frames: [{ key: "character", frame: 2 }],
       frameRate: 10,
     });
     this.anims.create({
       key: "idle-left",
-      frames: [{ key: "character", frame: 0 }],
+      frames: [{ key: "character", frame: 8 }],
       frameRate: 10,
     });
     this.anims.create({
       key: "idle-right",
-      frames: [{ key: "character", frame: 0 }],
+      frames: [{ key: "character", frame: 8 }],
       frameRate: 10,
     });
     this.anims.create({
       key: "idle-up",
-      frames: [{ key: "character", frame: 3 }],
+      frames: [{ key: "character", frame: 5 }],
       frameRate: 10,
     });
   }
@@ -148,11 +148,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   ) {
     if (leftPressed && !rightPressed) {
       this.anims.play("walk_horizontal", true);
-      this.flipX = false;
+      this.flipX = true;
       this.lastDirection = "left";
     } else if (rightPressed && !leftPressed) {
       this.anims.play("walk_horizontal", true);
-      this.flipX = true;
+      this.flipX = false;
       this.lastDirection = "right";
     } else if (upPressed && !downPressed) {
       this.anims.play("walk_up", true);
@@ -160,11 +160,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.lastDirection = "up";
     } else if (downPressed && !upPressed) {
       this.anims.play("walk_down", true);
-      this.flipX = true;
+      this.flipX = false;
       this.lastDirection = "down";
     } else {
       this.anims.play(`idle-${this.lastDirection}`, true);
-      this.flipX = this.lastDirection === "right";
+      this.flipX = this.lastDirection === "left";
     }
   }
 

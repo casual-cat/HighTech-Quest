@@ -22,7 +22,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("floor", "/assets/floor.png");
     this.load.image("wall", "/assets/wall.png");
     this.load.image("heart", "/assets/heart.png");
-    this.load.spritesheet("character", "/assets/ben-resized.png", {
+    this.load.spritesheet("character", "/assets/characters/miniGabi.png", {
       frameWidth: 42,
       frameHeight: 64,
     });
