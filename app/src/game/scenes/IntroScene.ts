@@ -11,12 +11,6 @@ export default class IntroScene extends Phaser.Scene {
   }
 
   create() {
-    const career = CareerStore.getCareer();
-    if (!career) {
-      console.warn("No career selected");
-      return;
-    }
-
     const { width, height } = this.scale;
 
     const video = this.add.video(width / 2, height / 2, "intro").setOrigin(0.5);
