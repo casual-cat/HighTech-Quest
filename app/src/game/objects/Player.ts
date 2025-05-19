@@ -13,9 +13,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene: Phaser.Scene,
     x: number,
     y: number,
-    maxHealth: number = 100
+    maxHealth: number = 100,
+    textureKey: string = "character"
   ) {
-    super(scene, x, y, "character");
+    super(scene, x, y, textureKey);
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
@@ -23,7 +24,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.health = maxHealth;
 
     this.setCollideWorldBounds(true);
-    this.createAnimations();
+    this.createAnimations(textureKey);
     this.setupInput(scene);
   }
 
@@ -58,20 +59,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     };
   }
 
-  createAnimations() {
+  createAnimations(textureKey: string) {
     this.anims.create({
       key: "walk_down",
-      frames: this.anims.generateFrameNumbers("character", {
+      frames: this.anims.generateFrameNumbers(textureKey, {
         start: 0,
         end: 1,
       }),
       frameRate: 10,
-      repeat: -1, // loop animation
+      repeat: -1,
     });
 
     this.anims.create({
       key: "walk_horizontal",
-      frames: this.anims.generateFrameNumbers("character", {
+      frames: this.anims.generateFrameNumbers(textureKey, {
         start: 6,
         end: 7,
       }),
@@ -81,7 +82,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.anims.create({
       key: "walk_up",
-      frames: this.anims.generateFrameNumbers("character", {
+      frames: this.anims.generateFrameNumbers(textureKey, {
         start: 3,
         end: 4,
       }),
@@ -91,22 +92,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.anims.create({
       key: "idle-down",
-      frames: [{ key: "character", frame: 2 }],
+      frames: [{ key: textureKey, frame: 2 }],
       frameRate: 10,
     });
     this.anims.create({
       key: "idle-left",
-      frames: [{ key: "character", frame: 8 }],
+      frames: [{ key: textureKey, frame: 8 }],
       frameRate: 10,
     });
     this.anims.create({
       key: "idle-right",
-      frames: [{ key: "character", frame: 8 }],
+      frames: [{ key: textureKey, frame: 8 }],
       frameRate: 10,
     });
     this.anims.create({
       key: "idle-up",
-      frames: [{ key: "character", frame: 5 }],
+      frames: [{ key: textureKey, frame: 5 }],
       frameRate: 10,
     });
   }

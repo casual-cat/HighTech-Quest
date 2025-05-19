@@ -7,7 +7,7 @@ import {
   WORLD_HEIGHT,
   WORLD_WIDTH,
 } from "../utils/Constants";
-import { CareerStore } from "../../stores/CareerStore";
+import { CareerKey, CareerStore } from "../../stores/CareerStore";
 
 export default class MainScene extends Phaser.Scene {
   private walls?: Phaser.Physics.Arcade.StaticGroup;
@@ -22,14 +22,19 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("floor", "/assets/floor.png");
     this.load.image("wall", "/assets/wall.png");
     this.load.image("heart", "/assets/heart.png");
-    this.load.spritesheet("character", "/assets/characters/miniGabi.png", {
-      frameWidth: 42,
-      frameHeight: 64,
+
+    const careers: CareerKey[] = ["fullstack", "devops", "uxui", "projectmanager"];
+    careers.forEach(career => {
+      this.load.spritesheet(`character-${career}`, `/assets/characters/${career}.png`, {
+        frameWidth: 42,
+        frameHeight: 64,
+      });
     });
   }
 
   create() {
     const career = CareerStore.getCareer();
+
     if (!career) {
       console.warn("No career selected");
       return;
@@ -39,7 +44,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.createWorld();
 
-    this.player = new Player(this, 21 * TILE_WIDTH, 12 * TILE_HEIGHT, 100);
+    this.player = new Player(this, 21 * TILE_WIDTH, 12 * TILE_HEIGHT, 100, `character-${career}`);
 
     this.healthBar = new HealthBar(
       this,
