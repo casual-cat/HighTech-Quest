@@ -5,6 +5,7 @@ import CareerMenu from "../scenes/CareerMenu";
 import IntroScene from "../scenes/IntroScene";
 import MainMenu from "../scenes/MainMenu";
 import MainScene from "../scenes/MainScene";
+import { BookScene } from "../ui/BookManager";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -13,7 +14,15 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   physics: {
     default: "arcade",
   },
-  scene: [InfoScene, OpeningScene, CareerMenu, IntroScene, MainMenu, MainScene],
+  scene: [
+    InfoScene,
+    OpeningScene,
+    CareerMenu,
+    IntroScene,
+    MainMenu,
+    MainScene,
+    BookScene,
+  ],
   pixelArt: true,
   roundPixels: true,
   scale: {
