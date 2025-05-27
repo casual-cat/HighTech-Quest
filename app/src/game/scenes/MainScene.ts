@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { Player } from "../objects/Player";
 import { HealthBar } from "../ui/HealthBar";
+import { BookManager } from "../ui/BookManager";
 import {
   TILE_HEIGHT,
   TILE_WIDTH,
@@ -13,26 +14,14 @@ export default class MainScene extends Phaser.Scene {
   private walls?: Phaser.Physics.Arcade.StaticGroup;
   private player?: Player;
   private healthBar?: HealthBar;
+  private career?: CareerKey;
+  private bookManager?: BookManager;
 
   constructor() {
     super({ key: "MainScene" });
   }
 
   preload() {
-    this.load.image("floor", "/assets/floor.png");
-    this.load.image("wall", "/assets/wall.png");
-    this.load.image("heart", "/assets/heart.png");
-
-    const careers: CareerKey[] = ["fullstack", "devops", "uxui", "projectmanager"];
-    careers.forEach(career => {
-      this.load.spritesheet(`character-${career}`, `/assets/characters/${career}.png`, {
-        frameWidth: 42,
-        frameHeight: 64,
-      });
-    });
-  }
-
-  create() {
     const career = CareerStore.getCareer();
 
     if (!career) {
@@ -40,11 +29,67 @@ export default class MainScene extends Phaser.Scene {
       return;
     }
 
-    console.log(career);
+    this.career = career;
+
+    this.load.image("floor", "/assets/floor.png");
+    this.load.image("wall", "/assets/wall.png");
+    this.load.image("heart", "/assets/heart.png");
+    this.load.image("avatarBackground", "/assets/game/avatarBackground.png");
+    this.load.image("book", "/assets/game/book.png");
+    this.load.image("book-open", "/assets/game/book-open.png");
+
+    const careers: CareerKey[] = [
+      "fullstack",
+      "devops",
+      "uxui",
+      "projectmanager",
+    ];
+    careers.forEach((career) => {
+      this.load.image(`${career}-avatar`, `/assets/game/${career}-avatar.png`);
+
+      this.load.spritesheet(
+        `character-${career}`,
+        `/assets/characters/${career}.png`,
+        {
+          frameWidth: 42,
+          frameHeight: 64,
+        }
+      );
+    });
+  }
+
+  create() {
+    if (!this.career) {
+      console.warn("No career selected");
+      return;
+    }
 
     this.createWorld();
 
-    this.player = new Player(this, 21 * TILE_WIDTH, 12 * TILE_HEIGHT, 100, `character-${career}`);
+    this.player = new Player(
+      this,
+      21 * TILE_WIDTH,
+      12 * TILE_HEIGHT,
+      100,
+      `character-${this.career}`
+    );
+
+    this.createHUD();
+
+    if (!this.walls) return;
+    this.physics.add.collider(this.player, this.walls);
+
+    this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+    this.cameras.main.setDeadzone(100, 100);
+  }
+
+  update() {
+    this.player?.update();
+  }
+
+  private createHUD() {
+    if (!this.player) return;
 
     this.healthBar = new HealthBar(
       this,
@@ -55,15 +100,30 @@ export default class MainScene extends Phaser.Scene {
     );
     this.healthBar.setHealth(this.player.getHealth());
 
-    if (!this.walls) return;
-    this.physics.add.collider(this.player, this.walls);
+    this.add
+      .image(16, 16, "avatarBackground")
+      .setOrigin(0, 0)
+      .setScrollFactor(0);
 
-    this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
-    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
-    this.cameras.main.setDeadzone(100, 100);
+    this.add
+      .image(16, 16, `${this.career}-avatar`)
+      .setOrigin(0)
+      .setScrollFactor(0);
+
+    const bookIcon = this.add
+      .image(16 * 6, 16, "book")
+      .setOrigin(0)
+      .setScrollFactor(0)
+      .setInteractive({ useHandCursor: true });
+
+    this.bookManager = new BookManager(this);
+
+    bookIcon.on("pointerdown", () => {
+      this.bookManager?.open();
+    });
   }
 
-  createWorld() {
+  private createWorld() {
     this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
     for (let x = 0; x < WORLD_WIDTH; x += TILE_WIDTH) {
@@ -87,7 +147,7 @@ export default class MainScene extends Phaser.Scene {
     this.createObstacles();
   }
 
-  createObstacles() {
+  private createObstacles() {
     const obstaclePositions = [
       { x: 10 * TILE_WIDTH, y: 10 * TILE_HEIGHT },
       { x: 17 * TILE_WIDTH, y: 20 * TILE_HEIGHT },
@@ -126,9 +186,5 @@ export default class MainScene extends Phaser.Scene {
   healPlayer(amount: number) {
     this.player?.heal(amount);
     this.healthBar?.increase(amount);
-  }
-
-  update() {
-    this.player?.update();
   }
 }
