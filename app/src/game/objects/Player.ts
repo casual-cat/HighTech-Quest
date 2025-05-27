@@ -8,6 +8,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private health: number;
   private maxHealth: number;
+  private isMovementEnabled: boolean = true;
 
   constructor(
     scene: Phaser.Scene,
@@ -112,7 +113,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
+  disableMovement() {
+    this.isMovementEnabled = false;
+    this.setVelocity(0);
+    this.anims.play(`idle-${this.lastDirection}`, true);
+  }
+
+  enableMovement() {
+    this.isMovementEnabled = true;
+  }
+
   handleMovement() {
+    if (!this.isMovementEnabled) return;
+    
     this.setVelocity(0);
 
     const leftPressed = this.cursors?.left.isDown || this.keys.A.isDown;
