@@ -51,8 +51,8 @@ export default class MainScene extends Phaser.Scene {
         `character-${career}`,
         `/assets/characters/${career}.png`,
         {
-          frameWidth: 42,
-          frameHeight: 64,
+          frameWidth: 32,
+          frameHeight: 48,
         }
       );
     });
