@@ -167,7 +167,7 @@ export default class CareerMenu extends Phaser.Scene {
           break;
       }
 
-      const bg = this.add.image(0, 0, "characterBackground").setScale(0.6);
+      const bg = this.add.image(0, 0, "characterBackground").setScale(0.6); // remove this scale after Tal fixes the asset
 
       const sprite = this.add.sprite(0, 0, key);
 
