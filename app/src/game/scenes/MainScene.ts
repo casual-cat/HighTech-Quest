@@ -1,7 +1,9 @@
 import Phaser from "phaser";
-import { Player } from "../objects/Player";
+import { Player } from "../entities/Player";
 import { HealthBar } from "../ui/HealthBar";
 import { BookManager } from "../ui/BookManager";
+import { Envelope } from "../entities/Envelope";
+import { Chest } from "../entities/Chest";
 import {
   TILE_HEIGHT,
   TILE_WIDTH,
@@ -16,6 +18,8 @@ export default class MainScene extends Phaser.Scene {
   private healthBar?: HealthBar;
   private career?: CareerKey;
   private bookManager?: BookManager;
+  private envelopes: Envelope[] = [];
+  private chests: Chest[] = [];
 
   constructor() {
     super({ key: "MainScene" });
@@ -37,6 +41,11 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("avatarBackground", "/assets/game/avatarBackground.png");
     this.load.image("book", "/assets/game/book.png");
     this.load.image("book-open", "/assets/game/book-open.png");
+
+    this.load.spritesheet("icons", "/assets/icons.png", {
+      frameWidth: 32,
+      frameHeight: 32,
+    }); // icons for tests
 
     const careers: CareerKey[] = [
       "fullstack",
@@ -86,6 +95,8 @@ export default class MainScene extends Phaser.Scene {
 
   update() {
     this.player?.update();
+    this.envelopes.forEach((envelope) => envelope.update(this.player!));
+    this.chests.forEach((chest) => chest.update(this.player!));
   }
 
   private createHUD() {
@@ -143,6 +154,13 @@ export default class MainScene extends Phaser.Scene {
       this.walls.create(0, y, "wall");
       this.walls.create(WORLD_WIDTH, y, "wall");
     }
+
+    // Create the icon item
+    const envelope = new Envelope(this, 32 * 20 + 16, 32 * 7 + 16, 13).setOrigin(0);
+    this.envelopes.push(envelope);
+
+    const chest = new Chest(this, 32 * 16 + 16, 32 * 7 + 16, 15).setOrigin(0);
+    this.chests.push(chest);
 
     this.createObstacles();
   }
