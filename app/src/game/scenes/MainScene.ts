@@ -156,10 +156,10 @@ export default class MainScene extends Phaser.Scene {
     }
 
     // Create the icon item
-    const envelope = new Envelope(this, 32 * 20 + 16, 32 * 7 + 16, 13).setOrigin(0);
+    const envelope = new Envelope(this, 32 * 20, 32 * 7, 13).setOrigin(0.5);
     this.envelopes.push(envelope);
 
-    const chest = new Chest(this, 32 * 16 + 16, 32 * 7 + 16, 15).setOrigin(0);
+    const chest = new Chest(this, 32 * 16, 32 * 7, 15).setOrigin(0.5);
     this.chests.push(chest);
 
     this.createObstacles();
