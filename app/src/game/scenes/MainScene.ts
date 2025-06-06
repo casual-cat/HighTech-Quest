@@ -155,7 +155,6 @@ export default class MainScene extends Phaser.Scene {
       this.walls.create(WORLD_WIDTH, y, "wall");
     }
 
-    // Create the icon item
     const envelope = new Envelope(this, 32 * 20, 32 * 7, 13).setOrigin(0.5);
     this.envelopes.push(envelope);
 

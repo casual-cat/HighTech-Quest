@@ -6,6 +6,7 @@ import IntroScene from "../scenes/IntroScene";
 import MainMenu from "../scenes/MainMenu";
 import MainScene from "../scenes/MainScene";
 import { BookScene } from "../ui/BookManager";
+import { PuzzleScene } from "../scenes/PuzzleScene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -22,6 +23,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     MainMenu,
     MainScene,
     BookScene,
+    PuzzleScene,
   ],
   pixelArt: true,
   roundPixels: true,

@@ -41,6 +41,7 @@ export class Chest extends Item {
   }
 
   onInteract(player: Phaser.Physics.Arcade.Sprite): void {
-    console.log('Chest interacted with!');
+    this.scene.scene.pause();
+    this.scene.scene.launch("PuzzleScene");
   }
 } 
