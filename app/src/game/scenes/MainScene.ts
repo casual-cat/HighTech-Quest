@@ -18,8 +18,7 @@ export default class MainScene extends Phaser.Scene {
   private healthBar?: HealthBar;
   private career?: CareerKey;
   private bookManager?: BookManager;
-  private envelopes: Envelope[] = [];
-  private chests: Chest[] = [];
+  private interactiveObjects: (Envelope | Chest)[] = [];
 
   constructor() {
     super({ key: "MainScene" });
@@ -40,12 +39,13 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("heart", "/assets/heart.png");
     this.load.image("avatarBackground", "/assets/game/avatarBackground.png");
     this.load.image("book", "/assets/game/book.png");
+    this.load.image("book-badge", "/assets/game/book-badge.png");
     this.load.image("book-open", "/assets/game/book-open.png");
 
     this.load.spritesheet("icons", "/assets/icons.png", {
       frameWidth: 32,
       frameHeight: 32,
-    }); // icons for tests
+    });
 
     const careers: CareerKey[] = [
       "fullstack",
@@ -95,8 +95,7 @@ export default class MainScene extends Phaser.Scene {
 
   update() {
     this.player?.update();
-    this.envelopes.forEach((envelope) => envelope.update(this.player!));
-    this.chests.forEach((chest) => chest.update(this.player!));
+    this.interactiveObjects.forEach((obj) => obj.update(this.player!));
   }
 
   private createHUD() {
@@ -129,6 +128,10 @@ export default class MainScene extends Phaser.Scene {
 
     this.bookManager = new BookManager(this);
 
+    this.events.on('bookStateChanged', (data: { hasNewPieces: boolean }) => {
+      bookIcon.setTexture(data.hasNewPieces ? "book-badge" : "book");
+    });
+
     bookIcon.on("pointerdown", () => {
       this.bookManager?.open();
     });
@@ -156,10 +159,10 @@ export default class MainScene extends Phaser.Scene {
     }
 
     const envelope = new Envelope(this, 32 * 20, 32 * 7, 13).setOrigin(0.5);
-    this.envelopes.push(envelope);
+    this.interactiveObjects.push(envelope);
 
     const chest = new Chest(this, 32 * 16, 32 * 7, 15).setOrigin(0.5);
-    this.chests.push(chest);
+    this.interactiveObjects.push(chest);
 
     this.createObstacles();
   }
