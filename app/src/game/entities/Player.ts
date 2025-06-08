@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { PLAYER_SPEED } from "../utils/Constants";
+import { PLAYER_SPEED } from "../constants/game";
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   private keys: any = {};

@@ -9,7 +9,7 @@ import {
   TILE_WIDTH,
   WORLD_HEIGHT,
   WORLD_WIDTH,
-} from "../utils/Constants";
+} from "../constants/game";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
 
 export default class MainScene extends Phaser.Scene {

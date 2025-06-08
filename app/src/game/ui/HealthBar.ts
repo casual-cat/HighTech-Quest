@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { UI_COLORS } from "../utils/Constants";
+import { UI_COLORS } from "../constants/game";
 
 export class HealthBar {
   private scene: Phaser.Scene;
