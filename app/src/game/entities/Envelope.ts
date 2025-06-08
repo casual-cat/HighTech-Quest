@@ -14,14 +14,14 @@ export class Envelope extends Item {
   highlight() {
     if (!this.isHighlighted) {
       super.highlight();
-      
+
       this.floatTween = this.scene.tweens.add({
         targets: this,
         y: this.originalY - 5,
         duration: 400,
-        ease: 'Sine.easeInOut',
+        ease: "Sine.easeInOut",
         yoyo: true,
-        repeat: -1
+        repeat: -1,
       });
     }
   }
@@ -29,7 +29,7 @@ export class Envelope extends Item {
   unhighlight() {
     if (this.isHighlighted) {
       super.unhighlight();
-      
+
       if (this.floatTween) {
         this.floatTween.stop();
         this.floatTween = undefined;
@@ -39,7 +39,7 @@ export class Envelope extends Item {
   }
 
   onInteract(player: Phaser.Physics.Arcade.Sprite): void {
-    console.log('Envelope interacted with!');
+    console.log("Envelope interacted with!");
   }
 
   destroy() {
@@ -48,4 +48,4 @@ export class Envelope extends Item {
     }
     super.destroy();
   }
-} 
+}
