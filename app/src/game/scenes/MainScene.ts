@@ -36,7 +36,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.load.image("floor", "/assets/floor.png");
     this.load.image("wall", "/assets/wall.png");
-    this.load.spritesheet("heart", "/assets/heart.png", {
+    this.load.spritesheet("heart", "/assets/ui/lifebar/heart.png", {
       frameWidth: 32,
       frameHeight: 32,
     });
