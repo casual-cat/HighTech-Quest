@@ -36,7 +36,10 @@ export default class MainScene extends Phaser.Scene {
 
     this.load.image("floor", "/assets/floor.png");
     this.load.image("wall", "/assets/wall.png");
-    this.load.image("heart", "/assets/heart.png");
+    this.load.spritesheet("heart", "/assets/heart.png", {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
     this.load.image("avatarBackground", "/assets/game/avatarBackground.png");
     this.load.image("book", "/assets/game/book.png");
     this.load.image("book-badge", "/assets/game/book-badge.png");
@@ -128,7 +131,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.bookManager = new BookManager(this);
 
-    this.events.on('bookStateChanged', (data: { hasNewPieces: boolean }) => {
+    this.events.on("bookStateChanged", (data: { hasNewPieces: boolean }) => {
       bookIcon.setTexture(data.hasNewPieces ? "book-badge" : "book");
     });
 

@@ -11,7 +11,7 @@ export class HealthBar {
 
   private background: Phaser.GameObjects.Rectangle;
   private fill: Phaser.GameObjects.Rectangle;
-  private icon: Phaser.GameObjects.Image;
+  private icon: Phaser.GameObjects.Sprite;
 
   constructor(
     scene: Phaser.Scene,
@@ -38,9 +38,20 @@ export class HealthBar {
       .setScrollFactor(0);
 
     this.icon = this.scene.add
-      .image(x - 40, y + 16, "heart")
+      .sprite(x - 40, y + 16, "heart")
       .setOrigin(0.5, 0.5)
       .setScrollFactor(0);
+
+    if (!this.scene.anims.exists("heartBeat")) {
+      this.scene.anims.create({
+        key: "heartBeat",
+        frames: this.scene.anims.generateFrameNumbers("heart", { start: 0, end: 1 }),
+        frameRate: 2,
+        repeat: -1
+      });
+    }
+
+    this.icon.play("heartBeat");
   }
 
   setHealth(hp: number): HealthBar {
