@@ -11,6 +11,7 @@ import {
   WORLD_WIDTH,
 } from "../constants/game";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
+import { GameOverScene } from "./GameOverScene";
 
 export default class MainScene extends Phaser.Scene {
   private walls?: Phaser.Physics.Arcade.StaticGroup;
@@ -202,8 +203,12 @@ export default class MainScene extends Phaser.Scene {
     this.healthBar.decrease(amount);
 
     if (newHealth <= 0) {
-      // TODO: this.gameOver();
+      this.gameOver();
     }
+  }
+
+  private gameOver() {
+    GameOverScene.handleGameOver(this);
   }
 
   healPlayer(amount: number) {
