@@ -3,9 +3,12 @@ import { BookManager } from "../ui/BookManager";
 import { Chest } from "../entities/Chest";
 import { PuzzlePiece, PUZZLE_DATA } from "../data/puzzlePieces";
 import { ANIMATION_CONFIG } from "../constants/puzzle";
+import { HealthBar } from "../ui/HealthBar";
 
 interface MainScene extends Phaser.Scene {
   bookManager?: BookManager;
+  damagePlayer(amount: number): void;
+  player?: { getHealth(): number; getMaxHealth(): number };
 }
 
 export class PuzzleScene extends Phaser.Scene {
@@ -13,21 +16,30 @@ export class PuzzleScene extends Phaser.Scene {
   private selectedPiece: number | null = null;
   private hoverTweens: Phaser.Tweens.Tween[] = [];
   private readonly puzzleData = PUZZLE_DATA;
+  private healthBar?: HealthBar;
 
   constructor() {
     super({ key: "PuzzleScene" });
   }
 
   preload() {
-    this.load.image("puzzleBackground", "/assets/game/level1/puzzlePiecesBackground.png");
+    this.load.image(
+      "puzzleBackground",
+      "/assets/game/level1/puzzlePiecesBackground.png"
+    );
     this.load.image("puzzlePiece1", "/assets/game/level1/puzzlePiece1.png");
     this.load.image("puzzlePiece2", "/assets/game/level1/puzzlePiece2.png");
     this.load.image("puzzlePiece3", "/assets/game/level1/puzzlePiece3.png");
+    this.load.spritesheet("heart", "/assets/game/heart.png", {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
   }
 
   create() {
     this.createBackground();
     this.createPuzzleBackground();
+    this.createHealthBar();
   }
 
   private createBackground() {
@@ -51,7 +63,7 @@ export class PuzzleScene extends Phaser.Scene {
       scale: ANIMATION_CONFIG.BACKGROUND.SCALE.to,
       duration: ANIMATION_CONFIG.BACKGROUND.DURATION,
       ease: ANIMATION_CONFIG.BACKGROUND.EASE,
-      onComplete: () => this.createPuzzlePieces()
+      onComplete: () => this.createPuzzlePieces(),
     });
   }
 
@@ -60,7 +72,7 @@ export class PuzzleScene extends Phaser.Scene {
     const piecePositions = [
       { x: width * 0.3, y: height * 0.5 },
       { x: width * 0.5, y: height * 0.5 },
-      { x: width * 0.7, y: height * 0.5 }
+      { x: width * 0.7, y: height * 0.5 },
     ];
 
     const piecesToDisplay = this.getRandomPieces();
@@ -69,7 +81,11 @@ export class PuzzleScene extends Phaser.Scene {
     });
   }
 
-  private createPuzzlePiece(pieceData: PuzzlePiece, position: { x: number; y: number }, index: number) {
+  private createPuzzlePiece(
+    pieceData: PuzzlePiece,
+    position: { x: number; y: number },
+    index: number
+  ) {
     const imageKey = `puzzlePiece${index + 1}`;
     const piece = this.add
       .image(position.x, position.y, imageKey)
@@ -81,7 +97,7 @@ export class PuzzleScene extends Phaser.Scene {
       .text(position.x, position.y + 60, pieceData.label, {
         color: "#ffffff",
         fontSize: "16px",
-        fontFamily: "Arial"
+        fontFamily: "Arial",
       })
       .setOrigin(0.5)
       .setAlpha(0);
@@ -94,7 +110,10 @@ export class PuzzleScene extends Phaser.Scene {
     this.puzzlePieces.push(piece);
   }
 
-  private setupPieceInteractions(piece: Phaser.GameObjects.Image, index: number) {
+  private setupPieceInteractions(
+    piece: Phaser.GameObjects.Image,
+    index: number
+  ) {
     piece.on("pointerover", () => this.handlePieceHover(piece, index));
     piece.on("pointerout", () => this.handlePieceUnhover(piece, index));
   }
@@ -105,7 +124,7 @@ export class PuzzleScene extends Phaser.Scene {
       targets: piece,
       scale: ANIMATION_CONFIG.PIECE.HOVER.SCALE,
       duration: ANIMATION_CONFIG.PIECE.HOVER.DURATION,
-      ease: ANIMATION_CONFIG.PIECE.HOVER.EASE
+      ease: ANIMATION_CONFIG.PIECE.HOVER.EASE,
     });
   }
 
@@ -115,18 +134,22 @@ export class PuzzleScene extends Phaser.Scene {
       targets: piece,
       scale: 1,
       duration: ANIMATION_CONFIG.PIECE.HOVER.DURATION,
-      ease: ANIMATION_CONFIG.PIECE.HOVER.EASE
+      ease: ANIMATION_CONFIG.PIECE.HOVER.EASE,
     });
   }
 
-  private animatePieceEntry(piece: Phaser.GameObjects.Image, label: Phaser.GameObjects.Text, index: number) {
+  private animatePieceEntry(
+    piece: Phaser.GameObjects.Image,
+    label: Phaser.GameObjects.Text,
+    index: number
+  ) {
     this.tweens.add({
       targets: [piece, label],
       scale: 1,
       alpha: 1,
       duration: ANIMATION_CONFIG.PIECE.FADE.DURATION,
       delay: index * ANIMATION_CONFIG.PIECE.FADE.DELAY,
-      ease: ANIMATION_CONFIG.PIECE.FADE.EASE
+      ease: ANIMATION_CONFIG.PIECE.FADE.EASE,
     });
   }
 
@@ -145,7 +168,10 @@ export class PuzzleScene extends Phaser.Scene {
     }
   }
 
-  private handleCorrectPiece(piece: Phaser.GameObjects.Image, pieceData: PuzzlePiece) {
+  private handleCorrectPiece(
+    piece: Phaser.GameObjects.Image,
+    pieceData: PuzzlePiece
+  ) {
     this.selectedPiece = this.puzzlePieces.indexOf(piece);
 
     this.tweens.add({
@@ -153,11 +179,14 @@ export class PuzzleScene extends Phaser.Scene {
       scale: ANIMATION_CONFIG.PIECE.SELECT.SCALE,
       duration: ANIMATION_CONFIG.PIECE.SELECT.DURATION,
       ease: ANIMATION_CONFIG.PIECE.SELECT.EASE,
-      onComplete: () => this.movePieceToBook(piece, pieceData)
+      onComplete: () => this.movePieceToBook(piece, pieceData),
     });
   }
 
-  private movePieceToBook(piece: Phaser.GameObjects.Image, pieceData: PuzzlePiece) {
+  private movePieceToBook(
+    piece: Phaser.GameObjects.Image,
+    pieceData: PuzzlePiece
+  ) {
     this.tweens.add({
       targets: piece,
       x: ANIMATION_CONFIG.BOOK.POSITION.x,
@@ -165,25 +194,27 @@ export class PuzzleScene extends Phaser.Scene {
       scale: 0,
       duration: ANIMATION_CONFIG.BOOK.MOVE_DURATION,
       ease: ANIMATION_CONFIG.BOOK.EASE,
-      onComplete: () => this.handlePieceCollection(pieceData)
+      onComplete: () => this.handlePieceCollection(pieceData),
     });
   }
 
   private handlePieceCollection(pieceData: PuzzlePiece) {
     const mainScene = this.scene.get("MainScene") as MainScene;
-    
+
     mainScene.bookManager?.addPuzzlePiece({
       id: `piece${pieceData.id}`,
-      content: pieceData.label
+      content: pieceData.label,
     });
 
-    const chest = mainScene.children.list.find(child => child instanceof Chest) as Chest;
+    const chest = mainScene.children.list.find(
+      (child) => child instanceof Chest
+    ) as Chest;
     if (chest) {
       chest.markAsCollected();
     }
 
     const remainingCorrectPieces = this.puzzleData.filter(
-      piece => piece.isCorrect && !piece.wasPicked
+      (piece) => piece.isCorrect && !piece.wasPicked
     );
 
     if (remainingCorrectPieces.length === 0) {
@@ -195,6 +226,13 @@ export class PuzzleScene extends Phaser.Scene {
 
   private handleIncorrectPiece(piece: Phaser.GameObjects.Image) {
     const originalX = piece.x;
+    const mainScene = this.scene.get("MainScene") as MainScene;
+    mainScene.damagePlayer(10);
+    
+    if (this.healthBar && mainScene.player) {
+      this.healthBar.setHealth(mainScene.player.getHealth());
+    }
+
     this.tweens.add({
       targets: piece,
       x: piece.x - ANIMATION_CONFIG.PIECE.SHAKE.OFFSET,
@@ -204,25 +242,40 @@ export class PuzzleScene extends Phaser.Scene {
       ease: ANIMATION_CONFIG.PIECE.SHAKE.EASE,
       onComplete: () => {
         piece.x = originalX;
-      }
+      },
     });
   }
 
   private getAvailablePieces(): PuzzlePiece[] {
-    return this.puzzleData.filter(piece => !piece.wasPicked);
+    return this.puzzleData.filter((piece) => !piece.wasPicked);
   }
 
   private getRandomPieces(): PuzzlePiece[] {
     const availablePieces = this.getAvailablePieces();
-    const correctPieces = availablePieces.filter(piece => piece.isCorrect);
-    const incorrectPieces = availablePieces.filter(piece => !piece.isCorrect);
+    const correctPieces = availablePieces.filter((piece) => piece.isCorrect);
+    const incorrectPieces = availablePieces.filter((piece) => !piece.isCorrect);
 
-    const randomCorrectPiece = correctPieces[Math.floor(Math.random() * correctPieces.length)];
+    const randomCorrectPiece =
+      correctPieces[Math.floor(Math.random() * correctPieces.length)];
     const shuffledIncorrect = incorrectPieces.sort(() => 0.5 - Math.random());
     const randomIncorrectPieces = shuffledIncorrect.slice(0, 2);
 
     const selectedPieces = [randomCorrectPiece, ...randomIncorrectPieces];
     return selectedPieces.sort(() => 0.5 - Math.random());
+  }
+
+  private createHealthBar() {
+    const mainScene = this.scene.get("MainScene") as MainScene;
+    if (!mainScene.player) return;
+
+    this.healthBar = new HealthBar(
+      this,
+      1100,
+      16,
+      mainScene.player.getMaxHealth(),
+      160
+    );
+    this.healthBar.setHealth(mainScene.player.getHealth());
   }
 
   private closeScene() {

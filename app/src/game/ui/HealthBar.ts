@@ -120,12 +120,17 @@ export class HealthBar {
   }
 
   private updateFill(): void {
+    this.fill.clear();
+    
+    if (this.currentHp === 0) {
+      return;
+    }
+
     const fillWidth = Math.max(
       (this.currentHp / this.maxHp) * this.width,
       HEALTH_BAR.HEIGHT
     );
 
-    this.fill.clear();
     this.fill.fillStyle(
       this.currentHp < this.maxHp * 0.25
         ? UI_COLORS.HEALTH_BAR_LOW
