@@ -1,16 +1,8 @@
 import Phaser from "phaser";
 import { UI_COLORS } from "../constants/game";
+import { HEALTH_BAR } from "../constants/ui";
 
 export class HealthBar {
-  private static readonly HEIGHT = 24;
-  private static readonly RADIUS = 12;
-  private static readonly LINE_WIDTH = 1;
-  private static readonly LINE_COLOR = 0xff0000;
-  private static readonly BG_COLOR = 0xcccccc;
-  private static readonly FONT_SIZE = "14px";
-  private static readonly TEXT_COLOR = "#ffffff";
-  private static readonly ICON_OFFSET = 24;
-
   private scene: Phaser.Scene;
   private x: number;
   private y: number;
@@ -67,8 +59,8 @@ export class HealthBar {
   private createIcon(): void {
     this.icon = this.scene.add
       .sprite(
-        this.x - HealthBar.ICON_OFFSET,
-        this.y + HealthBar.HEIGHT / 2,
+        this.x - HEALTH_BAR.ICON_OFFSET,
+        this.y + HEALTH_BAR.HEIGHT / 2,
         "heart"
       )
       .setOrigin(0.5)
@@ -77,9 +69,9 @@ export class HealthBar {
 
   private createText(): void {
     this.text = this.scene.add
-      .text(this.x + this.width / 2, this.y + HealthBar.HEIGHT / 2, "", {
-        fontSize: HealthBar.FONT_SIZE,
-        color: HealthBar.TEXT_COLOR,
+      .text(this.x + this.width / 2, this.y + HEALTH_BAR.HEIGHT / 2, "", {
+        fontSize: HEALTH_BAR.FONT_SIZE,
+        color: HEALTH_BAR.TEXT_COLOR,
       })
       .setOrigin(0.5)
       .setScrollFactor(0);
@@ -102,21 +94,21 @@ export class HealthBar {
 
   private drawBar(): void {
     this.bar.clear();
-    this.bar.fillStyle(HealthBar.BG_COLOR);
+    this.bar.fillStyle(HEALTH_BAR.BG_COLOR);
     this.bar.fillRoundedRect(
       this.x,
       this.y,
       this.width,
-      HealthBar.HEIGHT,
-      HealthBar.RADIUS
+      HEALTH_BAR.HEIGHT,
+      HEALTH_BAR.RADIUS
     );
-    this.bar.lineStyle(HealthBar.LINE_WIDTH, HealthBar.LINE_COLOR);
+    this.bar.lineStyle(HEALTH_BAR.LINE_WIDTH, HEALTH_BAR.LINE_COLOR);
     this.bar.strokeRoundedRect(
       this.x,
       this.y,
       this.width,
-      HealthBar.HEIGHT,
-      HealthBar.RADIUS
+      HEALTH_BAR.HEIGHT,
+      HEALTH_BAR.RADIUS
     );
   }
 
@@ -130,7 +122,7 @@ export class HealthBar {
   private updateFill(): void {
     const fillWidth = Math.max(
       (this.currentHp / this.maxHp) * this.width,
-      HealthBar.HEIGHT
+      HEALTH_BAR.HEIGHT
     );
 
     this.fill.clear();
@@ -143,8 +135,8 @@ export class HealthBar {
       this.x,
       this.y,
       fillWidth,
-      HealthBar.HEIGHT,
-      HealthBar.RADIUS
+      HEALTH_BAR.HEIGHT,
+      HEALTH_BAR.RADIUS
     );
   }
 
