@@ -228,9 +228,14 @@ export class PuzzleScene extends Phaser.Scene {
     const originalX = piece.x;
     const mainScene = this.scene.get("MainScene") as MainScene;
     mainScene.damagePlayer(10);
-    
+
     if (this.healthBar && mainScene.player) {
       this.healthBar.setHealth(mainScene.player.getHealth());
+
+      if (mainScene.player.getHealth() <= 0) {
+        this.closeScene();
+        return;
+      }
     }
 
     this.tweens.add({
