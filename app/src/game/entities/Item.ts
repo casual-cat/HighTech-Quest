@@ -54,7 +54,7 @@ export abstract class Item extends Phaser.Physics.Arcade.Sprite {
       this.setInteractive({ useHandCursor: true });
       this.on(
         "pointerdown",
-        () => this.currentPlayer && this.onInteract(this.currentPlayer)
+        () => this.onInteract(this.currentPlayer)
       );
     }
   }
@@ -67,5 +67,5 @@ export abstract class Item extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  abstract onInteract(player: Phaser.Physics.Arcade.Sprite): void;
+  abstract onInteract(player?: Phaser.Physics.Arcade.Sprite): void;
 }

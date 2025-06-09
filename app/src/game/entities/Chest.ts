@@ -53,7 +53,7 @@ export class Chest extends Item {
     }
   }
 
-  onInteract(_player: Phaser.Physics.Arcade.Sprite): void {
+  onInteract(player?: Phaser.Physics.Arcade.Sprite): void {
     if (!this.isOpened) {
       this.tryOpen();
     }

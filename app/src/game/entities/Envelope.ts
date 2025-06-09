@@ -38,7 +38,7 @@ export class Envelope extends Item {
     }
   }
 
-  onInteract(_player: Phaser.Physics.Arcade.Sprite): void {
+  onInteract(player?: Phaser.Physics.Arcade.Sprite): void {
     console.log("Envelope interacted with!");
   }
 
