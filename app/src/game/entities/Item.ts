@@ -52,10 +52,7 @@ export abstract class Item extends Phaser.Physics.Arcade.Sprite {
     if (!this.isHighlighted) {
       this.isHighlighted = true;
       this.setInteractive({ useHandCursor: true });
-      this.on(
-        "pointerdown",
-        () => this.onInteract(this.currentPlayer)
-      );
+      this.on("pointerdown", () => this.onInteract(this.currentPlayer));
     }
   }
 
@@ -65,6 +62,11 @@ export abstract class Item extends Phaser.Physics.Arcade.Sprite {
       this.disableInteractive();
       this.removeAllListeners("pointerdown");
     }
+  }
+
+  destroy(fromScene?: boolean): void {
+    this.removeAllListeners();
+    super.destroy(fromScene);
   }
 
   abstract onInteract(player?: Phaser.Physics.Arcade.Sprite): void;
