@@ -22,7 +22,7 @@ export default class CareerMenu extends Phaser.Scene {
     this.load.image(
       "characterBackground",
       "/assets/careerMenu/characterBackground.png"
-    ); // ask tal to size down the asset
+    );
     this.load.image("button", "/assets/buttons/Button_LightGreen.png");
     this.load.image("buttonPressed", "/assets/buttons/Button_DarkGreen.png");
 
@@ -34,19 +34,19 @@ export default class CareerMenu extends Phaser.Scene {
         frameHeight: 288,
         endFrame: 2,
       }
-    ); // animation is not smooth, check with Tal
+    );
 
     this.load.spritesheet("devops", "/assets/careerMenu/devops.png", {
       frameWidth: 192,
       frameHeight: 288,
       endFrame: 2,
-    }); // animation is not smooth, check with Tal
+    });
 
     this.load.spritesheet("uxui", "/assets/careerMenu/uxui.png", {
       frameWidth: 192,
       frameHeight: 288,
       endFrame: 2,
-    }); // animation is not smooth, check with Tal
+    });
 
     this.load.spritesheet(
       "projectmanager",
@@ -56,7 +56,7 @@ export default class CareerMenu extends Phaser.Scene {
         frameHeight: 288,
         endFrame: 2,
       }
-    ); // animation is not smooth, check with Tal
+    );
   }
 
   create() {
