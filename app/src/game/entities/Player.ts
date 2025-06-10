@@ -125,7 +125,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   handleMovement() {
     if (!this.isMovementEnabled) return;
-    
+
     this.setVelocity(0);
 
     const leftPressed = this.cursors?.left.isDown || this.keys.A.isDown;
