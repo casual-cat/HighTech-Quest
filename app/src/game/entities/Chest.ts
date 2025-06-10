@@ -99,4 +99,12 @@ export class Chest extends Item {
     this.scene.scene.launch("PuzzleScene");
     this.scene.scene.pause("MainScene");
   }
+
+  destroy() {
+    if (this.enlargedTween) {
+      this.enlargedTween.stop();
+      this.enlargedTween = undefined;
+    }
+    super.destroy();
+  }
 }
