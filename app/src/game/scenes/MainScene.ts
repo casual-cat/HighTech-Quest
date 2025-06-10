@@ -11,7 +11,6 @@ import {
   WORLD_WIDTH,
 } from "../constants/game";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
-import { GameOverScene } from "./GameOverScene";
 
 export default class MainScene extends Phaser.Scene {
   private walls?: Phaser.Physics.Arcade.StaticGroup;
@@ -20,9 +19,14 @@ export default class MainScene extends Phaser.Scene {
   private career?: CareerKey;
   private bookManager?: BookManager;
   private interactiveObjects: (Envelope | Chest)[] = [];
+  private isGameOver = false;
 
   constructor() {
     super({ key: "MainScene" });
+  }
+
+  init() {
+    this.isGameOver = false;
   }
 
   preload() {
@@ -98,6 +102,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
+    if (this.isGameOver) return;
     this.player?.update();
     this.interactiveObjects.forEach((obj) => obj.update(this.player!));
   }
@@ -203,16 +208,32 @@ export default class MainScene extends Phaser.Scene {
     this.healthBar.decrease(amount);
 
     if (newHealth <= 0) {
-      this.gameOver();
+      this.handleGameOver();
     }
   }
 
-  private gameOver() {
-    GameOverScene.handleGameOver(this);
+  private handleGameOver() {
+    if (this.isGameOver) return;
+    this.isGameOver = true;
+
+    this.cameras.main.fadeOut(1000, 0, 0, 0);
+    this.cameras.main.once("camerafadeoutcomplete", () => {
+      this.shutdown();
+      this.scene.start("GameOverScene");
+    });
   }
 
   healPlayer(amount: number) {
     this.player?.heal(amount);
     this.healthBar?.increase(amount);
+  }
+
+  shutdown() {
+    this.player?.destroy();
+    this.healthBar?.destroy();
+    this.bookManager?.destroy?.();
+    this.interactiveObjects.forEach((obj) => obj.destroy());
+    this.interactiveObjects = [];
+    this.walls?.clear(true, true);
   }
 }

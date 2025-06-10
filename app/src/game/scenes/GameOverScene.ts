@@ -15,7 +15,7 @@ export class GameOverScene extends Phaser.Scene {
     );
 
     scene.cameras.main.once("camerafadeoutcomplete", () => {
-      scene.scene.stop();
+      scene.scene.stop("MainScene");
       scene.scene.start("GameOverScene");
     });
   }
@@ -24,6 +24,8 @@ export class GameOverScene extends Phaser.Scene {
     this.setupBackground();
     this.createGameOverText();
     this.setupInput();
+
+    this.cameras.main.fadeIn(GAME_OVER_CONFIG.FADE_DURATION);
   }
 
   private setupBackground(): void {

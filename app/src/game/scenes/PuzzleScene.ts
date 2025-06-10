@@ -234,7 +234,6 @@ export class PuzzleScene extends Phaser.Scene {
 
       if (mainScene.player.getHealth() <= 0) {
         this.closeScene();
-        return;
       }
     }
 
