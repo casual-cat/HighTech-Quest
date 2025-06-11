@@ -1,9 +1,9 @@
 import Phaser from "phaser";
-import { PLAYER_SPEED } from "../constants/game";
+import { PLAYER } from "../constants/game";
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   private keys: any = {};
-  private playerSpeed: number = PLAYER_SPEED;
+  private playerSpeed: number = PLAYER.SPEED;
   private lastDirection: "up" | "down" | "left" | "right" = "down";
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private health: number;
@@ -14,7 +14,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene: Phaser.Scene,
     x: number,
     y: number,
-    maxHealth: number = 100,
+    maxHealth: number = PLAYER.HEALTH.MAX,
     textureKey: string = "character"
   ) {
     super(scene, x, y, textureKey);

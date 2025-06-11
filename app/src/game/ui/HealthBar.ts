@@ -1,6 +1,5 @@
 import Phaser from "phaser";
-import { UI_COLORS } from "../constants/game";
-import { HEALTH_BAR } from "../constants/ui";
+import { UI, THEME } from "../constants/game";
 
 export class HealthBar {
   private scene: Phaser.Scene;
@@ -59,8 +58,8 @@ export class HealthBar {
   private createIcon(): void {
     this.icon = this.scene.add
       .sprite(
-        this.x - HEALTH_BAR.ICON_OFFSET,
-        this.y + HEALTH_BAR.HEIGHT / 2,
+        this.x - UI.HEALTH_BAR.DIMENSIONS.ICON_OFFSET,
+        this.y + UI.HEALTH_BAR.DIMENSIONS.HEIGHT / 2,
         "heart"
       )
       .setOrigin(0.5)
@@ -69,10 +68,15 @@ export class HealthBar {
 
   private createText(): void {
     this.text = this.scene.add
-      .text(this.x + this.width / 2, this.y + HEALTH_BAR.HEIGHT / 2, "", {
-        fontSize: HEALTH_BAR.FONT_SIZE,
-        color: HEALTH_BAR.TEXT_COLOR,
-      })
+      .text(
+        this.x + this.width / 2,
+        this.y + UI.HEALTH_BAR.DIMENSIONS.HEIGHT / 2,
+        "",
+        {
+          fontSize: UI.HEALTH_BAR.STYLE.FONT_SIZE,
+          color: THEME.COLORS.TEXT.PRIMARY,
+        }
+      )
       .setOrigin(0.5)
       .setScrollFactor(0);
   }
@@ -94,21 +98,24 @@ export class HealthBar {
 
   private drawBar(): void {
     this.bar.clear();
-    this.bar.fillStyle(HEALTH_BAR.BG_COLOR);
+    this.bar.fillStyle(UI.HEALTH_BAR.COLORS.BACKGROUND);
     this.bar.fillRoundedRect(
       this.x,
       this.y,
       this.width,
-      HEALTH_BAR.HEIGHT,
-      HEALTH_BAR.RADIUS
+      UI.HEALTH_BAR.DIMENSIONS.HEIGHT,
+      UI.HEALTH_BAR.DIMENSIONS.RADIUS
     );
-    this.bar.lineStyle(HEALTH_BAR.LINE_WIDTH, HEALTH_BAR.LINE_COLOR);
+    this.bar.lineStyle(
+      UI.HEALTH_BAR.DIMENSIONS.LINE_WIDTH,
+      UI.HEALTH_BAR.COLORS.BORDER
+    );
     this.bar.strokeRoundedRect(
       this.x,
       this.y,
       this.width,
-      HEALTH_BAR.HEIGHT,
-      HEALTH_BAR.RADIUS
+      UI.HEALTH_BAR.DIMENSIONS.HEIGHT,
+      UI.HEALTH_BAR.DIMENSIONS.RADIUS
     );
   }
 
@@ -121,27 +128,27 @@ export class HealthBar {
 
   private updateFill(): void {
     this.fill.clear();
-    
+
     if (this.currentHp === 0) {
       return;
     }
 
     const fillWidth = Math.max(
       (this.currentHp / this.maxHp) * this.width,
-      HEALTH_BAR.HEIGHT
+      UI.HEALTH_BAR.DIMENSIONS.HEIGHT
     );
 
     this.fill.fillStyle(
       this.currentHp < this.maxHp * 0.25
-        ? UI_COLORS.HEALTH_BAR_LOW
-        : UI_COLORS.HEALTH_BAR_FILL
+        ? UI.HEALTH_BAR.COLORS.LOW_HEALTH
+        : UI.HEALTH_BAR.COLORS.FILL
     );
     this.fill.fillRoundedRect(
       this.x,
       this.y,
       fillWidth,
-      HEALTH_BAR.HEIGHT,
-      HEALTH_BAR.RADIUS
+      UI.HEALTH_BAR.DIMENSIONS.HEIGHT,
+      UI.HEALTH_BAR.DIMENSIONS.RADIUS
     );
   }
 

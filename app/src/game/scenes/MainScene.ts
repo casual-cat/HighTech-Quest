@@ -1,15 +1,10 @@
 import Phaser from "phaser";
+import { WORLD, PLAYER } from "../constants/game";
 import { Player } from "../entities/Player";
 import { HealthBar } from "../ui/HealthBar";
 import { BookManager } from "../ui/BookManager";
 import { Envelope } from "../entities/Envelope";
 import { Chest } from "../entities/Chest";
-import {
-  TILE_HEIGHT,
-  TILE_WIDTH,
-  WORLD_HEIGHT,
-  WORLD_WIDTH,
-} from "../constants/game";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
 
 export default class MainScene extends Phaser.Scene {
@@ -85,9 +80,9 @@ export default class MainScene extends Phaser.Scene {
 
     this.player = new Player(
       this,
-      21 * TILE_WIDTH,
-      12 * TILE_HEIGHT,
-      100,
+      21 * WORLD.TILE.WIDTH,
+      12 * WORLD.TILE.HEIGHT,
+      PLAYER.HEALTH.MAX,
       `character-${this.career}`
     );
 
@@ -96,7 +91,7 @@ export default class MainScene extends Phaser.Scene {
     if (!this.walls) return;
     this.physics.add.collider(this.player, this.walls);
 
-    this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+    this.cameras.main.setBounds(0, 0, WORLD.WIDTH, WORLD.HEIGHT);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.cameras.main.setDeadzone(100, 100);
   }
@@ -147,24 +142,24 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private createWorld() {
-    this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+    this.physics.world.setBounds(0, 0, WORLD.WIDTH, WORLD.HEIGHT);
 
-    for (let x = 0; x < WORLD_WIDTH; x += TILE_WIDTH) {
-      for (let y = 0; y < WORLD_HEIGHT; y += TILE_HEIGHT) {
+    for (let x = 0; x < WORLD.WIDTH; x += WORLD.TILE.WIDTH) {
+      for (let y = 0; y < WORLD.HEIGHT; y += WORLD.TILE.HEIGHT) {
         this.add.image(x, y, "floor");
       }
     }
 
     this.walls = this.physics.add.staticGroup();
 
-    for (let x = 0; x < WORLD_WIDTH; x += TILE_WIDTH) {
+    for (let x = 0; x < WORLD.WIDTH; x += WORLD.TILE.WIDTH) {
       this.walls.create(x, 0, "wall");
-      this.walls.create(x, WORLD_HEIGHT, "wall");
+      this.walls.create(x, WORLD.HEIGHT, "wall");
     }
 
-    for (let y = 0; y < WORLD_HEIGHT; y += TILE_HEIGHT) {
+    for (let y = 0; y < WORLD.HEIGHT; y += WORLD.TILE.HEIGHT) {
       this.walls.create(0, y, "wall");
-      this.walls.create(WORLD_WIDTH, y, "wall");
+      this.walls.create(WORLD.WIDTH, y, "wall");
     }
 
     const envelope = new Envelope(this, 32 * 20, 32 * 7, 13).setOrigin(0.5);
@@ -178,14 +173,14 @@ export default class MainScene extends Phaser.Scene {
 
   private createObstacles() {
     const obstaclePositions = [
-      { x: 10 * TILE_WIDTH, y: 10 * TILE_HEIGHT },
-      { x: 17 * TILE_WIDTH, y: 20 * TILE_HEIGHT },
-      { x: 25 * TILE_WIDTH, y: 15 * TILE_HEIGHT },
-      { x: 28 * TILE_WIDTH, y: 4 * TILE_HEIGHT },
-      { x: 34 * TILE_WIDTH, y: 16 * TILE_HEIGHT },
-      { x: 10 * TILE_WIDTH, y: 30 * TILE_HEIGHT },
-      { x: 42 * TILE_WIDTH, y: 12 * TILE_HEIGHT },
-      { x: 43 * TILE_WIDTH, y: 35 * TILE_HEIGHT },
+      { x: 10 * WORLD.TILE.WIDTH, y: 10 * WORLD.TILE.HEIGHT },
+      { x: 17 * WORLD.TILE.WIDTH, y: 20 * WORLD.TILE.HEIGHT },
+      { x: 25 * WORLD.TILE.WIDTH, y: 15 * WORLD.TILE.HEIGHT },
+      { x: 28 * WORLD.TILE.WIDTH, y: 4 * WORLD.TILE.HEIGHT },
+      { x: 34 * WORLD.TILE.WIDTH, y: 16 * WORLD.TILE.HEIGHT },
+      { x: 10 * WORLD.TILE.WIDTH, y: 30 * WORLD.TILE.HEIGHT },
+      { x: 42 * WORLD.TILE.WIDTH, y: 12 * WORLD.TILE.HEIGHT },
+      { x: 43 * WORLD.TILE.WIDTH, y: 35 * WORLD.TILE.HEIGHT },
     ];
 
     obstaclePositions.forEach((pos) => {
@@ -193,8 +188,8 @@ export default class MainScene extends Phaser.Scene {
       for (let i = 0; i < wallLength; i++) {
         for (let j = 0; j < wallLength; j++) {
           this.walls!.create(
-            pos.x + i * TILE_WIDTH,
-            pos.y + j * TILE_HEIGHT,
+            pos.x + i * WORLD.TILE.WIDTH,
+            pos.y + j * WORLD.TILE.HEIGHT,
             "wall"
           );
         }

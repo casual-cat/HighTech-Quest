@@ -1,3 +1,5 @@
+import { THEME } from "./game";
+
 export const GAME_OVER_CONFIG = {
   FADE_DURATION: 1000,
   TEXT: {
@@ -5,7 +7,7 @@ export const GAME_OVER_CONFIG = {
       "You have run out of motivation for today.\nYou go to sleep and promise yourself\nyou will do better tomorrow...",
     STYLE: {
       fontSize: "24px",
-      color: "#ffffff",
+      color: THEME.COLORS.TEXT.PRIMARY,
       align: "center",
       lineSpacing: 10,
     },

@@ -4,6 +4,7 @@ import { Chest } from "../entities/Chest";
 import { PuzzlePiece, PUZZLE_DATA } from "../data/puzzlePieces";
 import { ANIMATION_CONFIG } from "../constants/puzzle";
 import { HealthBar } from "../ui/HealthBar";
+import { THEME } from "../constants/game";
 
 interface MainScene extends Phaser.Scene {
   bookManager?: BookManager;
@@ -95,7 +96,7 @@ export class PuzzleScene extends Phaser.Scene {
 
     const label = this.add
       .text(position.x, position.y + 60, pieceData.label, {
-        color: "#ffffff",
+        color: THEME.COLORS.TEXT.PRIMARY,
         fontSize: "16px",
         fontFamily: "Arial",
       })

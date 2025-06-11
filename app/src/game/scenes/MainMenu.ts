@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { CareerStore } from "../../stores/CareerStore";
+import { THEME } from "../constants/game";
 
 export default class MainMenu extends Phaser.Scene {
   private selectedCareer: string = "";
@@ -64,7 +65,7 @@ export default class MainMenu extends Phaser.Scene {
     const playBtnTxt = this.add
       .text(0, 0, "Play", {
         fontSize: "32px",
-        color: "#fff",
+        color: THEME.COLORS.TEXT.PRIMARY,
       })
       .setOrigin(0.5);
 
@@ -93,7 +94,7 @@ export default class MainMenu extends Phaser.Scene {
     const returnBtnTxt = this.add
       .text(0, 0, "Return", {
         fontSize: "32px",
-        color: "#fff",
+        color: THEME.COLORS.TEXT.PRIMARY,
       })
       .setOrigin(0.5);
 

@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
+import { THEME } from "../constants/game";
 
 export default class CareerMenu extends Phaser.Scene {
   private careers: { key: CareerKey; title: string }[] = [
@@ -72,7 +73,7 @@ export default class CareerMenu extends Phaser.Scene {
     this.titleText = this.add
       .text(width / 2, height / 8, "", {
         fontSize: "32px",
-        color: "#fff",
+        color: THEME.COLORS.TEXT.PRIMARY,
       })
       .setOrigin(0.5);
 
@@ -107,7 +108,7 @@ export default class CareerMenu extends Phaser.Scene {
     const btnTxt = this.add
       .text(0, 0, "Continue", {
         fontSize: "28px",
-        color: "#fff",
+        color: THEME.COLORS.TEXT.PRIMARY,
         padding: { x: 20, y: 10 },
       })
       .setOrigin(0.5);
