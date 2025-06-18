@@ -25,6 +25,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.health = maxHealth;
 
     this.setCollideWorldBounds(true);
+    this.setupCollisionBody();
     this.createAnimations(textureKey);
     this.setupInput(scene);
   }
@@ -184,5 +185,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   update() {
     this.handleMovement();
+  }
+
+  setupCollisionBody() {
+    const spriteWidth = this.width;
+    const spriteHeight = this.height;
+    
+    const collisionWidth = 24;
+    const collisionHeight = 24;
+    
+    const offsetX = (spriteWidth - collisionWidth) / 2;
+    const offsetY = spriteHeight - collisionHeight;
+    
+    if (this.body) {
+      this.body.setSize(collisionWidth, collisionHeight);
+      this.body.setOffset(offsetX, offsetY);
+    }
   }
 }
