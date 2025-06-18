@@ -1,7 +1,7 @@
 // World Configuration
 export const WORLD = {
-  WIDTH: 2560,
-  HEIGHT: 1280,
+  WIDTH: 1280,
+  HEIGHT: 736,
   TILE: {
     WIDTH: 32,
     HEIGHT: 32,
