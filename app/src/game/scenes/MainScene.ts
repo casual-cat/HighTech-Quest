@@ -3,18 +3,17 @@ import { WORLD, PLAYER } from "../constants/game";
 import { Player } from "../entities/Player";
 import { HealthBar } from "../ui/HealthBar";
 import { BookManager } from "../ui/BookManager";
-import { Envelope } from "../entities/Envelope";
-import { Chest } from "../entities/Chest";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
 
 export default class MainScene extends Phaser.Scene {
-  private walls?: Phaser.Physics.Arcade.StaticGroup;
   private player?: Player;
   private healthBar?: HealthBar;
   private career?: CareerKey;
   private bookManager?: BookManager;
-  private interactiveObjects: (Envelope | Chest)[] = [];
   private isGameOver = false;
+  private wallLayer?: Phaser.Tilemaps.TilemapLayer;
+  private collidablesLayer?: Phaser.Tilemaps.TilemapLayer;
+  private interactablesLayer?: Phaser.Tilemaps.TilemapLayer;
 
   constructor() {
     super({ key: "MainScene" });
@@ -34,8 +33,8 @@ export default class MainScene extends Phaser.Scene {
 
     this.career = career;
 
-    this.load.image("floor", "/assets/floor.png");
-    this.load.image("wall", "/assets/wall.png");
+    this.load.image("tiles", "/assets/maps/level1/v1/level1-tileset.png");
+    this.load.tilemapTiledJSON("map", "/assets/maps/level1/v1/level1.tmj");
     this.load.spritesheet("heart", "/assets/ui/lifebar/heart.png", {
       frameWidth: 32,
       frameHeight: 32,
@@ -44,11 +43,6 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("book", "/assets/game/book.png");
     this.load.image("book-badge", "/assets/game/book-badge.png");
     this.load.image("book-open", "/assets/game/book-open.png");
-
-    this.load.spritesheet("icons", "/assets/icons.png", {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
 
     const careers: CareerKey[] = [
       "fullstack",
@@ -80,16 +74,25 @@ export default class MainScene extends Phaser.Scene {
 
     this.player = new Player(
       this,
-      21 * WORLD.TILE.WIDTH,
-      12 * WORLD.TILE.HEIGHT,
+      19 * WORLD.TILE.WIDTH,
+      10 * WORLD.TILE.HEIGHT,
       PLAYER.HEALTH.MAX,
       `character-${this.career}`
     );
 
-    this.createHUD();
+    if (this.player) {
+      if (this.wallLayer) {
+        this.physics.add.collider(this.player, this.wallLayer);
+      }
+      if (this.collidablesLayer) {
+        this.physics.add.collider(this.player, this.collidablesLayer);
+      }
+      if (this.interactablesLayer) {
+        this.physics.add.collider(this.player, this.interactablesLayer);
+      }
+    }
 
-    if (!this.walls) return;
-    this.physics.add.collider(this.player, this.walls);
+    this.createHUD();
 
     this.cameras.main.setBounds(0, 0, WORLD.WIDTH, WORLD.HEIGHT);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
@@ -99,7 +102,8 @@ export default class MainScene extends Phaser.Scene {
   update() {
     if (this.isGameOver) return;
     this.player?.update();
-    this.interactiveObjects.forEach((obj) => obj.update(this.player!));
+
+    this.checkForInteractions();
   }
 
   private createHUD() {
@@ -144,57 +148,94 @@ export default class MainScene extends Phaser.Scene {
   private createWorld() {
     this.physics.world.setBounds(0, 0, WORLD.WIDTH, WORLD.HEIGHT);
 
-    for (let x = 0; x < WORLD.WIDTH; x += WORLD.TILE.WIDTH) {
-      for (let y = 0; y < WORLD.HEIGHT; y += WORLD.TILE.HEIGHT) {
-        this.add.image(x, y, "floor");
-      }
+    const map = this.add.tilemap("map");
+    const tiles = map.addTilesetImage("level1-tileset", "tiles");
+
+    if (!tiles) {
+      console.error("Failed to load tiles");
+      return;
     }
 
-    this.walls = this.physics.add.staticGroup();
+    this.wallLayer = map.createLayer("walls", tiles) || undefined;
+    const floorLayer = map.createLayer("floor", tiles);
+    const carpetLayer = map.createLayer("carpet", tiles);
+    this.collidablesLayer = map.createLayer("collidables", tiles) || undefined;
+    this.interactablesLayer =
+      map.createLayer("interactables", tiles) || undefined;
+    const foregroundLayer = map.createLayer("nonCollidableForegrounds", tiles);
 
-    for (let x = 0; x < WORLD.WIDTH; x += WORLD.TILE.WIDTH) {
-      this.walls.create(x, 0, "wall");
-      this.walls.create(x, WORLD.HEIGHT, "wall");
+    if (this.wallLayer) {
+      this.wallLayer.setCollisionByProperty({ collides: true });
+      this.wallLayer.setCollisionBetween(1, 1000);
     }
 
-    for (let y = 0; y < WORLD.HEIGHT; y += WORLD.TILE.HEIGHT) {
-      this.walls.create(0, y, "wall");
-      this.walls.create(WORLD.WIDTH, y, "wall");
+    if (this.collidablesLayer) {
+      this.collidablesLayer.setCollisionByProperty({ collides: true });
+      this.collidablesLayer.setCollisionBetween(1, 1000);
     }
 
-    const envelope = new Envelope(this, 32 * 20, 32 * 7, 13).setOrigin(0.5);
-    this.interactiveObjects.push(envelope);
+    if (this.interactablesLayer) {
+      this.interactablesLayer.setCollisionByProperty({ collides: true });
+      this.interactablesLayer.setCollisionBetween(1, 1000);
+    }
 
-    const chest = new Chest(this, 32 * 16, 32 * 7, 15).setOrigin(0.5);
-    this.interactiveObjects.push(chest);
-
-    this.createObstacles();
+    if (foregroundLayer) foregroundLayer.setDepth(1);
   }
 
-  private createObstacles() {
-    const obstaclePositions = [
-      { x: 10 * WORLD.TILE.WIDTH, y: 10 * WORLD.TILE.HEIGHT },
-      { x: 17 * WORLD.TILE.WIDTH, y: 20 * WORLD.TILE.HEIGHT },
-      { x: 25 * WORLD.TILE.WIDTH, y: 15 * WORLD.TILE.HEIGHT },
-      { x: 28 * WORLD.TILE.WIDTH, y: 4 * WORLD.TILE.HEIGHT },
-      { x: 34 * WORLD.TILE.WIDTH, y: 16 * WORLD.TILE.HEIGHT },
-      { x: 10 * WORLD.TILE.WIDTH, y: 30 * WORLD.TILE.HEIGHT },
-      { x: 42 * WORLD.TILE.WIDTH, y: 12 * WORLD.TILE.HEIGHT },
-      { x: 43 * WORLD.TILE.WIDTH, y: 35 * WORLD.TILE.HEIGHT },
-    ];
+  private checkForInteractions() {
+    if (!this.player || !this.interactablesLayer) return;
 
-    obstaclePositions.forEach((pos) => {
-      const wallLength = Math.floor(Math.random() * 5) + 1;
-      for (let i = 0; i < wallLength; i++) {
-        for (let j = 0; j < wallLength; j++) {
-          this.walls!.create(
-            pos.x + i * WORLD.TILE.WIDTH,
-            pos.y + j * WORLD.TILE.HEIGHT,
-            "wall"
-          );
+    const playerTileX = Math.floor(this.player.x / WORLD.TILE.WIDTH);
+    const playerTileY = Math.floor(this.player.y / WORLD.TILE.HEIGHT);
+
+    for (let x = playerTileX - 1; x <= playerTileX + 1; x++) {
+      for (let y = playerTileY - 1; y <= playerTileY + 1; y++) {
+        if (x >= 0 && x < 40 && y >= 0 && y < 23) {
+          const tile = this.interactablesLayer.getTileAt(x, y);
+          if (tile && tile.index > 0) {
+            const properties = tile.properties;
+            if (properties && properties.interactable) {
+              this.handleNearbyInteractiveObject(tile, x, y);
+              return;
+            }
+          }
         }
       }
-    });
+    }
+  }
+
+  private handleNearbyInteractiveObject(
+    tile: Phaser.Tilemaps.Tile,
+    tileX: number,
+    tileY: number
+  ) {
+    const cursors = this.input.keyboard?.createCursorKeys();
+    const eKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    const spaceKey = this.input.keyboard?.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
+
+    if ((eKey && eKey.isDown) || (spaceKey && spaceKey.isDown)) {
+      this.interactWithObject(tile.index, tileX, tileY);
+    }
+  }
+
+  private interactWithObject(tileIndex: number, tileX: number, tileY: number) {
+    console.log(
+      `Interacting with object at tile (${tileX}, ${tileY}) with index ${tileIndex}`
+    );
+
+    switch (tileIndex) {
+      case 13:
+        console.log("Opening door...");
+        break;
+      case 14:
+        console.log("Interacting with object...");
+        break;
+      default:
+        console.log(`Unknown interactive object with index ${tileIndex}`);
+        break;
+    }
   }
 
   damagePlayer(amount: number) {
@@ -227,8 +268,5 @@ export default class MainScene extends Phaser.Scene {
     this.player?.destroy();
     this.healthBar?.destroy();
     this.bookManager?.destroy?.();
-    this.interactiveObjects.forEach((obj) => obj.destroy());
-    this.interactiveObjects = [];
-    this.walls?.clear(true, true);
   }
 }
