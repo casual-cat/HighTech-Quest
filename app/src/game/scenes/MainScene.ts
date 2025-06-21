@@ -13,7 +13,8 @@ export default class MainScene extends Phaser.Scene {
   private isGameOver = false;
   private wallLayer?: Phaser.Tilemaps.TilemapLayer;
   private collidablesLayer?: Phaser.Tilemaps.TilemapLayer;
-  private interactablesLayer?: Phaser.Tilemaps.TilemapLayer;
+  private interactableObjects?: Phaser.Physics.Arcade.StaticGroup;
+  private eKey?: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super({ key: "MainScene" });
@@ -37,7 +38,10 @@ export default class MainScene extends Phaser.Scene {
     this.load.tilemapTiledJSON("map", "/assets/maps/level1/v1/level1.tmj");
     this.load.image("batteryFull", "/assets/ui/motivationBar/battery-full.png");
     this.load.image("batteryHalf", "/assets/ui/motivationBar/battery-half.png");
-    this.load.image("batteryEmpty", "/assets/ui/motivationBar/battery-empty.png");
+    this.load.image(
+      "batteryEmpty",
+      "/assets/ui/motivationBar/battery-empty.png"
+    );
     this.load.image("avatarBackground", "/assets/game/avatarBackground.png");
     this.load.image("book", "/assets/game/book.png");
     this.load.image("book-badge", "/assets/game/book-badge.png");
@@ -86,8 +90,8 @@ export default class MainScene extends Phaser.Scene {
       if (this.collidablesLayer) {
         this.physics.add.collider(this.player, this.collidablesLayer);
       }
-      if (this.interactablesLayer) {
-        this.physics.add.collider(this.player, this.interactablesLayer);
+      if (this.interactableObjects) {
+        this.physics.add.collider(this.player, this.interactableObjects);
       }
     }
 
@@ -96,6 +100,8 @@ export default class MainScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, WORLD.WIDTH, WORLD.HEIGHT);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.cameras.main.setDeadzone(100, 100);
+
+    this.eKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
   }
 
   update() {
@@ -159,9 +165,25 @@ export default class MainScene extends Phaser.Scene {
     const floorLayer = map.createLayer("floor", tiles);
     const carpetLayer = map.createLayer("carpet", tiles);
     this.collidablesLayer = map.createLayer("collidables", tiles) || undefined;
-    this.interactablesLayer =
-      map.createLayer("interactables", tiles) || undefined;
     const foregroundLayer = map.createLayer("nonCollidableForegrounds", tiles);
+
+    const objectLayer = map.getObjectLayer("Objects");
+
+    if (objectLayer) {
+      this.interactableObjects = this.physics.add.staticGroup();
+      objectLayer.objects.forEach((obj) => {
+        const properties = obj.properties;
+        if (properties && properties.some((p: any) => p.name === "pieceIds")) {
+          const sprite = this.interactableObjects?.create(obj.x!, obj.y!);
+          if (sprite) {
+            sprite.setOrigin(0, 1);
+            sprite.setData("properties", properties);
+            sprite.setVisible(false);
+            sprite.refreshBody();
+          }
+        }
+      });
+    }
 
     if (this.wallLayer) {
       this.wallLayer.setCollisionByProperty({ collides: true });
@@ -173,67 +195,58 @@ export default class MainScene extends Phaser.Scene {
       this.collidablesLayer.setCollisionBetween(1, 1000);
     }
 
-    if (this.interactablesLayer) {
-      this.interactablesLayer.setCollisionByProperty({ collides: true });
-      this.interactablesLayer.setCollisionBetween(1, 1000);
-    }
-
     if (foregroundLayer) foregroundLayer.setDepth(1);
   }
 
   private checkForInteractions() {
-    if (!this.player || !this.interactablesLayer) return;
+    if (!this.player || !this.interactableObjects || !this.eKey) return;
 
-    const playerTileX = Math.floor(this.player.x / WORLD.TILE.WIDTH);
-    const playerTileY = Math.floor(this.player.y / WORLD.TILE.HEIGHT);
+    if (Phaser.Input.Keyboard.JustDown(this.eKey)) {
+      let closestObject: Phaser.GameObjects.Sprite | null = null;
+      let minDistance = 64;
 
-    for (let x = playerTileX - 1; x <= playerTileX + 1; x++) {
-      for (let y = playerTileY - 1; y <= playerTileY + 1; y++) {
-        if (x >= 0 && x < 40 && y >= 0 && y < 23) {
-          const tile = this.interactablesLayer.getTileAt(x, y);
-          if (tile && tile.index > 0) {
-            const properties = tile.properties;
-            if (properties && properties.interactable) {
-              this.handleNearbyInteractiveObject(tile, x, y);
-              return;
-            }
-          }
+      this.interactableObjects.children.each((obj) => {
+        const sprite = obj as Phaser.Physics.Arcade.Sprite;
+        const distance = Phaser.Math.Distance.Between(
+          this.player!.x,
+          this.player!.y,
+          sprite.x,
+          sprite.y
+        );
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestObject = sprite;
         }
+        return true;
+      });
+
+      if (closestObject) {
+        this.interactWithObject(closestObject);
       }
     }
   }
 
-  private handleNearbyInteractiveObject(
-    tile: Phaser.Tilemaps.Tile,
-    tileX: number,
-    tileY: number
-  ) {
-    const cursors = this.input.keyboard?.createCursorKeys();
-    const eKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
-    const spaceKey = this.input.keyboard?.addKey(
-      Phaser.Input.Keyboard.KeyCodes.SPACE
-    );
+  private interactWithObject(obj: Phaser.GameObjects.Sprite) {
+    const propertiesArray = obj.getData("properties") as {
+      name: string;
+      type: string;
+      value: any;
+    }[];
+    if (!propertiesArray) return;
 
-    if ((eKey && eKey.isDown) || (spaceKey && spaceKey.isDown)) {
-      this.interactWithObject(tile.index, tileX, tileY);
-    }
-  }
+    const properties: { [key: string]: any } = {};
+    propertiesArray.forEach((prop) => {
+      properties[prop.name] = prop.value;
+    });
 
-  private interactWithObject(tileIndex: number, tileX: number, tileY: number) {
-    console.log(
-      `Interacting with object at tile (${tileX}, ${tileY}) with index ${tileIndex}`
-    );
-
-    switch (tileIndex) {
-      case 13:
-        console.log("Opening door...");
-        break;
-      case 14:
-        console.log("Interacting with object...");
-        break;
-      default:
-        console.log(`Unknown interactive object with index ${tileIndex}`);
-        break;
+    if (properties.pieceIds) {
+      const pieceIds = String(properties.pieceIds)
+        .split(",")
+        .map((id: string) => parseInt(id.trim(), 10));
+      this.scene.launch("PuzzleScene", { pieceIds });
+      this.scene.pause();
+      return;
     }
   }
 
@@ -241,6 +254,7 @@ export default class MainScene extends Phaser.Scene {
     if (!this.player || !this.healthBar) return;
     const newHealth = this.player.damage(amount);
     this.healthBar.decrease(amount);
+    this.events.emit("playerDamaged");
 
     if (newHealth <= 0) {
       this.handleGameOver();
