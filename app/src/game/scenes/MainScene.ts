@@ -35,10 +35,9 @@ export default class MainScene extends Phaser.Scene {
 
     this.load.image("tiles", "/assets/maps/level1/v1/level1-tileset.png");
     this.load.tilemapTiledJSON("map", "/assets/maps/level1/v1/level1.tmj");
-    this.load.spritesheet("heart", "/assets/ui/lifebar/heart.png", {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
+    this.load.image("batteryFull", "/assets/ui/motivationBar/battery-full.png");
+    this.load.image("batteryHalf", "/assets/ui/motivationBar/battery-half.png");
+    this.load.image("batteryEmpty", "/assets/ui/motivationBar/battery-empty.png");
     this.load.image("avatarBackground", "/assets/game/avatarBackground.png");
     this.load.image("book", "/assets/game/book.png");
     this.load.image("book-badge", "/assets/game/book-badge.png");

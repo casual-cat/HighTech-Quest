@@ -33,7 +33,6 @@ export class HealthBar {
 
   private initialize(): void {
     this.createGameObjects();
-    this.setupHeartAnimation();
     this.setHealth(this.maxHp);
   }
 
@@ -59,8 +58,8 @@ export class HealthBar {
     this.icon = this.scene.add
       .sprite(
         this.x - UI.HEALTH_BAR.DIMENSIONS.ICON_OFFSET,
-        this.y + UI.HEALTH_BAR.DIMENSIONS.HEIGHT / 2,
-        "heart"
+        this.y + UI.HEALTH_BAR.DIMENSIONS.HEIGHT / 2 - 1,
+        "batteryFull"
       )
       .setOrigin(0.5)
       .setScrollFactor(0);
@@ -81,21 +80,6 @@ export class HealthBar {
       .setScrollFactor(0);
   }
 
-  private setupHeartAnimation(): void {
-    if (!this.scene.anims.exists("heartBeat")) {
-      this.scene.anims.create({
-        key: "heartBeat",
-        frames: this.scene.anims.generateFrameNumbers("heart", {
-          start: 0,
-          end: 1,
-        }),
-        frameRate: 2,
-        repeat: -1,
-      });
-    }
-    this.icon.play("heartBeat");
-  }
-
   private drawBar(): void {
     this.bar.clear();
     this.bar.fillStyle(UI.HEALTH_BAR.COLORS.BACKGROUND);
@@ -108,7 +92,11 @@ export class HealthBar {
     );
     this.bar.lineStyle(
       UI.HEALTH_BAR.DIMENSIONS.LINE_WIDTH,
-      UI.HEALTH_BAR.COLORS.BORDER
+      this.currentHp < this.maxHp * 0.1
+        ? UI.HEALTH_BAR.COLORS.NO_HEALTH
+        : this.currentHp < this.maxHp * 0.5
+        ? UI.HEALTH_BAR.COLORS.LOW_HEALTH
+        : UI.HEALTH_BAR.COLORS.FULL_HEALTH
     );
     this.bar.strokeRoundedRect(
       this.x,
@@ -139,9 +127,11 @@ export class HealthBar {
     );
 
     this.fill.fillStyle(
-      this.currentHp < this.maxHp * 0.25
+      this.currentHp < this.maxHp * 0.1
+        ? UI.HEALTH_BAR.COLORS.NO_HEALTH
+        : this.currentHp < this.maxHp * 0.5
         ? UI.HEALTH_BAR.COLORS.LOW_HEALTH
-        : UI.HEALTH_BAR.COLORS.FILL
+        : UI.HEALTH_BAR.COLORS.FULL_HEALTH
     );
     this.fill.fillRoundedRect(
       this.x,

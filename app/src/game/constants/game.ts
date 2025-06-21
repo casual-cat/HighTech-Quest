@@ -23,7 +23,7 @@ export const UI = {
       HEIGHT: 24,
       RADIUS: 12,
       LINE_WIDTH: 1,
-      ICON_OFFSET: 24,
+      ICON_OFFSET: 48,
     },
     STYLE: {
       FONT_SIZE: "14px",
@@ -31,9 +31,9 @@ export const UI = {
     },
     COLORS: {
       BACKGROUND: 0x888888,
-      FILL: 0x9b4dca, // PRIMARY
-      LOW_HEALTH: 0xff6600,
-      BORDER: 0x9b4dca, // PRIMARY
+      FULL_HEALTH: 0x1bd5d3,
+      LOW_HEALTH: 0x39cd68,
+      NO_HEALTH: 0x5f0cc0,
     },
   },
 } as const;
