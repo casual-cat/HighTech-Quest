@@ -8,7 +8,6 @@ export class HealthBar {
   private width: number;
   private maxHp: number;
   private currentHp: number;
-
   private bar!: Phaser.GameObjects.Graphics;
   private fill!: Phaser.GameObjects.Graphics;
   private icon!: Phaser.GameObjects.Sprite;
@@ -32,29 +31,17 @@ export class HealthBar {
   }
 
   private initialize(): void {
-    this.createGameObjects();
+    this.createMotivationBar();
     this.setHealth(this.maxHp);
   }
 
-  private createGameObjects(): void {
-    this.createBar();
-    this.createFill();
-    this.createIcon();
-    this.createText();
-  }
-
-  private createBar(): void {
+  private createMotivationBar(): void {
     this.bar = this.scene.add.graphics();
     this.bar.setScrollFactor(0);
-    this.drawBar();
-  }
 
-  private createFill(): void {
     this.fill = this.scene.add.graphics();
     this.fill.setScrollFactor(0);
-  }
 
-  private createIcon(): void {
     this.icon = this.scene.add
       .sprite(
         this.x - UI.HEALTH_BAR.DIMENSIONS.ICON_OFFSET,
@@ -63,9 +50,7 @@ export class HealthBar {
       )
       .setOrigin(0.5)
       .setScrollFactor(0);
-  }
 
-  private createText(): void {
     this.text = this.scene.add
       .text(
         this.x + this.width / 2,
@@ -80,7 +65,29 @@ export class HealthBar {
       .setScrollFactor(0);
   }
 
-  private drawBar(): void {
+  setHealth(hp: number): HealthBar {
+    this.currentHp = Phaser.Math.Clamp(hp, 0, this.maxHp);
+
+    const healthPercentage = this.currentHp / this.maxHp;
+    let barColor: number;
+    let barIcon: string;
+
+    if (healthPercentage > 0.5) {
+      barColor = UI.HEALTH_BAR.COLORS.FULL_HEALTH;
+      barIcon = "batteryFull";
+    } else if (healthPercentage > 0.1) {
+      barColor = UI.HEALTH_BAR.COLORS.LOW_HEALTH;
+      barIcon = "batteryHalf";
+    } else {
+      barColor = UI.HEALTH_BAR.COLORS.NO_HEALTH;
+      barIcon = "batteryEmpty";
+    }
+
+    this.updateMotivationBar(barColor, barIcon);
+    return this;
+  }
+
+  private updateMotivationBar(barColor: number, barIcon: string): void {
     this.bar.clear();
     this.bar.fillStyle(UI.HEALTH_BAR.COLORS.BACKGROUND);
     this.bar.fillRoundedRect(
@@ -90,14 +97,7 @@ export class HealthBar {
       UI.HEALTH_BAR.DIMENSIONS.HEIGHT,
       UI.HEALTH_BAR.DIMENSIONS.RADIUS
     );
-    this.bar.lineStyle(
-      UI.HEALTH_BAR.DIMENSIONS.LINE_WIDTH,
-      this.currentHp < this.maxHp * 0.1
-        ? UI.HEALTH_BAR.COLORS.NO_HEALTH
-        : this.currentHp < this.maxHp * 0.5
-        ? UI.HEALTH_BAR.COLORS.LOW_HEALTH
-        : UI.HEALTH_BAR.COLORS.FULL_HEALTH
-    );
+    this.bar.lineStyle(UI.HEALTH_BAR.DIMENSIONS.LINE_WIDTH, barColor);
     this.bar.strokeRoundedRect(
       this.x,
       this.y,
@@ -105,44 +105,25 @@ export class HealthBar {
       UI.HEALTH_BAR.DIMENSIONS.HEIGHT,
       UI.HEALTH_BAR.DIMENSIONS.RADIUS
     );
-  }
 
-  setHealth(hp: number): HealthBar {
-    this.currentHp = Phaser.Math.Clamp(hp, 0, this.maxHp);
-    this.updateFill();
-    this.updateText();
-    return this;
-  }
-
-  private updateFill(): void {
     this.fill.clear();
-
-    if (this.currentHp === 0) {
-      return;
+    if (this.currentHp > 0) {
+      const fillWidth = Math.max(
+        (this.currentHp / this.maxHp) * this.width,
+        UI.HEALTH_BAR.DIMENSIONS.HEIGHT
+      );
+      this.fill.fillStyle(barColor);
+      this.fill.fillRoundedRect(
+        this.x,
+        this.y,
+        fillWidth,
+        UI.HEALTH_BAR.DIMENSIONS.HEIGHT,
+        UI.HEALTH_BAR.DIMENSIONS.RADIUS
+      );
     }
 
-    const fillWidth = Math.max(
-      (this.currentHp / this.maxHp) * this.width,
-      UI.HEALTH_BAR.DIMENSIONS.HEIGHT
-    );
+    this.icon.setTexture(barIcon);
 
-    this.fill.fillStyle(
-      this.currentHp < this.maxHp * 0.1
-        ? UI.HEALTH_BAR.COLORS.NO_HEALTH
-        : this.currentHp < this.maxHp * 0.5
-        ? UI.HEALTH_BAR.COLORS.LOW_HEALTH
-        : UI.HEALTH_BAR.COLORS.FULL_HEALTH
-    );
-    this.fill.fillRoundedRect(
-      this.x,
-      this.y,
-      fillWidth,
-      UI.HEALTH_BAR.DIMENSIONS.HEIGHT,
-      UI.HEALTH_BAR.DIMENSIONS.RADIUS
-    );
-  }
-
-  private updateText(): void {
     this.text.setText(`${Math.floor(this.currentHp)}/${this.maxHp}`);
   }
 
@@ -182,9 +163,8 @@ export class HealthBar {
     this.x = x;
     this.y = y;
 
-    this.drawBar();
-    this.updatePositions(xDiff, yDiff);
     this.setHealth(this.currentHp);
+    this.updatePositions(xDiff, yDiff);
 
     return this;
   }
