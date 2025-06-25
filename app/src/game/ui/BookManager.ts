@@ -105,6 +105,8 @@ export class BookManager {
 
 export class BookScene extends Phaser.Scene {
   private puzzlePieces: PuzzlePiece[] = [];
+  private currentTab: "Tasks" | "Levels" | "Elements" = "Tasks";
+  private tabContentGroup!: Phaser.GameObjects.Group;
 
   constructor() {
     super({ key: "BookScene" });
@@ -117,11 +119,88 @@ export class BookScene extends Phaser.Scene {
   create(): void {
     this.setupOverlay();
     this.createBook();
-    this.displayPuzzlePieces();
+    this.createTabs();
+    this.tabContentGroup = this.add.group();
+    this.renderTabContent();
+    // this.displayPuzzlePieces();
   }
 
   update(): void {
     this.checkGameOver();
+  }
+
+  private createTabs(): void {
+    const { width, height } = this.scale;
+
+    const tabData = [
+      { name: "Tasks", x: width * 0.282, y: height * 0.18 },
+      { name: "Levels", x: width * 0.34, y: height * 0.18 },
+      { name: "Elements", x: width * 0.395, y: height * 0.18 },
+    ];
+
+    tabData.forEach((tab) => {
+      const tabRect = this.add
+        .rectangle(tab.x, tab.y, 80, 40, 0xffffff, 0)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerdown", () => {
+          this.currentTab = tab.name as typeof this.currentTab;
+          this.renderTabContent();
+        });
+
+      this.add
+        .text(tab.x, tab.y, tab.name, { fontSize: "12px", color: "#333" })
+        .setOrigin(0.5);
+    });
+  }
+
+  private renderTabContent(): void {
+    this.tabContentGroup.clear(true, true);
+
+    if (this.currentTab === "Tasks") {
+      this.displayPuzzlePieces();
+    } else if (this.currentTab === "Levels") {
+      this.displayLevels();
+    } else if (this.currentTab === "Elements") {
+      this.displayElements();
+    }
+  }
+
+  private displayPuzzlePieces(): void {
+    const { width, height } = this.scale;
+    this.puzzlePieces.forEach((piece, index) => {
+      const y = height * 0.3 + index * BOOK_SCENE_CONFIG.TEXT.SPACING;
+      const text = this.add
+        .text(width * 0.6, y, piece.content, {
+          ...BOOK_SCENE_CONFIG.TEXT.STYLE,
+          color: piece.isNew
+            ? BOOK_SCENE_CONFIG.TEXT.COLORS.NEW
+            : BOOK_SCENE_CONFIG.TEXT.COLORS.VIEWED,
+        })
+        .setOrigin(0, 0.5);
+      this.tabContentGroup.add(text);
+    });
+  }
+
+  private displayLevels(): void {
+    const { width, height } = this.scale;
+    const text = this.add
+      .text(width * 0.6, height * 0.4, "Levels content here", {
+        fontSize: "16px",
+        color: "#000",
+      })
+      .setOrigin(0, 0.5);
+    this.tabContentGroup.add(text);
+  }
+
+  private displayElements(): void {
+    const { width, height } = this.scale;
+    const text = this.add
+      .text(width * 0.6, height * 0.4, "Elements content here", {
+        fontSize: "16px",
+        color: "#000",
+      })
+      .setOrigin(0, 0.5);
+    this.tabContentGroup.add(text);
   }
 
   private setupOverlay(): void {
@@ -153,22 +232,6 @@ export class BookScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     book.on("pointerdown", () => false);
-  }
-
-  private displayPuzzlePieces(): void {
-    const { width, height } = this.scale;
-
-    this.puzzlePieces.forEach((piece, index) => {
-      const y = height * 0.3 + index * BOOK_SCENE_CONFIG.TEXT.SPACING;
-      this.add
-        .text(width * 0.6, y, piece.content, {
-          ...BOOK_SCENE_CONFIG.TEXT.STYLE,
-          color: piece.isNew
-            ? BOOK_SCENE_CONFIG.TEXT.COLORS.NEW
-            : BOOK_SCENE_CONFIG.TEXT.COLORS.VIEWED,
-        })
-        .setOrigin(0, 0.5);
-    });
   }
 
   private checkGameOver(): void {
