@@ -9,6 +9,7 @@ interface MainScene extends Phaser.Scene {
   bookManager?: BookManager;
   damagePlayer(amount: number): void;
   player?: { getHealth(): number; getMaxHealth(): number };
+  interactableObjects?: Phaser.Physics.Arcade.StaticGroup;
 }
 
 export class PuzzleScene extends Phaser.Scene {
@@ -21,8 +22,12 @@ export class PuzzleScene extends Phaser.Scene {
     super({ key: "PuzzleScene" });
   }
 
-  init(data: { pieceIds?: number[] }) {
+  init(data: {
+    pieceIds?: number[];
+    sourceObject?: Phaser.GameObjects.Sprite;
+  }) {
     this.pieceIds = data.pieceIds || [];
+    (this as any).sourceObject = data.sourceObject;
   }
 
   preload() {
@@ -202,6 +207,14 @@ export class PuzzleScene extends Phaser.Scene {
   private handlePieceCollection(pieceData: PuzzlePiece) {
     const mainScene = this.scene.get("MainScene") as MainScene;
 
+    if ((this as any).sourceObject && mainScene.interactableObjects) {
+      mainScene.interactableObjects.remove(
+        (this as any).sourceObject,
+        true,
+        true
+      );
+    }
+
     mainScene.bookManager?.addPuzzlePiece({
       id: `piece${pieceData.id}`,
       content: pieceData.label,
@@ -280,7 +293,7 @@ export class PuzzleScene extends Phaser.Scene {
   shutdown() {
     this.tweens.killAll();
 
-    this.hoverTweens.forEach(tween => tween?.stop());
+    this.hoverTweens.forEach((tween) => tween?.stop());
     this.hoverTweens = [];
   }
 }

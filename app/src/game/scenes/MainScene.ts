@@ -244,7 +244,7 @@ export default class MainScene extends Phaser.Scene {
       const pieceIds = String(properties.pieceIds)
         .split(",")
         .map((id: string) => parseInt(id.trim(), 10));
-      this.scene.launch("PuzzleScene", { pieceIds });
+      this.scene.launch("PuzzleScene", { pieceIds, sourceObject: obj });
       this.scene.pause();
       return;
     }
