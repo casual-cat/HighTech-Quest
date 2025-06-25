@@ -14,7 +14,7 @@ const BOOK_SCENE_CONFIG = {
       NEW: "#9b59b6",
       VIEWED: "#000000",
     },
-    SPACING: 60,
+    SPACING: 35,
   },
 } as const;
 
@@ -122,7 +122,6 @@ export class BookScene extends Phaser.Scene {
     this.createTabs();
     this.tabContentGroup = this.add.group();
     this.renderTabContent();
-    // this.displayPuzzlePieces();
   }
 
   update(): void {
@@ -168,7 +167,7 @@ export class BookScene extends Phaser.Scene {
   private displayPuzzlePieces(): void {
     const { width, height } = this.scale;
     this.puzzlePieces.forEach((piece, index) => {
-      const y = height * 0.3 + index * BOOK_SCENE_CONFIG.TEXT.SPACING;
+      const y = height * 0.26 + index * BOOK_SCENE_CONFIG.TEXT.SPACING;
       const text = this.add
         .text(width * 0.6, y, piece.content, {
           ...BOOK_SCENE_CONFIG.TEXT.STYLE,
