@@ -47,9 +47,11 @@ export class PuzzleScene extends Phaser.Scene {
 
     const mainScene = this.scene.get("MainScene") as MainScene;
     mainScene.events.on("playerDamaged", this.updateHealthBar, this);
+    mainScene.events.on("gameOver", this.closeScene, this);
 
     this.events.on("shutdown", () => {
       mainScene.events.off("playerDamaged", this.updateHealthBar, this);
+      mainScene.events.off("gameOver", this.closeScene, this);
     });
   }
 
