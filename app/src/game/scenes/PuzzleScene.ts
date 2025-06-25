@@ -225,7 +225,8 @@ export class PuzzleScene extends Phaser.Scene {
     );
 
     if (remainingCorrectPieces.length === 0) {
-      console.log("All correct pieces collected!");
+      mainScene.scene.get("MainScene") as MainScene;
+      mainScene.events.emit("missionCompleted");
     }
 
     this.closeScene();

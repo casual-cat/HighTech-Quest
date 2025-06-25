@@ -45,6 +45,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("avatarBackground", "/assets/game/avatarBackground.png");
     this.load.image("book", "/assets/game/book.png");
     this.load.image("book-badge", "/assets/game/book-badge.png");
+    this.load.image("book-star", "/assets/game/book-star.png");
     this.load.image("book-open", "/assets/game/book-open.png");
 
     const careers: CareerKey[] = [
@@ -143,6 +144,10 @@ export default class MainScene extends Phaser.Scene {
 
     this.events.on("bookStateChanged", (data: { hasNewPieces: boolean }) => {
       bookIcon.setTexture(data.hasNewPieces ? "book-badge" : "book");
+    });
+
+    this.events.on("missionCompleted", () => {
+      bookIcon.setTexture("book-star");
     });
 
     bookIcon.on("pointerdown", () => {
