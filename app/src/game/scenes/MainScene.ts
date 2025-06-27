@@ -46,7 +46,10 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("book", "/assets/game/book.png");
     this.load.image("book-badge", "/assets/game/book-badge.png");
     this.load.image("book-star", "/assets/game/book-star.png");
-    this.load.image("book-open", "/assets/game/book-open.png");
+    this.load.image("book-tasks", "/assets/ui/book/book-tasks.png");
+    this.load.image("book-levels", "/assets/ui/book/book-levels.png");
+    this.load.image("book-elements", "/assets/ui/book/book-elements.png");
+
 
     const careers: CareerKey[] = [
       "fullstack",

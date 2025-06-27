@@ -107,6 +107,7 @@ export class BookScene extends Phaser.Scene {
   private puzzlePieces: PuzzlePiece[] = [];
   private currentTab: "Tasks" | "Levels" | "Elements" = "Tasks";
   private tabContentGroup!: Phaser.GameObjects.Group;
+  private bookImage!: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: "BookScene" });
@@ -132,9 +133,9 @@ export class BookScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     const tabData = [
-      { name: "Tasks", x: width * 0.282, y: height * 0.18 },
-      { name: "Levels", x: width * 0.34, y: height * 0.18 },
-      { name: "Elements", x: width * 0.395, y: height * 0.18 },
+      { name: "Tasks", x: width * 0.189, y: height * 0.0565 },
+      { name: "Levels", x: width * 0.269, y: height * 0.0565 },
+      { name: "Elements", x: width * 0.346, y: height * 0.0565 },
     ];
 
     tabData.forEach((tab) => {
@@ -143,6 +144,7 @@ export class BookScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", () => {
           this.currentTab = tab.name as typeof this.currentTab;
+          this.updateBookImage();
           this.renderTabContent();
         });
 
@@ -225,12 +227,22 @@ export class BookScene extends Phaser.Scene {
   private createBook(): void {
     const { width, height } = this.scale;
 
-    const book = this.add
-      .image(width / 2, height / 2, "book-open")
+    this.bookImage = this.add
+      .image(width / 2, height / 2, "book-tasks")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    book.on("pointerdown", () => false);
+    this.bookImage.on("pointerdown", () => false);
+  }
+
+  private updateBookImage(): void {
+    let textureKey = "book-tasks";
+    if (this.currentTab === "Levels") {
+      textureKey = "book-levels";
+    } else if (this.currentTab === "Elements") {
+      textureKey = "book-elements";
+    }
+    this.bookImage.setTexture(textureKey);
   }
 
   private checkGameOver(): void {
