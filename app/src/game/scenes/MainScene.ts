@@ -51,6 +51,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("book-elements", "/assets/ui/book/book-elements.png");
     this.load.image("checkbox", "/assets/ui/book/checkbox.png");
     this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
+    this.load.image("qKey", "/assets/ui/keys/q.png");
 
     const careers: CareerKey[] = [
       "fullstack",
@@ -143,6 +144,12 @@ export default class MainScene extends Phaser.Scene {
       .setOrigin(0)
       .setScrollFactor(0)
       .setInteractive({ useHandCursor: true });
+
+    this.add
+      .image(16 * 7, 16 * 5, "qKey")
+      .setOrigin(0)
+      .setScrollFactor(0)
+      .setScale(0.5);
 
     this.bookManager = new BookManager(this);
 
