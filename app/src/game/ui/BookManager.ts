@@ -249,6 +249,19 @@ export class BookScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     this.bookImage.on("pointerdown", () => false);
+
+    const bookBounds = this.bookImage.getBounds();
+    const qKeyX = bookBounds.right - 260;
+    const qKeyY = bookBounds.bottom - 75;
+
+    this.add.image(qKeyX, qKeyY, "qKey").setOrigin(0.5).setScale(0.7);
+
+    this.add
+      .text(qKeyX + 25, qKeyY, "Close Notebook", {
+        fontSize: "16px",
+        color: "#333333",
+      })
+      .setOrigin(0, 0.5);
   }
 
   private updateBookImage(): void {
