@@ -171,7 +171,7 @@ export class PuzzleScene extends Phaser.Scene {
     if (!pieceData) return;
 
     if (pieceData.isCorrect) {
-      pieceData.wasPicked = true;
+      pieceData.collected = true;
       this.handleCorrectPiece(piece, pieceData);
     } else {
       this.handleIncorrectPiece(piece);
@@ -218,12 +218,14 @@ export class PuzzleScene extends Phaser.Scene {
     }
 
     mainScene.bookManager?.addPuzzlePiece({
-      id: `piece${pieceData.id}`,
-      content: pieceData.label,
+      id: pieceData.id,
+      label: pieceData.label,
+      isCorrect: pieceData.isCorrect,
+      image: pieceData.image,
     });
 
     const remainingCorrectPieces = this.puzzleData.filter(
-      (piece) => piece.isCorrect && !piece.wasPicked
+      (piece) => piece.isCorrect && !piece.collected
     );
 
     if (remainingCorrectPieces.length === 0) {

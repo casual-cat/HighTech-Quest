@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { GameOverScene } from "../scenes/GameOverScene";
+import { PuzzlePiece, PUZZLE_DATA } from "../data/puzzlePieces";
 
 const BOOK_SCENE_CONFIG = {
   OVERLAY: {
@@ -18,12 +19,6 @@ const BOOK_SCENE_CONFIG = {
   },
 } as const;
 
-interface PuzzlePiece {
-  id: string;
-  content: string;
-  isNew: boolean;
-}
-
 interface MainScene extends Phaser.Scene {
   player?: { getHealth(): number; getMaxHealth(): number };
 }
@@ -31,7 +26,7 @@ interface MainScene extends Phaser.Scene {
 export class BookManager {
   private scene: Phaser.Scene;
   private keyHandler!: (event: KeyboardEvent) => void;
-  private puzzlePieces: PuzzlePiece[] = [];
+  private puzzlePieces: PuzzlePiece[] = PUZZLE_DATA;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -52,12 +47,12 @@ export class BookManager {
     window.addEventListener("keydown", this.keyHandler);
   }
 
-  public addPuzzlePiece(piece: Omit<PuzzlePiece, "isNew">): void {
-    const newPiece = {
-      ...piece,
-      isNew: true,
-    };
-    this.puzzlePieces.push(newPiece);
+  public addPuzzlePiece(piece: Omit<PuzzlePiece, "collected" | "isNew">): void {
+    const existingPiece = this.puzzlePieces.find((p) => p.id === piece.id);
+    if (existingPiece) {
+      existingPiece.collected = true;
+      existingPiece.isNew = true;
+    }
     this.updateBookIcon();
   }
 
@@ -168,14 +163,35 @@ export class BookScene extends Phaser.Scene {
 
   private displayPuzzlePieces(): void {
     const { width, height } = this.scale;
-    this.puzzlePieces.forEach((piece, index) => {
-      const y = height * 0.28 + index * BOOK_SCENE_CONFIG.TEXT.SPACING;
+    const baseY = height * 0.28;
+
+    const title = this.add
+      .text(width * 0.6, baseY - 50, "Find all CV pieces", {
+        ...BOOK_SCENE_CONFIG.TEXT.STYLE,
+        color: "#000",
+        fontSize: "18px",
+      })
+      .setOrigin(0, 0.5);
+    this.tabContentGroup.add(title);
+
+    const cvPieces = this.puzzlePieces.filter((piece) => piece.isCorrect);
+
+    cvPieces.forEach((piece, idx) => {
+      const y = baseY + idx * BOOK_SCENE_CONFIG.TEXT.SPACING;
+      const displayText = piece.collected ? piece.label : "?";
+
+      const checkboxTexture = piece.collected ? "checkbox-checked" : "checkbox";
+      const checkbox = this.add
+        .image(width * 0.55, y, checkboxTexture)
+        .setOrigin(0, 0.5);
+      this.tabContentGroup.add(checkbox);
+
       const text = this.add
-        .text(width * 0.6, y, piece.content, {
+        .text(width * 0.6, y, displayText, {
           ...BOOK_SCENE_CONFIG.TEXT.STYLE,
-          color: piece.isNew
-            ? BOOK_SCENE_CONFIG.TEXT.COLORS.NEW
-            : BOOK_SCENE_CONFIG.TEXT.COLORS.VIEWED,
+          color: piece.collected
+            ? BOOK_SCENE_CONFIG.TEXT.COLORS.VIEWED
+            : BOOK_SCENE_CONFIG.TEXT.COLORS.NEW,
         })
         .setOrigin(0, 0.5);
       this.tabContentGroup.add(text);
