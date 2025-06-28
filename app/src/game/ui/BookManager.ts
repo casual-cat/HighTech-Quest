@@ -189,9 +189,7 @@ export class BookScene extends Phaser.Scene {
       const text = this.add
         .text(width * 0.6, y, displayText, {
           ...BOOK_SCENE_CONFIG.TEXT.STYLE,
-          color: piece.collected
-            ? BOOK_SCENE_CONFIG.TEXT.COLORS.VIEWED
-            : BOOK_SCENE_CONFIG.TEXT.COLORS.NEW,
+          color: BOOK_SCENE_CONFIG.TEXT.COLORS.VIEWED,
         })
         .setOrigin(0, 0.5);
       this.tabContentGroup.add(text);
