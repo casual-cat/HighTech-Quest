@@ -96,9 +96,6 @@ export default class MainScene extends Phaser.Scene {
       if (this.collidablesLayer) {
         this.physics.add.collider(this.player, this.collidablesLayer);
       }
-      if (this.interactableObjects) {
-        this.physics.add.collider(this.player, this.interactableObjects);
-      }
     }
 
     this.createHUD();
