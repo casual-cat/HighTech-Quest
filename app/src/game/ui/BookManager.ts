@@ -88,6 +88,13 @@ export class BookManager {
 
     this.scene.scene.stop("BookScene");
     this.scene.scene.resume();
+
+    const bookScene = this.scene.scene.get("BookScene") as
+      | BookScene
+      | undefined;
+    if (bookScene) {
+      bookScene.resetTab && bookScene.resetTab();
+    }
   }
 
   public destroy(): void {
@@ -110,6 +117,12 @@ export class BookScene extends Phaser.Scene {
 
   init(data: { puzzlePieces: PuzzlePiece[] }): void {
     this.puzzlePieces = data.puzzlePieces;
+  }
+
+  preload(): void {
+    this.load.image("myCV", "/assets/ui/book/myCV.png");
+    this.load.image("cv", "/assets/ui/book/cv.png");
+    this.load.image("lock", "/assets/ui/book/lock.png");
   }
 
   create(): void {
@@ -209,13 +222,12 @@ export class BookScene extends Phaser.Scene {
 
   private displayElements(): void {
     const { width, height } = this.scale;
-    const text = this.add
-      .text(width * 0.6, height * 0.4, "Elements content here", {
-        fontSize: "16px",
-        color: "#000",
-      })
-      .setOrigin(0, 0.5);
-    this.tabContentGroup.add(text);
+
+    const title = this.add.image(width * 0.27, height * 0.13, "myCV");
+    const cv = this.add.image(width * 0.27, height * 0.52, "cv");
+
+    this.tabContentGroup.add(title);
+    this.tabContentGroup.add(cv);
   }
 
   private setupOverlay(): void {
@@ -278,5 +290,9 @@ export class BookScene extends Phaser.Scene {
     if (playerHealth !== undefined && playerHealth <= 0) {
       GameOverScene.handleGameOver(this);
     }
+  }
+
+  public resetTab() {
+    this.currentTab = "Tasks";
   }
 }
