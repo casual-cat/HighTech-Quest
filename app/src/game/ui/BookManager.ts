@@ -225,9 +225,36 @@ export class BookScene extends Phaser.Scene {
 
     const title = this.add.image(width * 0.27, height * 0.13, "myCV");
     const cv = this.add.image(width * 0.27, height * 0.52, "cv");
-
     this.tabContentGroup.add(title);
     this.tabContentGroup.add(cv);
+
+    const correctPieces = this.puzzlePieces.filter((p) => p.isCorrect);
+    const cols = 2;
+    const rows = 4;
+    const spacingX = 200;
+    const spacingY = 140;
+    const gridStartX = width * 0.72 - spacingX / 2;
+    const gridStartY = height * 0.21;
+
+    correctPieces.forEach((piece, idx) => {
+      const col = idx % cols;
+      const row = Math.floor(idx / cols);
+      const x = gridStartX + col * spacingX;
+      const y = gridStartY + row * spacingY;
+      const imageKey = piece.collected ? piece.image : "lock";
+      const img = this.add.image(x, y, imageKey).setOrigin(0.5).setScale(0.7);
+      this.tabContentGroup.add(img);
+      if (piece.collected) {
+        const label = this.add
+          .text(x, y + 55, piece.label, {
+            fontSize: "16px",
+            color: "#333",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5, 0);
+        this.tabContentGroup.add(label);
+      }
+    });
   }
 
   private setupOverlay(): void {
