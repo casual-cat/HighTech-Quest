@@ -9,8 +9,8 @@ export default class InfoScene extends Phaser.Scene {
 
   preload() {
     this.load.image("background", "/assets/backgrounds/purpleBackground.png");
-    this.load.image("button", "/assets/buttons/Button_LightGreen.png");
-    this.load.image("buttonPressed", "/assets/buttons/Button_DarkGreen.png");
+    this.load.image("button", "/assets/buttons/Button_DarkGreen.png");
+    this.load.image("buttonPressed", "/assets/buttons/Button_LightGreen.png");
   }
 
   create() {

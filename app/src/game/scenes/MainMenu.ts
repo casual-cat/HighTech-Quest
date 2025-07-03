@@ -19,8 +19,8 @@ export default class MainMenu extends Phaser.Scene {
     this.selectedCareer = career;
 
     this.load.image("bg", "assets/mainMenu/background.png");
-    this.load.image("button", "assets/buttons/Button_LightGreen.png");
-    this.load.image("button2", "assets/buttons/Button_DarkGreen.png");
+    this.load.image("button", "assets/buttons/Button_DarkGreen.png");
+    this.load.image("buttonPressed", "assets/buttons/Button_LightGreen.png");
     this.load.spritesheet(
       `${this.selectedCareer}-texture`,
       `assets/careerMenu/${this.selectedCareer}.png`,
@@ -72,7 +72,7 @@ export default class MainMenu extends Phaser.Scene {
     this.add.container(width / 8.6, height - 160, [playBtnBg, playBtnTxt]);
 
     playBtnBg.on("pointerdown", () => {
-      playBtnBg.setTexture("button2");
+      playBtnBg.setTexture("buttonPressed");
     });
 
     playBtnBg.on("pointerup", () => {
@@ -88,7 +88,7 @@ export default class MainMenu extends Phaser.Scene {
     });
 
     const returnBtnBg = this.add
-      .image(0, 0, "button2")
+      .image(0, 0, "button")
       .setInteractive({ useHandCursor: true });
 
     const returnBtnTxt = this.add
@@ -101,11 +101,11 @@ export default class MainMenu extends Phaser.Scene {
     this.add.container(width / 8.6, height - 80, [returnBtnBg, returnBtnTxt]);
 
     returnBtnBg.on("pointerdown", () => {
-      returnBtnBg.setTexture("button");
+      returnBtnBg.setTexture("buttonPressed");
     });
 
     returnBtnBg.on("pointerup", () => {
-      returnBtnBg.setTexture("button2");
+      returnBtnBg.setTexture("button");
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
         CareerStore.reset();
@@ -114,7 +114,7 @@ export default class MainMenu extends Phaser.Scene {
     });
 
     returnBtnBg.on("pointerout", () => {
-      returnBtnBg.setTexture("button2");
+      returnBtnBg.setTexture("button");
     });
   }
 }

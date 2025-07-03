@@ -24,8 +24,8 @@ export default class CareerMenu extends Phaser.Scene {
       "characterBackground",
       "/assets/careerMenu/characterBackground.png"
     );
-    this.load.image("button", "/assets/buttons/Button_LightGreen.png");
-    this.load.image("buttonPressed", "/assets/buttons/Button_DarkGreen.png");
+    this.load.image("button", "/assets/buttons/Button_DarkGreen.png");
+    this.load.image("buttonPressed", "/assets/buttons/Button_LightGreen.png");
 
     this.load.spritesheet(
       "fullstack",
