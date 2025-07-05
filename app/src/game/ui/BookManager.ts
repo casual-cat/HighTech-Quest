@@ -149,6 +149,9 @@ export class BookScene extends Phaser.Scene {
     this.load.image("level1", "/assets/ui/book/level1.png");
     this.load.image("level2", "/assets/ui/book/level2.png");
     this.load.image("star-empty", "/assets/ui/book/star-empty.png");
+    this.load.image("tasks", "/assets/ui/book/tasks.png");
+    this.load.image("levels", "/assets/ui/book/levels.png");
+    this.load.image("elements", "/assets/ui/book/elements.png");
   }
 
   create(): void {
@@ -168,24 +171,25 @@ export class BookScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     const tabData = [
-      { name: "Tasks", x: width * 0.189, y: height * 0.0565 },
-      { name: "Levels", x: width * 0.269, y: height * 0.0565 },
-      { name: "Elements", x: width * 0.346, y: height * 0.0565 },
+      { name: "Tasks", image: "tasks", x: width * 0.189, y: height * 0.0565 },
+      { name: "Levels", image: "levels", x: width * 0.266, y: height * 0.0565 },
+      {
+        name: "Elements",
+        image: "elements",
+        x: width * 0.347,
+        y: height * 0.0565,
+      },
     ];
 
     tabData.forEach((tab) => {
-      const tabRect = this.add
-        .rectangle(tab.x, tab.y, 80, 40, 0xffffff, 0)
+      const tabImage = this.add
+        .image(tab.x, tab.y, tab.image)
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", () => {
           this.currentTab = tab.name as typeof this.currentTab;
           this.updateBookImage();
           this.renderTabContent();
         });
-
-      this.add
-        .text(tab.x, tab.y, tab.name, { fontSize: "12px", color: "#333" })
-        .setOrigin(0.5);
     });
   }
 
