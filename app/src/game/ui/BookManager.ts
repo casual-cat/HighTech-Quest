@@ -146,6 +146,8 @@ export class BookScene extends Phaser.Scene {
     this.load.image("myCV", "/assets/ui/book/myCV.png");
     this.load.image("cv", "/assets/ui/book/cv.png");
     this.load.image("lock", "/assets/ui/book/lock.png");
+    this.load.image("level1", "/assets/ui/book/level1.png")
+    this.load.image("level2", "/assets/ui/book/level2.png")
   }
 
   create(): void {
@@ -235,13 +237,17 @@ export class BookScene extends Phaser.Scene {
 
   private displayLevels(): void {
     const { width, height } = this.scale;
-    const text = this.add
-      .text(width * 0.6, height * 0.4, "Levels content here", {
-        fontSize: "16px",
-        color: "#000",
-      })
-      .setOrigin(0, 0.5);
-    this.tabContentGroup.add(text);
+    const baseY = height * 0.15;
+    const leftPageX = width * 0.16;
+    const rightPageX = width * 0.62;
+
+    const level1Title = this.add
+      .image(leftPageX, baseY, "level1");
+    this.tabContentGroup.add(level1Title);
+
+    const level2Title = this.add
+      .image(rightPageX, baseY, "level2");
+    this.tabContentGroup.add(level2Title);
   }
 
   private displayElements(): void {
