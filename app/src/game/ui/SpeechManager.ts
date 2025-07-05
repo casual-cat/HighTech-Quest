@@ -62,14 +62,14 @@ export class SpeechManager {
     }
 
     this.text = this.scene.add
-      .text(x + 30, y + 57, "", {
-        fontSize: "18px",
+      .text(x + 115, y + 84, "", {
+        fontSize: "16px",
         color: "#222",
-        wordWrap: { width: this.bubble.width * 3 - 80 }, // adjust after getting a new asset
+        wordWrap: { width: 190 },
         align: "center",
         backgroundColor: "rgba(255,255,255,0)",
       })
-      .setOrigin(0, 0)
+      .setOrigin(0.5)
       .setDepth(1001);
 
     this.showCurrentLine();
@@ -78,6 +78,13 @@ export class SpeechManager {
       if (this.currentLine < this.lines.length - 1) {
         this.currentLine++;
         this.showCurrentLine();
+        if (this.autoHideTimer) {
+          this.autoHideTimer.destroy();
+        }
+        this.autoHideTimer = this.scene.time.delayedCall(5000, () => {
+          this.hideSpeech();
+          if (this.onComplete) this.onComplete();
+        });
       } else {
         this.hideSpeech();
         if (this.onComplete) this.onComplete();
@@ -88,8 +95,17 @@ export class SpeechManager {
     this.scene.input.keyboard?.on("keydown-ENTER", this.inputHandler);
 
     this.autoHideTimer = this.scene.time.delayedCall(5000, () => {
-      this.hideSpeech();
-      if (this.onComplete) this.onComplete();
+      if (this.currentLine < this.lines.length - 1) {
+        this.currentLine++;
+        this.showCurrentLine();
+        this.autoHideTimer = this.scene.time.delayedCall(5000, () => {
+          this.hideSpeech();
+          if (this.onComplete) this.onComplete();
+        });
+      } else {
+        this.hideSpeech();
+        if (this.onComplete) this.onComplete();
+      }
     });
   }
 
@@ -119,7 +135,7 @@ export class SpeechManager {
 
       this.bubble.setPosition(x, y);
       if (this.text) {
-        this.text.setPosition(x + 30, y + 57);
+        this.text.setPosition(x + 115, y + 84);
       }
     }
   }

@@ -56,7 +56,8 @@ export class BookManager {
       (this.mainScene as any).missionCompleted &&
       !(this.mainScene as any).bookOpenedAfterMission
     ) {
-      this.open("Levels");
+      // this.open("Levels"); // do this after the CV was submitted to the computer
+      this.open();
       (this.mainScene as any).bookOpenedAfterMission = true;
     } else {
       this.open();
@@ -197,7 +198,7 @@ export class BookScene extends Phaser.Scene {
     this.tabContentGroup.clear(true, true);
 
     if (this.currentTab === "Tasks") {
-      this.displayPuzzlePieces();
+      this.displayTasks();
     } else if (this.currentTab === "Levels") {
       this.displayLevels();
     } else if (this.currentTab === "Elements") {
@@ -205,20 +206,25 @@ export class BookScene extends Phaser.Scene {
     }
   }
 
-  private displayPuzzlePieces(): void {
+  private displayTasks(): void {
     const { width, height } = this.scale;
     const baseY = height * 0.28;
 
+    const cvPieces = this.puzzlePieces.filter((piece) => piece.isCorrect);
+    const allPiecesCollected = cvPieces.every((piece) => piece.collected);
+
+    const titleText = allPiecesCollected
+      ? "Submit your CV using the computer"
+      : "Find all CV pieces in the room";
+
     const title = this.add
-      .text(width * 0.6, baseY - 50, "Find all CV pieces in the room", {
+      .text(width * 0.6, baseY - 50, titleText, {
         ...BOOK_SCENE_CONFIG.TEXT.STYLE,
         color: "#000",
         fontSize: "18px",
       })
       .setOrigin(0, 0.5);
     this.tabContentGroup.add(title);
-
-    const cvPieces = this.puzzlePieces.filter((piece) => piece.isCorrect);
 
     cvPieces.forEach((piece, idx) => {
       const y = baseY + idx * BOOK_SCENE_CONFIG.TEXT.SPACING;

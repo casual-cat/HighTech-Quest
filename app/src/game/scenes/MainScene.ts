@@ -16,6 +16,8 @@ export default class MainScene extends Phaser.Scene {
   private wallLayer?: Phaser.Tilemaps.TilemapLayer;
   private collidablesLayer?: Phaser.Tilemaps.TilemapLayer;
   private interactableObjects?: Phaser.Physics.Arcade.StaticGroup;
+  private computerObjectData?: { x: number; y: number; id: number };
+  private computerInteractable = false;
   private eKey?: Phaser.Input.Keyboard.Key;
   private missionCompleted = false;
   private bookOpenedAfterMission = false;
@@ -181,6 +183,25 @@ export default class MainScene extends Phaser.Scene {
     this.events.on("missionCompleted", () => {
       bookIcon.setTexture("book-star");
       this.missionCompleted = true;
+
+      this.computerInteractable = true;
+
+      this.time.delayedCall(1000, () => {
+        if (this.player && this.speechManager) {
+          this.speechManager.showSpeech(
+            [
+              "My CV is complete! Time to submit it.",
+              "Using my computer of course...",
+            ],
+            {
+              target: this.player,
+              onComplete: () => {
+                console.log("Mission completion speech completed!");
+              },
+            }
+          );
+        }
+      });
     });
 
     bookIcon.on("pointerdown", () => {
@@ -220,6 +241,14 @@ export default class MainScene extends Phaser.Scene {
             sprite.refreshBody();
           }
         }
+
+        if (obj.id === 6) {
+          this.computerObjectData = {
+            x: obj.x!,
+            y: obj.y!,
+            id: obj.id,
+          };
+        }
       });
     }
 
@@ -237,29 +266,50 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private checkForInteractions() {
-    if (!this.player || !this.interactableObjects || !this.eKey) return;
+    if (!this.player || !this.eKey) return;
 
     if (Phaser.Input.Keyboard.JustDown(this.eKey)) {
       let closestObject: Phaser.GameObjects.Sprite | null = null;
+      let closestComputer = false;
       let minDistance = 64;
 
-      this.interactableObjects.children.each((obj) => {
-        const sprite = obj as Phaser.Physics.Arcade.Sprite;
+      if (this.interactableObjects) {
+        this.interactableObjects.children.each((obj) => {
+          const sprite = obj as Phaser.Physics.Arcade.Sprite;
+          const distance = Phaser.Math.Distance.Between(
+            this.player!.x,
+            this.player!.y,
+            sprite.x,
+            sprite.y
+          );
+
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestObject = sprite;
+            closestComputer = false;
+          }
+          return true;
+        });
+      }
+
+      if (this.computerObjectData && this.computerInteractable) {
         const distance = Phaser.Math.Distance.Between(
           this.player!.x,
           this.player!.y,
-          sprite.x,
-          sprite.y
+          this.computerObjectData.x,
+          this.computerObjectData.y
         );
 
         if (distance < minDistance) {
           minDistance = distance;
-          closestObject = sprite;
+          closestObject = null;
+          closestComputer = true;
         }
-        return true;
-      });
+      }
 
-      if (closestObject) {
+      if (closestComputer) {
+        console.log("Computer interacted with!");
+      } else if (closestObject) {
         this.interactWithObject(closestObject);
       }
     }
