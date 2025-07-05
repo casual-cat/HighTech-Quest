@@ -17,6 +17,8 @@ export default class MainScene extends Phaser.Scene {
   private collidablesLayer?: Phaser.Tilemaps.TilemapLayer;
   private interactableObjects?: Phaser.Physics.Arcade.StaticGroup;
   private eKey?: Phaser.Input.Keyboard.Key;
+  private missionCompleted = false;
+  private bookOpenedAfterMission = false;
 
   constructor() {
     super({ key: "MainScene" });
@@ -24,6 +26,8 @@ export default class MainScene extends Phaser.Scene {
 
   init() {
     this.isGameOver = false;
+    this.missionCompleted = false;
+    this.bookOpenedAfterMission = false;
   }
 
   preload() {
@@ -176,10 +180,11 @@ export default class MainScene extends Phaser.Scene {
 
     this.events.on("missionCompleted", () => {
       bookIcon.setTexture("book-star");
+      this.missionCompleted = true;
     });
 
     bookIcon.on("pointerdown", () => {
-      this.bookManager?.open();
+      this.bookManager?.openWithMissionCheck();
     });
   }
 

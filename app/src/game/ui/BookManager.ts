@@ -21,15 +21,19 @@ const BOOK_SCENE_CONFIG = {
 
 interface MainScene extends Phaser.Scene {
   player?: { getHealth(): number; getMaxHealth(): number };
+  missionCompleted?: boolean;
+  bookOpenedAfterMission?: boolean;
 }
 
 export class BookManager {
   private scene: Phaser.Scene;
+  private mainScene: MainScene;
   private keyHandler!: (event: KeyboardEvent) => void;
   private puzzlePieces: PuzzlePiece[] = PUZZLE_DATA;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
+    this.mainScene = scene as MainScene;
     this.setupKeyHandler();
   }
 
@@ -39,12 +43,24 @@ export class BookManager {
         if (this.scene.scene.isActive("BookScene")) {
           this.close();
         } else {
-          this.open();
+          this.openWithMissionCheck();
         }
       }
     };
 
     window.addEventListener("keydown", this.keyHandler);
+  }
+
+  public openWithMissionCheck(): void {
+    if (
+      (this.mainScene as any).missionCompleted &&
+      !(this.mainScene as any).bookOpenedAfterMission
+    ) {
+      this.open("Levels");
+      (this.mainScene as any).bookOpenedAfterMission = true;
+    } else {
+      this.open();
+    }
   }
 
   public addPuzzlePiece(piece: Omit<PuzzlePiece, "collected" | "isNew">): void {
@@ -73,11 +89,14 @@ export class BookManager {
     });
   }
 
-  public open(): void {
+  public open(initialTab?: "Tasks" | "Levels" | "Elements"): void {
     if (this.scene.scene.isActive("BookScene")) return;
 
     this.scene.scene.pause();
-    this.scene.scene.launch("BookScene", { puzzlePieces: this.puzzlePieces });
+    this.scene.scene.launch("BookScene", {
+      puzzlePieces: this.puzzlePieces,
+      initialTab: initialTab || "Tasks",
+    });
     this.scene.input.setDefaultCursor("default");
 
     this.markPiecesAsViewed();
@@ -115,8 +134,12 @@ export class BookScene extends Phaser.Scene {
     super({ key: "BookScene" });
   }
 
-  init(data: { puzzlePieces: PuzzlePiece[] }): void {
+  init(data: {
+    puzzlePieces: PuzzlePiece[];
+    initialTab?: "Tasks" | "Levels" | "Elements";
+  }): void {
     this.puzzlePieces = data.puzzlePieces;
+    this.currentTab = data.initialTab || "Tasks";
   }
 
   preload(): void {
@@ -130,6 +153,7 @@ export class BookScene extends Phaser.Scene {
     this.createBook();
     this.createTabs();
     this.tabContentGroup = this.add.group();
+    this.updateBookImage();
     this.renderTabContent();
   }
 
