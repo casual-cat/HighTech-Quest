@@ -146,8 +146,9 @@ export class BookScene extends Phaser.Scene {
     this.load.image("myCV", "/assets/ui/book/myCV.png");
     this.load.image("cv", "/assets/ui/book/cv.png");
     this.load.image("lock", "/assets/ui/book/lock.png");
-    this.load.image("level1", "/assets/ui/book/level1.png")
-    this.load.image("level2", "/assets/ui/book/level2.png")
+    this.load.image("level1", "/assets/ui/book/level1.png");
+    this.load.image("level2", "/assets/ui/book/level2.png");
+    this.load.image("star-empty", "/assets/ui/book/star-empty.png");
   }
 
   create(): void {
@@ -241,13 +242,34 @@ export class BookScene extends Phaser.Scene {
     const leftPageX = width * 0.16;
     const rightPageX = width * 0.62;
 
-    const level1Title = this.add
-      .image(leftPageX, baseY, "level1");
+    const level1Title = this.add.image(leftPageX, baseY, "level1");
     this.tabContentGroup.add(level1Title);
 
-    const level2Title = this.add
-      .image(rightPageX, baseY, "level2");
+    const starSpacing = 60;
+    const leftStarsStartX = leftPageX + 20;
+    const rightStarsStartX = leftPageX + 600;
+    const starsY = baseY + 270;
+
+    for (let i = 0; i < 5; i++) {
+      const star = this.add.image(
+        leftStarsStartX + i * starSpacing,
+        starsY,
+        "star-empty"
+      );
+      this.tabContentGroup.add(star);
+    }
+
+    const level2Title = this.add.image(rightPageX, baseY, "level2");
     this.tabContentGroup.add(level2Title);
+
+    for (let i = 0; i < 5; i++) {
+      const star = this.add.image(
+        rightStarsStartX + i * starSpacing,
+        starsY,
+        "star-empty"
+      );
+      this.tabContentGroup.add(star);
+    }
   }
 
   private displayElements(): void {
