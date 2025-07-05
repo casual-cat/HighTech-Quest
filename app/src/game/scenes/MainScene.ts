@@ -61,6 +61,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
     this.load.image("qKey", "/assets/ui/keys/q.png");
     this.load.image("speechBubble", "/assets/characters/speechBubble.png");
+    this.load.image("3DaysLater", "/assets/backgrounds/3DaysLater.png");
 
     const careers: CareerKey[] = [
       "fullstack",
@@ -123,9 +124,6 @@ export default class MainScene extends Phaser.Scene {
           ["I need to look around the room for my CV!"],
           {
             target: this.player,
-            onComplete: () => {
-              console.log("Welcome speech completed!");
-            },
           }
         );
       }
@@ -191,13 +189,10 @@ export default class MainScene extends Phaser.Scene {
           this.speechManager.showSpeech(
             [
               "My CV is complete! Time to submit it.",
-              "Using my computer of course...",
+              "Using my computer of course :)",
             ],
             {
               target: this.player,
-              onComplete: () => {
-                console.log("Mission completion speech completed!");
-              },
             }
           );
         }
@@ -308,7 +303,37 @@ export default class MainScene extends Phaser.Scene {
       }
 
       if (closestComputer) {
-        console.log("Computer interacted with!");
+        if (this.player && this.speechManager) {
+          this.speechManager.showSpeech(
+            ["I have submitted my CV! Now it's time to wait..."],
+            {
+              target: this.player,
+              onComplete: () => {
+                this.cameras.main.fadeOut(1000, 0, 0, 0);
+                this.cameras.main.once("camerafadeoutcomplete", () => {
+                  const { width, height } = this.scale;
+                  const threeDaysImage = this.add.image(
+                    width / 2,
+                    height / 2,
+                    "3DaysLater"
+                  );
+                  threeDaysImage.setOrigin(0.5);
+                  threeDaysImage.setDepth(9999);
+
+                  this.cameras.main.fadeIn(1000, 0, 0, 0);
+
+                  this.time.delayedCall(4000, () => {
+                    this.cameras.main.fadeOut(1000, 0, 0, 0);
+                    this.cameras.main.once("camerafadeoutcomplete", () => {
+                      threeDaysImage.destroy();
+                      this.cameras.main.fadeIn(1000, 0, 0, 0);
+                    });
+                  });
+                });
+              },
+            }
+          );
+        }
       } else if (closestObject) {
         this.interactWithObject(closestObject);
       }

@@ -83,11 +83,9 @@ export class SpeechManager {
         }
         this.autoHideTimer = this.scene.time.delayedCall(5000, () => {
           this.hideSpeech();
-          if (this.onComplete) this.onComplete();
         });
       } else {
         this.hideSpeech();
-        if (this.onComplete) this.onComplete();
       }
     };
     this.scene.input.on("pointerdown", this.inputHandler);
@@ -100,11 +98,9 @@ export class SpeechManager {
         this.showCurrentLine();
         this.autoHideTimer = this.scene.time.delayedCall(5000, () => {
           this.hideSpeech();
-          if (this.onComplete) this.onComplete();
         });
       } else {
         this.hideSpeech();
-        if (this.onComplete) this.onComplete();
       }
     });
   }
@@ -141,6 +137,8 @@ export class SpeechManager {
   }
 
   hideSpeech(): void {
+    const callback = this.onComplete;
+    
     if (this.bubble) {
       this.bubble.destroy();
       this.bubble = null;
@@ -163,6 +161,10 @@ export class SpeechManager {
     this.currentLine = 0;
     this.onComplete = undefined;
     this.target = undefined;
+    
+    if (callback) {
+      callback();
+    }
   }
 
   destroy(): void {
