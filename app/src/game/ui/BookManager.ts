@@ -179,7 +179,7 @@ export class BookScene extends Phaser.Scene {
     const baseY = height * 0.28;
 
     const title = this.add
-      .text(width * 0.6, baseY - 50, "Find all CV pieces", {
+      .text(width * 0.6, baseY - 50, "Find all CV pieces in the room", {
         ...BOOK_SCENE_CONFIG.TEXT.STYLE,
         color: "#000",
         fontSize: "18px",

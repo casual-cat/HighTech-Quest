@@ -3,6 +3,7 @@ import { WORLD, PLAYER } from "../constants/game";
 import { Player } from "../entities/Player";
 import { HealthBar } from "../ui/HealthBar";
 import { BookManager } from "../ui/BookManager";
+import { SpeechManager } from "../ui/SpeechManager";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
 
 export default class MainScene extends Phaser.Scene {
@@ -10,6 +11,7 @@ export default class MainScene extends Phaser.Scene {
   private healthBar?: HealthBar;
   private career?: CareerKey;
   private bookManager?: BookManager;
+  private speechManager?: SpeechManager;
   private isGameOver = false;
   private wallLayer?: Phaser.Tilemaps.TilemapLayer;
   private collidablesLayer?: Phaser.Tilemaps.TilemapLayer;
@@ -52,6 +54,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("checkbox", "/assets/ui/book/checkbox.png");
     this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
     this.load.image("qKey", "/assets/ui/keys/q.png");
+    this.load.image("speechBubble", "/assets/characters/speechBubble.png");
 
     const careers: CareerKey[] = [
       "fullstack",
@@ -105,11 +108,28 @@ export default class MainScene extends Phaser.Scene {
     this.cameras.main.setDeadzone(100, 100);
 
     this.eKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+
+    this.speechManager = new SpeechManager(this);
+
+    this.time.delayedCall(1000, () => {
+      if (this.player && this.speechManager) {
+        this.speechManager.showSpeech(
+          ["I need to look around the room for my CV!"],
+          {
+            target: this.player,
+            onComplete: () => {
+              console.log("Welcome speech completed!");
+            },
+          }
+        );
+      }
+    });
   }
 
   update() {
     if (this.isGameOver) return;
     this.player?.update();
+    this.speechManager?.update();
 
     this.checkForInteractions();
   }
@@ -296,5 +316,6 @@ export default class MainScene extends Phaser.Scene {
     this.player?.destroy();
     this.healthBar?.destroy();
     this.bookManager?.destroy?.();
+    this.speechManager?.destroy();
   }
 }
