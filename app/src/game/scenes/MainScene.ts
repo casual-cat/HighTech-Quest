@@ -316,25 +316,26 @@ export default class MainScene extends Phaser.Scene {
             {
               target: this.player,
               onComplete: () => {
-                this.cameras.main.fadeOut(1000, 0, 0, 0);
-                this.cameras.main.once("camerafadeoutcomplete", () => {
-                  const { width, height } = this.scale;
-                  const threeDaysImage = this.add.image(
-                    width / 2,
-                    height / 2,
-                    "3DaysLater"
-                  );
-                  threeDaysImage.setOrigin(0.5);
-                  threeDaysImage.setDepth(9999);
+                const { width, height } = this.scale;
+                const threeDaysImage = this.add.image(
+                  width / 2,
+                  height / 2,
+                  "3DaysLater"
+                );
+                threeDaysImage.setOrigin(0.5);
+                threeDaysImage.setDepth(9999);
 
-                  this.cameras.main.fadeIn(1000, 0, 0, 0);
-
-                  this.time.delayedCall(4000, () => {
-                    this.cameras.main.fadeOut(1000, 0, 0, 0);
-                    this.cameras.main.once("camerafadeoutcomplete", () => {
-                      threeDaysImage.destroy();
-                      this.cameras.main.fadeIn(1000, 0, 0, 0);
-                    });
+                this.time.delayedCall(4000, () => {
+                  threeDaysImage.destroy();
+                  this.time.delayedCall(500, () => {
+                    if (this.player && this.speechManager) {
+                      this.speechManager.showSpeech(
+                        ["Yay! I got called to some interviews!"],
+                        {
+                          target: this.player,
+                        }
+                      );
+                    }
                   });
                 });
               },
