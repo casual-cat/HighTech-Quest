@@ -31,7 +31,7 @@
          "name":"floor",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":40,
          "x":0,
          "y":0
@@ -65,7 +65,7 @@
          "name":"carpet",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":40,
          "x":0,
          "y":0
@@ -105,7 +105,7 @@
                  "value":true
                 }],
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":40,
          "x":0,
          "y":0
@@ -173,7 +173,7 @@
                  "y":64
                 }, 
                 {
-                 "height":49.1063829787234,
+                 "height":96,
                  "id":6,
                  "name":"",
                  "properties":[
@@ -187,10 +187,10 @@
                  "visible":true,
                  "width":32,
                  "x":704,
-                 "y":96
+                 "y":64.0851063829787
                 }, 
                 {
-                 "height":20,
+                 "height":32,
                  "id":7,
                  "name":"",
                  "properties":[
@@ -204,7 +204,7 @@
                  "visible":true,
                  "width":32,
                  "x":640,
-                 "y":104
+                 "y":96
                 }, 
                 {
                  "height":32,
@@ -253,12 +253,12 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":18,
-                 "x":397,
+                 "width":32,
+                 "x":384,
                  "y":192
                 }, 
                 {
-                 "height":60,
+                 "height":64,
                  "id":11,
                  "name":"",
                  "properties":[
@@ -270,13 +270,13 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":60,
-                 "x":834,
-                 "y":257
+                 "width":64,
+                 "x":832,
+                 "y":256
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 

@@ -21,6 +21,11 @@ export default class MainScene extends Phaser.Scene {
   private eKey?: Phaser.Input.Keyboard.Key;
   private missionCompleted = false;
   private bookOpenedAfterMission = false;
+  private eKeyIndicator?: Phaser.GameObjects.Image;
+  private eKeyTargetObject?: Phaser.GameObjects.Sprite;
+  private eKeyTween?: Phaser.Tweens.Tween;
+  private lastEKeyObject?: Phaser.Physics.Arcade.Sprite;
+  private lastEKeyY?: number;
 
   constructor() {
     super({ key: "MainScene" });
@@ -59,7 +64,8 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("book-elements", "/assets/ui/book/book-elements.png");
     this.load.image("checkbox", "/assets/ui/book/checkbox.png");
     this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
-    this.load.image("qKey", "/assets/ui/keys/q.png");
+    this.load.image("qKey", "/assets/ui/keys/qKey.png");
+    this.load.image("eKey", "/assets/ui/keys/eKey.png");
     this.load.image("speechBubble", "/assets/characters/speechBubble.png");
     this.load.image("3DaysLater", "/assets/backgrounds/3DaysLater.png");
 
@@ -136,6 +142,7 @@ export default class MainScene extends Phaser.Scene {
     this.speechManager?.update();
 
     this.checkForInteractions();
+    this.updateEKeyIndicator();
   }
 
   private createHUD() {
@@ -264,7 +271,7 @@ export default class MainScene extends Phaser.Scene {
     if (!this.player || !this.eKey) return;
 
     if (Phaser.Input.Keyboard.JustDown(this.eKey)) {
-      let closestObject: Phaser.GameObjects.Sprite | null = null;
+      let closestObject: Phaser.Physics.Arcade.Sprite | null = null;
       let closestComputer = false;
       let minDistance = 64;
 
@@ -359,6 +366,10 @@ export default class MainScene extends Phaser.Scene {
         .map((id: string) => parseInt(id.trim(), 10));
       this.scene.launch("PuzzleScene", { pieceIds, sourceObject: obj });
       this.scene.pause();
+      if (this.eKeyIndicator) {
+        this.eKeyIndicator.setVisible(false);
+        this.eKeyTargetObject = undefined;
+      }
       return;
     }
   }
@@ -397,5 +408,68 @@ export default class MainScene extends Phaser.Scene {
     this.healthBar?.destroy();
     this.bookManager?.destroy?.();
     this.speechManager?.destroy();
+  }
+
+  private updateEKeyIndicator() {
+    if (!this.player || !this.interactableObjects) return;
+
+    let closestObject: Phaser.Physics.Arcade.Sprite | null = null;
+    let minDistance = 64;
+
+    this.interactableObjects.children.each((obj) => {
+      const sprite = obj as Phaser.Physics.Arcade.Sprite;
+      const distance = Phaser.Math.Distance.Between(
+        this.player!.x,
+        this.player!.y,
+        sprite.x,
+        sprite.y
+      );
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestObject = sprite;
+      }
+      return true;
+    });
+
+    if (closestObject !== null) {
+      const obj = closestObject as Phaser.Physics.Arcade.Sprite;
+      const topY = obj.y;
+
+      if (this.lastEKeyObject !== obj || this.lastEKeyY !== topY) {
+        if (!this.eKeyIndicator) {
+          this.eKeyIndicator = this.add.image(0, 0, "eKey").setOrigin(0, 1);
+          this.eKeyIndicator.setDepth(10);
+        }
+        this.eKeyIndicator.setVisible(true);
+        this.eKeyIndicator.setPosition(obj.x, topY);
+
+        if (this.eKeyTween) {
+          this.eKeyTween.stop();
+        }
+        this.eKeyTween = this.tweens.add({
+          targets: this.eKeyIndicator,
+          y: { from: topY, to: topY - 8 },
+          duration: 500,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+
+        this.lastEKeyObject = obj;
+        this.lastEKeyY = topY;
+      }
+      this.eKeyTargetObject = closestObject;
+    } else {
+      if (this.eKeyIndicator) {
+        this.eKeyIndicator.setVisible(false);
+        this.eKeyTargetObject = undefined;
+      }
+      if (this.eKeyTween) {
+        this.eKeyTween.stop();
+        this.eKeyTween = undefined;
+      }
+      this.lastEKeyObject = undefined;
+      this.lastEKeyY = undefined;
+    }
   }
 }
