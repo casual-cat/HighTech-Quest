@@ -1,23 +1,7 @@
 import Phaser from "phaser";
 import { GameOverScene } from "../scenes/GameOverScene";
 import { PuzzlePiece, PUZZLE_DATA } from "../data/puzzlePieces";
-
-const BOOK_SCENE_CONFIG = {
-  OVERLAY: {
-    COLOR: 0x000000,
-    ALPHA: 0.7,
-  },
-  TEXT: {
-    STYLE: {
-      fontSize: "16px",
-    },
-    COLORS: {
-      NEW: "#9b59b6",
-      VIEWED: "#000000",
-    },
-    SPACING: 50,
-  },
-} as const;
+import { BOOK_LEVELS_LAYOUT, BOOK_SCENE_CONFIG } from "../constants/book";
 
 interface MainScene extends Phaser.Scene {
   player?: { getHealth(): number; getMaxHealth(): number };
@@ -153,6 +137,7 @@ export class BookScene extends Phaser.Scene {
     this.load.image("tasks", "/assets/ui/book/tasks.png");
     this.load.image("levels", "/assets/ui/book/levels.png");
     this.load.image("elements", "/assets/ui/book/elements.png");
+    this.load.image("darken-left", "/assets/ui/book/darkPage-left.png");
   }
 
   create(): void {
@@ -247,38 +232,58 @@ export class BookScene extends Phaser.Scene {
   }
 
   private displayLevels(): void {
-    const { width, height } = this.scale;
-    const baseY = height * 0.15;
-    const leftPageX = width * 0.16;
-    const rightPageX = width * 0.62;
+    const {
+      pageY,
+      leftPageX,
+      rightPageX,
+      titleYOffset,
+      titleXOffset,
+      starSpacing,
+      leftStarsX,
+      rightStarsX,
+      starsY,
+      lockXOffset,
+      lockYOffset,
+    } = BOOK_LEVELS_LAYOUT;
 
-    const level1Title = this.add.image(leftPageX, baseY, "level1");
+    const level1Title = this.add
+      .image(leftPageX + titleXOffset, pageY + titleYOffset, "level1")
+      .setOrigin(0);
     this.tabContentGroup.add(level1Title);
 
-    const starSpacing = 60;
-    const leftStarsStartX = leftPageX + 20;
-    const rightStarsStartX = leftPageX + 600;
-    const starsY = baseY + 270;
-
     for (let i = 0; i < 5; i++) {
-      const star = this.add.image(
-        leftStarsStartX + i * starSpacing,
-        starsY,
-        "star-empty"
-      );
+      const star = this.add
+        .image(leftStarsX + i * starSpacing, starsY, "star-empty")
+        .setOrigin(0);
       this.tabContentGroup.add(star);
     }
 
-    const level2Title = this.add.image(rightPageX, baseY, "level2");
+    const level2Title = this.add
+      .image(rightPageX + titleXOffset, pageY + titleYOffset, "level2")
+      .setOrigin(0);
     this.tabContentGroup.add(level2Title);
 
     for (let i = 0; i < 5; i++) {
-      const star = this.add.image(
-        rightStarsStartX + i * starSpacing,
-        starsY,
-        "star-empty"
-      );
+      const star = this.add
+        .image(rightStarsX + i * starSpacing, starsY, "star-empty")
+        .setOrigin(0);
       this.tabContentGroup.add(star);
+    }
+
+    const cvPieces = this.puzzlePieces.filter((piece) => piece.isCorrect);
+    const allPiecesCollected = cvPieces.every((piece) => piece.collected);
+
+    if (!allPiecesCollected) {
+      const darkenOverlay = this.add.image(rightPageX, pageY, "darken-left");
+      darkenOverlay.setOrigin(0);
+      darkenOverlay.setAlpha(0.5);
+
+      const lock = this.add
+        .image(rightPageX + lockXOffset, pageY + lockYOffset, "lock")
+        .setOrigin(0);
+
+      this.tabContentGroup.add(darkenOverlay);
+      this.tabContentGroup.add(lock);
     }
   }
 
@@ -350,8 +355,8 @@ export class BookScene extends Phaser.Scene {
     this.bookImage.on("pointerdown", () => false);
 
     const bookBounds = this.bookImage.getBounds();
-    const qKeyX = bookBounds.right - 260;
-    const qKeyY = bookBounds.bottom - 75;
+    const qKeyX = bookBounds.centerX;
+    const qKeyY = bookBounds.bottom + 75;
 
     this.add.image(qKeyX, qKeyY, "qKey").setOrigin(0.5).setScale(0.7);
 
