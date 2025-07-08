@@ -44,9 +44,8 @@ export class SpeechManager {
     }
 
     this.bubble = this.scene.add.image(x, y, "speechBubble");
-    this.bubble.setOrigin(0, 0);
+    this.bubble.setOrigin(0);
     this.bubble.setDepth(1000);
-    this.bubble.setScale(3);
 
     if (this.target && "x" in this.target && "y" in this.target) {
       x = this.target.x;
@@ -56,13 +55,13 @@ export class SpeechManager {
         "height" in this.target
       ) {
         const height = (this.target as any).height || 0;
-        y = y - height / 2 - this.bubble.height * 3;
+        y = y - height / 2 - this.bubble.height;
       }
       this.bubble.setPosition(x, y);
     }
 
     this.text = this.scene.add
-      .text(x + 115, y + 84, "", {
+      .text(x, y, "", {
         fontSize: "16px",
         color: "#222",
         wordWrap: { width: 190 },
@@ -71,6 +70,13 @@ export class SpeechManager {
       })
       .setOrigin(0.5)
       .setDepth(1001);
+
+    if (this.bubble && this.text) {
+      this.text.setPosition(
+        this.bubble.x + this.bubble.width / 2 + 10,
+        this.bubble.y + this.bubble.height / 2 - 4
+      );
+    }
 
     this.showCurrentLine();
 
@@ -126,19 +132,22 @@ export class SpeechManager {
         "height" in this.target
       ) {
         const height = (this.target as any).height || 0;
-        y = y - height / 2 - this.bubble.height * 3;
+        y = y - height / 2 - this.bubble.height;
       }
 
       this.bubble.setPosition(x, y);
       if (this.text) {
-        this.text.setPosition(x + 115, y + 84);
+        this.text.setPosition(
+          this.bubble.x + this.bubble.width / 2 + 10,
+          this.bubble.y + this.bubble.height / 2 - 4
+        );
       }
     }
   }
 
   hideSpeech(): void {
     const callback = this.onComplete;
-    
+
     if (this.bubble) {
       this.bubble.destroy();
       this.bubble = null;
@@ -161,7 +170,7 @@ export class SpeechManager {
     this.currentLine = 0;
     this.onComplete = undefined;
     this.target = undefined;
-    
+
     if (callback) {
       callback();
     }
