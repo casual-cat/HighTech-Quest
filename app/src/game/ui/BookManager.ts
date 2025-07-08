@@ -135,6 +135,11 @@ export class BookScene extends Phaser.Scene {
     this.load.image("myCV", "/assets/ui/book/myCV.png");
     this.load.image("cv", "/assets/ui/book/cv.png");
     this.load.image("lock", "/assets/ui/book/lock.png");
+    this.load.spritesheet("lock-sprite", "/assets/ui/book/lock-sprite.png", {
+      frameWidth: 192,
+      frameHeight: 192,
+      endFrame: 5,
+    });
     this.load.image("level1", "/assets/ui/book/level1.png");
     this.load.image("level2", "/assets/ui/book/level2.png");
     this.load.image("star-empty", "/assets/ui/book/star-empty.png");
@@ -283,27 +288,38 @@ export class BookScene extends Phaser.Scene {
       darkenOverlay.setAlpha(0.5);
 
       const lock = this.add
-        .image(rightPageX + lockXOffset, pageY + lockYOffset, "lock")
-        .setOrigin(0);
+        .sprite(rightPageX + lockXOffset, pageY + lockYOffset, "lock-sprite", 0)
+        .setOrigin(0.5);
+      lock.anims.create({
+        key: "lock-unlock",
+        frames: this.anims.generateFrameNumbers("lock-sprite", {
+          start: 0,
+          end: 5,
+        }),
+        frameRate: 8,
+      });
 
       this.tabContentGroup.add(darkenOverlay);
       this.tabContentGroup.add(lock);
 
       if (this.showUnlockAnimation) {
         const bookManager = (this.scene.get("MainScene") as any)?.bookManager;
-        this.tweens.add({
-          targets: [darkenOverlay, lock],
-          alpha: 0,
-          duration: 1200,
-          ease: "Linear",
-          onComplete: () => {
-            darkenOverlay.destroy();
-            lock.destroy();
-            this.showUnlockAnimation = false;
-            if (bookManager) {
-              bookManager.showUnlockAnimation = false;
-            }
-          },
+        lock.anims.play("lock-unlock");
+        lock.on("animationcomplete", () => {
+          lock.destroy();
+          this.tweens.add({
+            targets: darkenOverlay,
+            alpha: 0,
+            duration: 800,
+            ease: "Linear",
+            onComplete: () => {
+              darkenOverlay.destroy();
+              this.showUnlockAnimation = false;
+              if (bookManager) {
+                bookManager.showUnlockAnimation = false;
+              }
+            },
+          });
         });
       }
     }

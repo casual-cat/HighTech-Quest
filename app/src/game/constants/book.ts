@@ -5,11 +5,11 @@ export const BOOK_LEVELS_LAYOUT = {
   titleYOffset: 40,
   titleXOffset: 50,
   starSpacing: 60,
-  leftStarsX: 197, // leftPageX + 115
-  rightStarsX: 767, // leftPageX + 685
-  starsY: 334, // pageY + 290
-  lockXOffset: 245,
-  lockYOffset: 254,
+  leftStarsX: 197,
+  rightStarsX: 772,
+  starsY: 334,
+  lockXOffset: 282,
+  lockYOffset: 320,
 };
 
 export const BOOK_SCENE_CONFIG = {
