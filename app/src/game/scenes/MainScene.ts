@@ -26,6 +26,7 @@ export default class MainScene extends Phaser.Scene {
   private eKeyTween?: Phaser.Tweens.Tween;
   private lastEKeyObject?: Phaser.Physics.Arcade.Sprite;
   private lastEKeyY?: number;
+  private levelUpShown = false;
 
   constructor() {
     super({ key: "MainScene" });
@@ -332,6 +333,16 @@ export default class MainScene extends Phaser.Scene {
                         ["Yay! I got called to some interviews!"],
                         {
                           target: this.player,
+                          onComplete: () => {
+                            if (!this.levelUpShown) {
+                              this.levelUpShown = true;
+                              this.scene.pause();
+                              this.scene.launch("LevelUpScene", {
+                                parentScene: this.scene.key,
+                              });
+                              return;
+                            }
+                          },
                         }
                       );
                     }
