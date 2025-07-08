@@ -146,7 +146,7 @@ export class BookScene extends Phaser.Scene {
     this.load.image("tasks", "/assets/ui/book/tasks.png");
     this.load.image("levels", "/assets/ui/book/levels.png");
     this.load.image("elements", "/assets/ui/book/elements.png");
-    this.load.image("darken-left", "/assets/ui/book/darkPage-left.png");
+    this.load.image("darken-right", "/assets/ui/book/darkPage-right.png");
   }
 
   create(): void {
@@ -283,7 +283,7 @@ export class BookScene extends Phaser.Scene {
     const allPiecesCollected = cvPieces.every((piece) => piece.collected);
 
     if (!allPiecesCollected || this.showUnlockAnimation) {
-      const darkenOverlay = this.add.image(rightPageX, pageY, "darken-left");
+      const darkenOverlay = this.add.image(rightPageX, pageY, "darken-right");
       darkenOverlay.setOrigin(0);
       darkenOverlay.setAlpha(0.5);
 
