@@ -14,6 +14,7 @@ export class BookManager {
   private mainScene: MainScene;
   private keyHandler!: (event: KeyboardEvent) => void;
   private puzzlePieces: PuzzlePiece[] = PUZZLE_DATA;
+  public showUnlockAnimation = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -40,7 +41,6 @@ export class BookManager {
       (this.mainScene as any).missionCompleted &&
       !(this.mainScene as any).bookOpenedAfterMission
     ) {
-      // this.open("Levels"); // do this after the CV was submitted to the computer
       this.open();
       (this.mainScene as any).bookOpenedAfterMission = true;
     } else {
@@ -81,6 +81,7 @@ export class BookManager {
     this.scene.scene.launch("BookScene", {
       puzzlePieces: this.puzzlePieces,
       initialTab: initialTab || "Tasks",
+      showUnlockAnimation: this.showUnlockAnimation,
     });
     this.scene.input.setDefaultCursor("default");
 
@@ -114,6 +115,7 @@ export class BookScene extends Phaser.Scene {
   private currentTab: "Tasks" | "Levels" | "Elements" = "Tasks";
   private tabContentGroup!: Phaser.GameObjects.Group;
   private bookImage!: Phaser.GameObjects.Image;
+  private showUnlockAnimation = false;
 
   constructor() {
     super({ key: "BookScene" });
@@ -122,9 +124,11 @@ export class BookScene extends Phaser.Scene {
   init(data: {
     puzzlePieces: PuzzlePiece[];
     initialTab?: "Tasks" | "Levels" | "Elements";
+    showUnlockAnimation?: boolean;
   }): void {
     this.puzzlePieces = data.puzzlePieces;
     this.currentTab = data.initialTab || "Tasks";
+    this.showUnlockAnimation = !!data.showUnlockAnimation;
   }
 
   preload(): void {
@@ -273,7 +277,7 @@ export class BookScene extends Phaser.Scene {
     const cvPieces = this.puzzlePieces.filter((piece) => piece.isCorrect);
     const allPiecesCollected = cvPieces.every((piece) => piece.collected);
 
-    if (!allPiecesCollected) {
+    if (!allPiecesCollected || this.showUnlockAnimation) {
       const darkenOverlay = this.add.image(rightPageX, pageY, "darken-left");
       darkenOverlay.setOrigin(0);
       darkenOverlay.setAlpha(0.5);
@@ -284,6 +288,24 @@ export class BookScene extends Phaser.Scene {
 
       this.tabContentGroup.add(darkenOverlay);
       this.tabContentGroup.add(lock);
+
+      if (this.showUnlockAnimation) {
+        const bookManager = (this.scene.get("MainScene") as any)?.bookManager;
+        this.tweens.add({
+          targets: [darkenOverlay, lock],
+          alpha: 0,
+          duration: 1200,
+          ease: "Linear",
+          onComplete: () => {
+            darkenOverlay.destroy();
+            lock.destroy();
+            this.showUnlockAnimation = false;
+            if (bookManager) {
+              bookManager.showUnlockAnimation = false;
+            }
+          },
+        });
+      }
     }
   }
 

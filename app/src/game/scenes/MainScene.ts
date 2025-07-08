@@ -199,6 +199,10 @@ export default class MainScene extends Phaser.Scene {
 
       this.computerInteractable = true;
 
+      if (this.bookManager) {
+        this.bookManager.showUnlockAnimation = true;
+      }
+
       this.time.delayedCall(1000, () => {
         if (this.player && this.speechManager) {
           this.speechManager.showSpeech(
