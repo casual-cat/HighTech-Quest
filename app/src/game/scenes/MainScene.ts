@@ -27,6 +27,7 @@ export default class MainScene extends Phaser.Scene {
   private lastEKeyObject?: Phaser.Physics.Arcade.Sprite;
   private lastEKeyY?: number;
   private levelUpShown = false;
+  private openBookOnResume = false;
 
   constructor() {
     super({ key: "MainScene" });
@@ -133,6 +134,13 @@ export default class MainScene extends Phaser.Scene {
             target: this.player,
           }
         );
+      }
+    });
+
+    this.events.on("resume", () => {
+      if (this.openBookOnResume) {
+        this.openBookOnResume = false;
+        this.bookManager?.open("Levels");
       }
     });
   }
@@ -336,6 +344,7 @@ export default class MainScene extends Phaser.Scene {
                           onComplete: () => {
                             if (!this.levelUpShown) {
                               this.levelUpShown = true;
+                              this.openBookOnResume = true;
                               this.scene.pause();
                               this.scene.launch("LevelUpScene", {
                                 parentScene: this.scene.key,
