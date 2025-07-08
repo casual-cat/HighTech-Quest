@@ -355,17 +355,17 @@ export class BookScene extends Phaser.Scene {
     this.bookImage.on("pointerdown", () => false);
 
     const bookBounds = this.bookImage.getBounds();
-    const qKeyX = bookBounds.centerX;
-    const qKeyY = bookBounds.bottom + 75;
+    const qKeyX = bookBounds.centerX - 340;
+    const qKeyY = bookBounds.bottom - 70;
 
-    this.add.image(qKeyX, qKeyY, "qKey").setOrigin(0.5).setScale(0.7);
+    this.add.image(qKeyX - 45, qKeyY, "qKey").setOrigin(0.5);
 
     this.add
-      .text(qKeyX + 25, qKeyY, "Close Notebook", {
+      .text(qKeyX + 45, qKeyY, "Close Notebook", {
         fontSize: "16px",
         color: "#333333",
       })
-      .setOrigin(0, 0.5);
+      .setOrigin(0.5);
   }
 
   private updateBookImage(): void {

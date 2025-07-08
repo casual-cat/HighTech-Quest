@@ -176,8 +176,7 @@ export default class MainScene extends Phaser.Scene {
     this.add
       .image(16 * 7, 16 * 5, "qKey")
       .setOrigin(0)
-      .setScrollFactor(0)
-      .setScale(0.5);
+      .setScrollFactor(0);
 
     this.bookManager = new BookManager(this);
 
