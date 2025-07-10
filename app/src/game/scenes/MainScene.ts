@@ -337,7 +337,7 @@ export default class MainScene extends Phaser.Scene {
                 threeDaysImage.setOrigin(0.5);
                 threeDaysImage.setDepth(9999);
 
-                this.time.delayedCall(4000, () => {
+                this.time.delayedCall(3000, () => {
                   threeDaysImage.destroy();
                   this.time.delayedCall(500, () => {
                     if (this.player && this.speechManager) {
