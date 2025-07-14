@@ -20,7 +20,6 @@ export default class MainScene extends Phaser.Scene {
   private computerInteractable = false;
   private eKey?: Phaser.Input.Keyboard.Key;
   private missionCompleted = false;
-  private bookOpenedAfterMission = false;
   private eKeyIndicator?: Phaser.GameObjects.Image;
   private eKeyTargetObject?: Phaser.GameObjects.Sprite;
   private eKeyTween?: Phaser.Tweens.Tween;
@@ -36,7 +35,6 @@ export default class MainScene extends Phaser.Scene {
   init() {
     this.isGameOver = false;
     this.missionCompleted = false;
-    this.bookOpenedAfterMission = false;
   }
 
   preload() {

@@ -5,8 +5,6 @@ import { BOOK_LEVELS_LAYOUT, BOOK_SCENE_CONFIG } from "../constants/book";
 
 interface MainScene extends Phaser.Scene {
   player?: { getHealth(): number; getMaxHealth(): number };
-  missionCompleted?: boolean;
-  bookOpenedAfterMission?: boolean;
 }
 
 export class BookManager {
@@ -15,11 +13,16 @@ export class BookManager {
   private keyHandler!: (event: KeyboardEvent) => void;
   private puzzlePieces: PuzzlePiece[] = PUZZLE_DATA;
   public showUnlockAnimation = false;
+  private missionCompleted = false;
+  private bookOpenedAfterMission = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.mainScene = scene as MainScene;
     this.setupKeyHandler();
+    this.scene.events.on("missionCompleted", () => {
+      this.missionCompleted = true;
+    });
   }
 
   private setupKeyHandler(): void {
@@ -37,12 +40,9 @@ export class BookManager {
   }
 
   public openWithMissionCheck(): void {
-    if (
-      (this.mainScene as any).missionCompleted &&
-      !(this.mainScene as any).bookOpenedAfterMission
-    ) {
+    if (this.missionCompleted && !this.bookOpenedAfterMission) {
       this.open();
-      (this.mainScene as any).bookOpenedAfterMission = true;
+      this.bookOpenedAfterMission = true;
     } else {
       this.open();
     }
@@ -116,6 +116,7 @@ export class BookScene extends Phaser.Scene {
   private tabContentGroup!: Phaser.GameObjects.Group;
   private bookImage!: Phaser.GameObjects.Image;
   private showUnlockAnimation = false;
+  private missionCompleted = false;
 
   constructor() {
     super({ key: "BookScene" });
@@ -134,6 +135,7 @@ export class BookScene extends Phaser.Scene {
   preload(): void {
     this.load.image("myCV", "/assets/ui/book/myCV.png");
     this.load.image("cv", "/assets/ui/book/cv.png");
+    this.load.image("cv-locked", "/assets/ui/book/cv-locked.png");
     this.load.image("lock", "/assets/ui/book/lock.png");
     this.load.spritesheet("lock-sprite", "/assets/ui/book/lock-sprite.png", {
       frameWidth: 192,
@@ -156,6 +158,9 @@ export class BookScene extends Phaser.Scene {
     this.tabContentGroup = this.add.group();
     this.updateBookImage();
     this.renderTabContent();
+    this.scene.get("MainScene")?.events.on("missionCompleted", () => {
+      this.missionCompleted = true;
+    });
   }
 
   update(): void {
@@ -329,7 +334,8 @@ export class BookScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     const title = this.add.image(width * 0.27, height * 0.13, "myCV");
-    const cv = this.add.image(width * 0.27, height * 0.52, "cv");
+    const cvImageKey = this.missionCompleted ? "cv" : "cv-locked";
+    const cv = this.add.image(width * 0.27, height * 0.52, cvImageKey);
     this.tabContentGroup.add(title);
     this.tabContentGroup.add(cv);
 
