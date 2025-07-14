@@ -2,6 +2,7 @@ export interface PuzzlePiece {
   id: number;
   isCorrect: boolean;
   label: string;
+  description?: string;
   collected: boolean;
   isNew: boolean;
   image: string;
@@ -12,6 +13,8 @@ export const PUZZLE_DATA: PuzzlePiece[] = [
     id: 1,
     isCorrect: true,
     label: "Contact",
+    description:
+      "Lets recruiters easily reach you for job opportunities and interviews.",
     collected: false,
     isNew: false,
     image: "puzzlePiece1",
@@ -20,6 +23,7 @@ export const PUZZLE_DATA: PuzzlePiece[] = [
     id: 2,
     isCorrect: true,
     label: "About",
+    description: "Gives a quick overview of who you are professionally.",
     collected: false,
     isNew: false,
     image: "puzzlePiece2",
@@ -28,6 +32,8 @@ export const PUZZLE_DATA: PuzzlePiece[] = [
     id: 3,
     isCorrect: true,
     label: "Work Experience",
+    description:
+      "Shows what you've done and where you've worked before professionally.",
     collected: false,
     isNew: false,
     image: "puzzlePiece3",
@@ -36,6 +42,8 @@ export const PUZZLE_DATA: PuzzlePiece[] = [
     id: 4,
     isCorrect: true,
     label: "Projects",
+    description:
+      "Proves your skills through hands-on, real-world practical achievements.",
     collected: false,
     isNew: false,
     image: "puzzlePiece4",
@@ -44,6 +52,7 @@ export const PUZZLE_DATA: PuzzlePiece[] = [
     id: 5,
     isCorrect: true,
     label: "Skills",
+    description: "Highlights what tools you know and how well you work.",
     collected: false,
     isNew: false,
     image: "puzzlePiece5",
@@ -52,6 +61,8 @@ export const PUZZLE_DATA: PuzzlePiece[] = [
     id: 6,
     isCorrect: true,
     label: "Education",
+    description:
+      "Demonstrates your academic background and relevant professional learning.",
     collected: false,
     isNew: false,
     image: "puzzlePiece6",
@@ -60,6 +71,7 @@ export const PUZZLE_DATA: PuzzlePiece[] = [
     id: 7,
     isCorrect: true,
     label: "Languages",
+    description: "Shows your proficiency in different languages.",
     collected: false,
     isNew: false,
     image: "puzzlePiece7",

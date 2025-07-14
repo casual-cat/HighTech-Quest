@@ -341,11 +341,10 @@ export class BookScene extends Phaser.Scene {
 
     const correctPieces = this.puzzlePieces.filter((p) => p.isCorrect);
     const cols = 2;
-    const rows = 4;
     const spacingX = 200;
     const spacingY = 140;
     const gridStartX = width * 0.72 - spacingX / 2;
-    const gridStartY = height * 0.21;
+    const gridStartY = height * 0.18;
 
     correctPieces.forEach((piece, idx) => {
       const col = idx % cols;
@@ -357,13 +356,22 @@ export class BookScene extends Phaser.Scene {
       this.tabContentGroup.add(img);
       if (piece.collected) {
         const label = this.add
-          .text(x, y + 55, piece.label, {
-            fontSize: "16px",
+          .text(x, y + 35, piece.label, {
+            fontSize: "14px",
             color: "#333",
             fontStyle: "bold",
           })
           .setOrigin(0.5, 0);
+        const description = this.add
+          .text(x, y + 50, piece.description!, {
+            fontSize: "13px",
+            color: "#333",
+            wordWrap: { width: 170 },
+            align: "center",
+          })
+          .setOrigin(0.5, 0);
         this.tabContentGroup.add(label);
+        this.tabContentGroup.add(description);
       }
     });
   }
