@@ -165,12 +165,11 @@ export class PuzzleScene extends Phaser.Scene {
   }
 
   private selectPiece(piece: Phaser.GameObjects.Image) {
-    piece.disableInteractive();
-
     const pieceData = (piece as any).pieceData;
     if (!pieceData) return;
 
     if (pieceData.isCorrect) {
+      piece.disableInteractive();
       pieceData.collected = true;
       this.handleCorrectPiece(piece, pieceData);
     } else {
