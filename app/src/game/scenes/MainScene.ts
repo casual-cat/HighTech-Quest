@@ -19,7 +19,7 @@ export default class MainScene extends Phaser.Scene {
   private computerObjectData?: { x: number; y: number; id: number };
   private computerInteractable = false;
   private eKey?: Phaser.Input.Keyboard.Key;
-  private missionCompleted = false;
+  private allPiecesCollected = false;
   private eKeyIndicator?: Phaser.GameObjects.Image;
   private eKeyTargetObject?: Phaser.GameObjects.Sprite;
   private eKeyTween?: Phaser.Tweens.Tween;
@@ -34,7 +34,7 @@ export default class MainScene extends Phaser.Scene {
 
   init() {
     this.isGameOver = false;
-    this.missionCompleted = false;
+    this.allPiecesCollected = false;
   }
 
   preload() {
@@ -191,15 +191,11 @@ export default class MainScene extends Phaser.Scene {
       bookIcon.setTexture(data.hasNewPieces ? "book-badge" : "book");
     });
 
-    this.events.on("missionCompleted", () => {
+    this.events.on("allPiecesCollected", () => {
       bookIcon.setTexture("book-star");
-      this.missionCompleted = true;
+      this.allPiecesCollected = true;
 
       this.computerInteractable = true;
-
-      if (this.bookManager) {
-        this.bookManager.showUnlockAnimation = true;
-      }
 
       this.time.delayedCall(1000, () => {
         if (this.player && this.speechManager) {
@@ -334,7 +330,6 @@ export default class MainScene extends Phaser.Scene {
                 );
                 threeDaysImage.setOrigin(0.5);
                 threeDaysImage.setDepth(9999);
-
                 this.time.delayedCall(3000, () => {
                   threeDaysImage.destroy();
                   this.time.delayedCall(500, () => {
@@ -344,9 +339,13 @@ export default class MainScene extends Phaser.Scene {
                         {
                           target: this.player,
                           onComplete: () => {
+                            if (this.bookManager) {
+                              this.bookManager.showUnlockAnimation = true;
+                            }
                             if (!this.levelUpShown) {
                               this.levelUpShown = true;
                               this.openBookOnResume = true;
+                              this.events.emit("level1Completed");
                               this.scene.pause();
                               this.scene.launch("LevelUpScene", {
                                 parentScene: this.scene.key,

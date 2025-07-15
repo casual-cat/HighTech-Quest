@@ -13,15 +13,19 @@ export class BookManager {
   private keyHandler!: (event: KeyboardEvent) => void;
   private puzzlePieces: PuzzlePiece[] = PUZZLE_DATA;
   public showUnlockAnimation = false;
-  private missionCompleted = false;
+  private allPiecesCollected = false;
   private bookOpenedAfterMission = false;
+  private level1Completed = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.mainScene = scene as MainScene;
     this.setupKeyHandler();
-    this.scene.events.on("missionCompleted", () => {
-      this.missionCompleted = true;
+    this.scene.events.on("allPiecesCollected", () => {
+      this.allPiecesCollected = true;
+    });
+    this.scene.events.on("level1Completed", () => {
+      this.level1Completed = true;
     });
   }
 
@@ -40,7 +44,7 @@ export class BookManager {
   }
 
   public openWithMissionCheck(): void {
-    if (this.missionCompleted && !this.bookOpenedAfterMission) {
+    if (this.allPiecesCollected && !this.bookOpenedAfterMission) {
       this.open();
       this.bookOpenedAfterMission = true;
     } else {
@@ -82,6 +86,7 @@ export class BookManager {
       puzzlePieces: this.puzzlePieces,
       initialTab: initialTab || "Tasks",
       showUnlockAnimation: this.showUnlockAnimation,
+      level1Completed: this.level1Completed,
     });
     this.scene.input.setDefaultCursor("default");
 
@@ -116,7 +121,8 @@ export class BookScene extends Phaser.Scene {
   private tabContentGroup!: Phaser.GameObjects.Group;
   private bookImage!: Phaser.GameObjects.Image;
   private showUnlockAnimation = false;
-  private missionCompleted = false;
+  private allPiecesCollected = false;
+  private level1Completed = false;
 
   constructor() {
     super({ key: "BookScene" });
@@ -126,10 +132,12 @@ export class BookScene extends Phaser.Scene {
     puzzlePieces: PuzzlePiece[];
     initialTab?: "Tasks" | "Levels" | "Elements";
     showUnlockAnimation?: boolean;
+    level1Completed?: boolean;
   }): void {
     this.puzzlePieces = data.puzzlePieces;
     this.currentTab = data.initialTab || "Tasks";
     this.showUnlockAnimation = !!data.showUnlockAnimation;
+    this.level1Completed = !!data.level1Completed;
   }
 
   preload(): void {
@@ -158,8 +166,8 @@ export class BookScene extends Phaser.Scene {
     this.tabContentGroup = this.add.group();
     this.updateBookImage();
     this.renderTabContent();
-    this.scene.get("MainScene")?.events.on("missionCompleted", () => {
-      this.missionCompleted = true;
+    this.scene.get("MainScene")?.events.on("allPiecesCollected", () => {
+      this.allPiecesCollected = true;
     });
   }
 
@@ -284,10 +292,7 @@ export class BookScene extends Phaser.Scene {
       this.tabContentGroup.add(star);
     }
 
-    const cvPieces = this.puzzlePieces.filter((piece) => piece.isCorrect);
-    const allPiecesCollected = cvPieces.every((piece) => piece.collected);
-
-    if (!allPiecesCollected || this.showUnlockAnimation) {
+    if (!this.level1Completed || this.showUnlockAnimation) {
       const darkenOverlay = this.add.image(rightPageX, pageY, "darken-right");
       darkenOverlay.setOrigin(0);
       darkenOverlay.setAlpha(0.5);
@@ -334,7 +339,7 @@ export class BookScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     const title = this.add.image(width * 0.27, height * 0.13, "myCV");
-    const cvImageKey = this.missionCompleted ? "cv" : "cv-locked";
+    const cvImageKey = this.allPiecesCollected ? "cv" : "cv-locked";
     const cv = this.add.image(width * 0.27, height * 0.52, cvImageKey);
     this.tabContentGroup.add(title);
     this.tabContentGroup.add(cv);

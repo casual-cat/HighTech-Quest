@@ -230,7 +230,7 @@ export class PuzzleScene extends Phaser.Scene {
 
     if (remainingCorrectPieces.length === 0) {
       mainScene.scene.get("MainScene") as MainScene;
-      mainScene.events.emit("missionCompleted");
+      mainScene.events.emit("allPiecesCollected");
     }
 
     this.closeScene();
