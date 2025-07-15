@@ -5,6 +5,7 @@ import { HealthBar } from "../ui/HealthBar";
 import { BookManager } from "../ui/BookManager";
 import { SpeechManager } from "../ui/SpeechManager";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
+import { PUZZLE_DATA } from "../data/puzzlePieces";
 
 export default class MainScene extends Phaser.Scene {
   private player?: Player;
@@ -27,6 +28,7 @@ export default class MainScene extends Phaser.Scene {
   private lastEKeyY?: number;
   private levelUpShown = false;
   private openBookOnResume = false;
+  private bookIcon?: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: "MainScene" });
@@ -35,6 +37,10 @@ export default class MainScene extends Phaser.Scene {
   init() {
     this.isGameOver = false;
     this.allPiecesCollected = false;
+    PUZZLE_DATA.forEach((piece) => {
+      piece.collected = false;
+      piece.isNew = false;
+    });
   }
 
   preload() {
@@ -174,7 +180,10 @@ export default class MainScene extends Phaser.Scene {
       .setOrigin(0)
       .setScrollFactor(0);
 
-    const bookIcon = this.add
+    this.events.off("bookStateChanged");
+    this.events.off("allPiecesCollected");
+
+    this.bookIcon = this.add
       .image(16 * 6, 16, "book")
       .setOrigin(0)
       .setScrollFactor(0)
@@ -188,15 +197,17 @@ export default class MainScene extends Phaser.Scene {
     this.bookManager = new BookManager(this);
 
     this.events.on("bookStateChanged", (data: { hasNewPieces: boolean }) => {
-      bookIcon.setTexture(data.hasNewPieces ? "book-badge" : "book");
+      if (this.bookIcon && this.bookIcon.scene) {
+        this.bookIcon.setTexture(data.hasNewPieces ? "book-badge" : "book");
+      }
     });
 
     this.events.on("allPiecesCollected", () => {
-      bookIcon.setTexture("book-star");
+      if (this.bookIcon && this.bookIcon.scene) {
+        this.bookIcon.setTexture("book-star");
+      }
       this.allPiecesCollected = true;
-
       this.computerInteractable = true;
-
       this.time.delayedCall(1000, () => {
         if (this.player && this.speechManager) {
           this.speechManager.showSpeech(
@@ -212,7 +223,7 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
-    bookIcon.on("pointerdown", () => {
+    this.bookIcon.on("pointerdown", () => {
       this.bookManager?.openWithMissionCheck();
     });
   }
@@ -429,6 +440,12 @@ export default class MainScene extends Phaser.Scene {
     this.healthBar?.destroy();
     this.bookManager?.destroy?.();
     this.speechManager?.destroy();
+    if (this.bookIcon) {
+      this.bookIcon.destroy();
+      this.bookIcon = undefined;
+    }
+    this.events.off("bookStateChanged");
+    this.events.off("allPiecesCollected");
   }
 
   private updateEKeyIndicator() {
