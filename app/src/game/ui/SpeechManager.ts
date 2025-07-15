@@ -60,6 +60,15 @@ export class SpeechManager {
       this.bubble.setPosition(x, y);
     }
 
+    if (this.bubble) {
+      if (this.bubble.x + this.bubble.width > this.scene.scale.width) {
+        this.bubble.x = this.scene.scale.width - this.bubble.width;
+      }
+      if (this.bubble.y < 0) {
+        this.bubble.y = 0;
+      }
+    }
+
     this.text = this.scene.add
       .text(x, y, "", {
         fontSize: "16px",
@@ -136,6 +145,15 @@ export class SpeechManager {
       }
 
       this.bubble.setPosition(x, y);
+      if (this.bubble) {
+        if (this.bubble.x + this.bubble.width > this.scene.scale.width) {
+          this.bubble.x = this.scene.scale.width - this.bubble.width;
+        }
+        if (this.bubble.y < 0) {
+          this.bubble.y = 0;
+        }
+      }
+
       if (this.text) {
         this.text.setPosition(
           this.bubble.x + this.bubble.width / 2 + 10,
