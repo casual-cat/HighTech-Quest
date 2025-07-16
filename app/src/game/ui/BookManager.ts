@@ -150,13 +150,15 @@ export class BookScene extends Phaser.Scene {
       frameHeight: 192,
       endFrame: 5,
     });
-    this.load.image("level1", "/assets/ui/book/level1.png");
-    this.load.image("level2", "/assets/ui/book/level2.png");
+    this.load.image("level1-title", "/assets/ui/book/level1-title.png");
+    this.load.image("level2-title", "/assets/ui/book/level2-title.png");
     this.load.image("star-empty", "/assets/ui/book/star-empty.png");
     this.load.image("tasks", "/assets/ui/book/tasks.png");
     this.load.image("levels", "/assets/ui/book/levels.png");
     this.load.image("elements", "/assets/ui/book/elements.png");
     this.load.image("darken-right", "/assets/ui/book/darkPage-right.png");
+    this.load.image("level1-image", "/assets/ui/book/level1-image.png");
+    this.load.image("level2-image", "/assets/ui/book/level2-image.png");
   }
 
   create(): void {
@@ -269,9 +271,14 @@ export class BookScene extends Phaser.Scene {
     } = BOOK_LEVELS_LAYOUT;
 
     const level1Title = this.add
-      .image(leftPageX + titleXOffset, pageY + titleYOffset, "level1")
+      .image(leftPageX + titleXOffset, pageY + titleYOffset, "level1-title")
       .setOrigin(0);
     this.tabContentGroup.add(level1Title);
+
+    const level1Image = this.add
+      .image(leftPageX + 50, pageY + 90, "level1-image")
+      .setOrigin(0);
+    this.tabContentGroup.add(level1Image);
 
     for (let i = 0; i < 5; i++) {
       const star = this.add
@@ -281,9 +288,14 @@ export class BookScene extends Phaser.Scene {
     }
 
     const level2Title = this.add
-      .image(rightPageX + titleXOffset, pageY + titleYOffset, "level2")
+      .image(rightPageX + titleXOffset, pageY + titleYOffset, "level2-title")
       .setOrigin(0);
     this.tabContentGroup.add(level2Title);
+
+    const level2Image = this.add
+      .image(rightPageX + 60, pageY + 90, "level2-image")
+      .setOrigin(0);
+    this.tabContentGroup.add(level2Image);
 
     for (let i = 0; i < 5; i++) {
       const star = this.add
