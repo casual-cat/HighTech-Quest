@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import EasyStar from "easystarjs";
 import { WORLD, PLAYER } from "../constants/game";
 import { Player } from "../entities/Player";
 import { HealthBar } from "../ui/HealthBar";
@@ -29,6 +30,7 @@ export default class MainScene extends Phaser.Scene {
   private levelUpShown = false;
   private openBookOnResume = false;
   private bookIcon?: Phaser.GameObjects.Image;
+  private easyStar: EasyStar.js = new EasyStar.js();
 
   constructor() {
     super({ key: "MainScene" });
@@ -223,6 +225,10 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
+    this.events.on("readyForLevel2", () => {
+      this.movePlayerToDoor();
+    });
+
     this.bookIcon.on("pointerdown", () => {
       this.bookManager?.openWithMissionCheck();
     });
@@ -282,6 +288,25 @@ export default class MainScene extends Phaser.Scene {
     }
 
     if (foregroundLayer) foregroundLayer.setDepth(1);
+
+    this.buildPathfindingGrid();
+  }
+
+  private buildPathfindingGrid() {
+    const map = this.add.tilemap("map");
+    const grid: number[][] = [];
+    for (let y = 0; y < map.height; y++) {
+      const row: number[] = [];
+      for (let x = 0; x < map.width; x++) {
+        const wallTile = this.wallLayer?.getTileAt(x, y);
+        const collidableTile = this.collidablesLayer?.getTileAt(x, y);
+        const blocked = wallTile || collidableTile;
+        row.push(blocked ? 1 : 0);
+      }
+      grid.push(row);
+    }
+    this.easyStar.setGrid(grid);
+    this.easyStar.setAcceptableTiles([0]);
   }
 
   private checkForInteractions() {
@@ -509,5 +534,47 @@ export default class MainScene extends Phaser.Scene {
       this.lastEKeyObject = undefined;
       this.lastEKeyY = undefined;
     }
+  }
+
+  private movePlayerToDoor() {
+    if (!this.player) return;
+    const targetTileX = 3;
+    const targetTileY = 3;
+    const playerTileX = Math.floor(this.player.x / WORLD.TILE.WIDTH);
+    const playerTileY = Math.floor(this.player.y / WORLD.TILE.HEIGHT);
+
+    this.easyStar.findPath(
+      playerTileX,
+      playerTileY,
+      targetTileX,
+      targetTileY,
+      (path) => {
+        if (!path || path.length === 0) return;
+        this.followPath(path);
+      }
+    );
+    this.easyStar.calculate();
+  }
+
+  private followPath(path: { x: number; y: number }[]) {
+    if (!this.player || !path || path.length === 0) return;
+    let step = 0;
+    const moveToNext = () => {
+      if (step >= path.length) return;
+      const { x, y } = path[step];
+      const worldX = x * WORLD.TILE.WIDTH + WORLD.TILE.WIDTH / 2;
+      const worldY = y * WORLD.TILE.HEIGHT + WORLD.TILE.HEIGHT / 2;
+      this.tweens.add({
+        targets: this.player,
+        x: worldX,
+        y: worldY,
+        duration: 200,
+        onComplete: () => {
+          step++;
+          moveToNext();
+        },
+      });
+    };
+    moveToNext();
   }
 }

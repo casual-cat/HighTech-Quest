@@ -11,6 +11,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "easystarjs": "^0.4.4",
     "phaser": "^3.88.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

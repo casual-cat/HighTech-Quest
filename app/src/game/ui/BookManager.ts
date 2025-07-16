@@ -340,6 +340,11 @@ export class BookScene extends Phaser.Scene {
               if (bookManager) {
                 bookManager.showUnlockAnimation = false;
               }
+
+              const mainScene = this.scene.get("MainScene");
+              if (mainScene) {
+                mainScene.events.emit("readyForLevel2");
+              }
             },
           });
         });
