@@ -378,16 +378,21 @@ export default class MainScene extends Phaser.Scene {
                             if (this.bookManager) {
                               this.bookManager.showUnlockAnimation = true;
                             }
-                            if (!this.levelUpShown) {
-                              this.levelUpShown = true;
-                              this.openBookOnResume = true;
-                              this.events.emit("level1Completed");
+
+                            this.movePlayerToDoor(() => {
                               this.scene.pause();
-                              this.scene.launch("LevelUpScene", {
-                                parentScene: this.scene.key,
-                              });
-                              return;
-                            }
+
+                              if (!this.levelUpShown) {
+                                this.levelUpShown = true;
+                                this.openBookOnResume = true;
+                                this.events.emit("level1Completed");
+                                this.scene.pause();
+                                this.scene.launch("LevelUpScene", {
+                                  parentScene: this.scene.key,
+                                });
+                                return;
+                              }
+                            });
                           },
                         }
                       );
@@ -536,7 +541,7 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  private movePlayerToDoor() {
+  private movePlayerToDoor(onComplete?: () => void) {
     if (!this.player) return;
     const targetTileX = 3;
     const targetTileY = 3;
@@ -549,16 +554,25 @@ export default class MainScene extends Phaser.Scene {
       targetTileX,
       targetTileY,
       (path) => {
-        if (!path || path.length === 0) return;
-        this.followPath(path);
+        if (!path || path.length === 0) {
+          if (onComplete) onComplete();
+          return;
+        }
+        this.followPath(path, onComplete);
       }
     );
     this.easyStar.calculate();
   }
 
-  private followPath(path: { x: number; y: number }[]) {
+  private followPath(
+    path: { x: number; y: number }[],
+    onComplete?: () => void
+  ) {
     const player = this.player;
-    if (!player || !path || path.length === 0) return;
+    if (!player || !path || path.length === 0) {
+      if (onComplete) onComplete();
+      return;
+    }
     player.disableMovement();
     let step = 0;
 
@@ -566,6 +580,7 @@ export default class MainScene extends Phaser.Scene {
       if (step >= path.length) {
         player.anims.play(`idle-${player.getLastDirection()}`, true);
         player.enableMovement();
+        if (onComplete) onComplete();
         return;
       }
       const { x, y } = path[step];
