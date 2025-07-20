@@ -557,15 +557,45 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private followPath(path: { x: number; y: number }[]) {
-    if (!this.player || !path || path.length === 0) return;
+    const player = this.player;
+    if (!player || !path || path.length === 0) return;
+    player.disableMovement();
     let step = 0;
+
     const moveToNext = () => {
-      if (step >= path.length) return;
+      if (step >= path.length) {
+        player.anims.play(`idle-${player.getLastDirection()}`, true);
+        player.enableMovement();
+        return;
+      }
       const { x, y } = path[step];
       const worldX = x * WORLD.TILE.WIDTH + WORLD.TILE.WIDTH / 2;
       const worldY = y * WORLD.TILE.HEIGHT + WORLD.TILE.HEIGHT / 2;
+
+      let direction: "up" | "down" | "left" | "right" =
+        player.getLastDirection();
+      if (step > 0) {
+        const prev = path[step - 1];
+        if (x > prev.x) direction = "right";
+        else if (x < prev.x) direction = "left";
+        else if (y > prev.y) direction = "down";
+        else if (y < prev.y) direction = "up";
+      }
+
+      if (direction === "left" || direction === "right") {
+        player.anims.play("walk_horizontal", true);
+        player.flipX = direction === "left";
+      } else if (direction === "up") {
+        player.anims.play("walk_up", true);
+        player.flipX = true;
+      } else if (direction === "down") {
+        player.anims.play("walk_down", true);
+        player.flipX = false;
+      }
+      player.setLastDirection(direction);
+
       this.tweens.add({
-        targets: this.player,
+        targets: player,
         x: worldX,
         y: worldY,
         duration: 200,

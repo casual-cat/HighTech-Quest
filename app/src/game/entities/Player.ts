@@ -190,16 +190,24 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   setupCollisionBody() {
     const spriteWidth = this.width;
     const spriteHeight = this.height;
-    
+
     const collisionWidth = 24;
     const collisionHeight = 24;
-    
+
     const offsetX = (spriteWidth - collisionWidth) / 2;
     const offsetY = spriteHeight - collisionHeight;
-    
+
     if (this.body) {
       this.body.setSize(collisionWidth, collisionHeight);
       this.body.setOffset(offsetX, offsetY);
     }
+  }
+
+  public getLastDirection() {
+    return this.lastDirection;
+  }
+
+  public setLastDirection(direction: "up" | "down" | "left" | "right") {
+    this.lastDirection = direction;
   }
 }
