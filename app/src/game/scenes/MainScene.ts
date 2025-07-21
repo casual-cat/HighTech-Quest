@@ -21,7 +21,6 @@ export default class MainScene extends Phaser.Scene {
   private computerObjectData?: { x: number; y: number; id: number };
   private computerInteractable = false;
   private eKey?: Phaser.Input.Keyboard.Key;
-  private allPiecesCollected = false;
   private eKeyIndicator?: Phaser.GameObjects.Image;
   private eKeyTargetObject?: Phaser.GameObjects.Sprite;
   private eKeyTween?: Phaser.Tweens.Tween;
@@ -31,6 +30,7 @@ export default class MainScene extends Phaser.Scene {
   private openBookOnResume = false;
   private bookIcon?: Phaser.GameObjects.Image;
   private pathfindingGrid?: number[][];
+  private threeDaysLaterComplete = false;
 
   constructor() {
     super({ key: "MainScene" });
@@ -38,7 +38,6 @@ export default class MainScene extends Phaser.Scene {
 
   init() {
     this.isGameOver = false;
-    this.allPiecesCollected = false;
     PUZZLE_DATA.forEach((piece) => {
       piece.collected = false;
       piece.isNew = false;
@@ -75,7 +74,6 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("qKey", "/assets/ui/keys/qKey.png");
     this.load.image("eKey", "/assets/ui/keys/eKey.png");
     this.load.image("speechBubble", "/assets/characters/speechBubble.png");
-    this.load.image("3DaysLater", "/assets/backgrounds/3DaysLater.png");
 
     const careers: CareerKey[] = [
       "fullstack",
@@ -151,6 +149,35 @@ export default class MainScene extends Phaser.Scene {
         this.openBookOnResume = false;
         this.bookManager?.open("Levels");
       }
+      if (this.threeDaysLaterComplete) {
+        this.threeDaysLaterComplete = false;
+        if (this.player && this.speechManager) {
+          this.speechManager.showSpeech(
+            ["Yay! I got called to some interviews!"],
+            {
+              target: this.player,
+              onComplete: () => {
+                if (this.bookManager) {
+                  this.bookManager.showUnlockAnimation = true;
+                }
+                if (this.player) {
+                  moveCharacterToTile(this.player, 3, 3, () => {
+                    this.scene.pause();
+                    if (!this.levelUpShown) {
+                      this.levelUpShown = true;
+                      this.openBookOnResume = true;
+                      this.events.emit("level1Completed");
+                      this.scene.launch("LevelUpScene", {
+                        parentScene: this.scene.key,
+                      });
+                    }
+                  });
+                }
+              },
+            }
+          );
+        }
+      }
     });
   }
 
@@ -185,9 +212,6 @@ export default class MainScene extends Phaser.Scene {
       .setOrigin(0)
       .setScrollFactor(0);
 
-    this.events.off("bookStateChanged");
-    this.events.off("allPiecesCollected");
-
     this.bookIcon = this.add
       .image(16 * 6, 16, "book")
       .setOrigin(0)
@@ -211,7 +235,6 @@ export default class MainScene extends Phaser.Scene {
       if (this.bookIcon && this.bookIcon.scene) {
         this.bookIcon.setTexture("book-star");
       }
-      this.allPiecesCollected = true;
       this.computerInteractable = true;
       this.time.delayedCall(1000, () => {
         if (this.player && this.speechManager) {
@@ -229,7 +252,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.bookIcon.on("pointerdown", () => {
-      this.bookManager?.openWithMissionCheck();
+      this.bookManager?.open();
     });
   }
 
@@ -356,45 +379,11 @@ export default class MainScene extends Phaser.Scene {
             {
               target: this.player,
               onComplete: () => {
-                const { width, height } = this.scale;
-                const threeDaysImage = this.add.image(
-                  width / 2,
-                  height / 2,
-                  "3DaysLater"
-                );
-                threeDaysImage.setOrigin(0.5);
-                threeDaysImage.setDepth(9999);
-                this.time.delayedCall(3000, () => {
-                  threeDaysImage.destroy();
-                  this.time.delayedCall(500, () => {
-                    if (this.player && this.speechManager) {
-                      this.speechManager.showSpeech(
-                        ["Yay! I got called to some interviews!"],
-                        {
-                          target: this.player,
-                          onComplete: () => {
-                            if (this.bookManager) {
-                              this.bookManager.showUnlockAnimation = true;
-                            }
-                            if (this.player) {
-                              moveCharacterToTile(this.player, 3, 3, () => {
-                                this.scene.pause();
-                                if (!this.levelUpShown) {
-                                  this.levelUpShown = true;
-                                  this.openBookOnResume = true;
-                                  this.events.emit("level1Completed");
-                                  this.scene.launch("LevelUpScene", {
-                                    parentScene: this.scene.key,
-                                  });
-                                }
-                              });
-                            }
-                          },
-                        }
-                      );
-                    }
-                  });
+                this.threeDaysLaterComplete = true;
+                this.scene.launch("ThreeDaysLaterScene", {
+                  parentScene: this.scene.key,
                 });
+                this.scene.pause();
               },
             }
           );
