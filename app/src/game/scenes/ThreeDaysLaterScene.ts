@@ -25,7 +25,6 @@ export default class ThreeDaysLaterScene extends Phaser.Scene {
         this.scene.stop();
         this.scene.resume(parentSceneKey);
       }
-      //   });
     });
   }
 }
