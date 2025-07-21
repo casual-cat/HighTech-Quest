@@ -54,6 +54,11 @@ export class BookScene extends Phaser.Scene {
     this.load.image("darken-right", "/assets/ui/book/darkPage-right.png");
     this.load.image("level1-image", "/assets/ui/book/level1-image.png");
     this.load.image("level2-image", "/assets/ui/book/level2-image.png");
+    this.load.image("book-tasks", "/assets/ui/book/book-tasks.png");
+    this.load.image("book-levels", "/assets/ui/book/book-levels.png");
+    this.load.image("book-elements", "/assets/ui/book/book-elements.png");
+    this.load.image("checkbox", "/assets/ui/book/checkbox.png");
+    this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
   }
 
   create(): void {
