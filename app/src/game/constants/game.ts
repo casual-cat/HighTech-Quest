@@ -8,8 +8,8 @@ export const WORLD = {
   },
 } as const;
 
-// Player Configuration
-export const PLAYER = {
+// Character Configuration
+export const CHARACTER = {
   SPEED: 160,
   HEALTH: {
     MAX: 100,

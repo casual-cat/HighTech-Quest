@@ -1,6 +1,5 @@
 import Phaser from "phaser";
-import EasyStar from "easystarjs";
-import { WORLD, PLAYER } from "../constants/game";
+import { WORLD, CHARACTER } from "../constants/game";
 import { Player } from "../entities/Player";
 import { HealthBar } from "../ui/HealthBar";
 import { BookManager } from "../ui/BookManager";
@@ -30,7 +29,7 @@ export default class MainScene extends Phaser.Scene {
   private levelUpShown = false;
   private openBookOnResume = false;
   private bookIcon?: Phaser.GameObjects.Image;
-  private easyStar: EasyStar.js = new EasyStar.js();
+  private pathfindingGrid?: number[][];
 
   constructor() {
     super({ key: "MainScene" });
@@ -109,7 +108,7 @@ export default class MainScene extends Phaser.Scene {
       this,
       19 * WORLD.TILE.WIDTH,
       10 * WORLD.TILE.HEIGHT,
-      PLAYER.HEALTH.MAX,
+      CHARACTER.HEALTH.MAX,
       `character-${this.career}`
     );
 
@@ -119,6 +118,9 @@ export default class MainScene extends Phaser.Scene {
       }
       if (this.collidablesLayer) {
         this.physics.add.collider(this.player, this.collidablesLayer);
+      }
+      if (this.pathfindingGrid) {
+        this.player.setPathfindingGrid(this.pathfindingGrid, [0]);
       }
     }
 
@@ -226,7 +228,25 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.events.on("readyForLevel2", () => {
-      this.movePlayerToDoor();
+      if (this.player) {
+        this.player.findPathTo(3, 3, (path) => {
+          if (path && path.length > 0) {
+            this.player!.followPath(path, () => {
+              this.scene.pause();
+
+              if (!this.levelUpShown) {
+                this.levelUpShown = true;
+                this.openBookOnResume = true;
+                this.events.emit("level1Completed");
+                this.scene.launch("LevelUpScene", {
+                  parentScene: this.scene.key,
+                });
+                return;
+              }
+            });
+          }
+        });
+      }
     });
 
     this.bookIcon.on("pointerdown", () => {
@@ -305,8 +325,7 @@ export default class MainScene extends Phaser.Scene {
       }
       grid.push(row);
     }
-    this.easyStar.setGrid(grid);
-    this.easyStar.setAcceptableTiles([0]);
+    this.pathfindingGrid = grid;
   }
 
   private checkForInteractions() {
@@ -378,21 +397,25 @@ export default class MainScene extends Phaser.Scene {
                             if (this.bookManager) {
                               this.bookManager.showUnlockAnimation = true;
                             }
+                            if (this.player) {
+                              this.player.findPathTo(3, 3, (path) => {
+                                if (path && path.length > 0) {
+                                  this.player!.followPath(path, () => {
+                                    this.scene.pause();
 
-                            this.movePlayerToDoor(() => {
-                              this.scene.pause();
-
-                              if (!this.levelUpShown) {
-                                this.levelUpShown = true;
-                                this.openBookOnResume = true;
-                                this.events.emit("level1Completed");
-                                this.scene.pause();
-                                this.scene.launch("LevelUpScene", {
-                                  parentScene: this.scene.key,
-                                });
-                                return;
-                              }
-                            });
+                                    if (!this.levelUpShown) {
+                                      this.levelUpShown = true;
+                                      this.openBookOnResume = true;
+                                      this.events.emit("level1Completed");
+                                      this.scene.launch("LevelUpScene", {
+                                        parentScene: this.scene.key,
+                                      });
+                                      return;
+                                    }
+                                  });
+                                }
+                              });
+                            }
                           },
                         }
                       );
@@ -539,87 +562,5 @@ export default class MainScene extends Phaser.Scene {
       this.lastEKeyObject = undefined;
       this.lastEKeyY = undefined;
     }
-  }
-
-  private movePlayerToDoor(onComplete?: () => void) {
-    if (!this.player) return;
-    const targetTileX = 3;
-    const targetTileY = 3;
-    const playerTileX = Math.floor(this.player.x / WORLD.TILE.WIDTH);
-    const playerTileY = Math.floor(this.player.y / WORLD.TILE.HEIGHT);
-
-    this.easyStar.findPath(
-      playerTileX,
-      playerTileY,
-      targetTileX,
-      targetTileY,
-      (path) => {
-        if (!path || path.length === 0) {
-          if (onComplete) onComplete();
-          return;
-        }
-        this.followPath(path, onComplete);
-      }
-    );
-    this.easyStar.calculate();
-  }
-
-  private followPath(
-    path: { x: number; y: number }[],
-    onComplete?: () => void
-  ) {
-    const player = this.player;
-    if (!player || !path || path.length === 0) {
-      if (onComplete) onComplete();
-      return;
-    }
-    player.disableMovement();
-    let step = 0;
-
-    const moveToNext = () => {
-      if (step >= path.length) {
-        player.anims.play(`idle-${player.getLastDirection()}`, true);
-        player.enableMovement();
-        if (onComplete) onComplete();
-        return;
-      }
-      const { x, y } = path[step];
-      const worldX = x * WORLD.TILE.WIDTH + WORLD.TILE.WIDTH / 2;
-      const worldY = y * WORLD.TILE.HEIGHT + WORLD.TILE.HEIGHT / 2;
-
-      let direction: "up" | "down" | "left" | "right" =
-        player.getLastDirection();
-      if (step > 0) {
-        const prev = path[step - 1];
-        if (x > prev.x) direction = "right";
-        else if (x < prev.x) direction = "left";
-        else if (y > prev.y) direction = "down";
-        else if (y < prev.y) direction = "up";
-      }
-
-      if (direction === "left" || direction === "right") {
-        player.anims.play("walk_horizontal", true);
-        player.flipX = direction === "left";
-      } else if (direction === "up") {
-        player.anims.play("walk_up", true);
-        player.flipX = true;
-      } else if (direction === "down") {
-        player.anims.play("walk_down", true);
-        player.flipX = false;
-      }
-      player.setLastDirection(direction);
-
-      this.tweens.add({
-        targets: player,
-        x: worldX,
-        y: worldY,
-        duration: 200,
-        onComplete: () => {
-          step++;
-          moveToNext();
-        },
-      });
-    };
-    moveToNext();
   }
 }
