@@ -6,6 +6,7 @@ import { BookManager } from "../ui/BookManager";
 import { SpeechManager } from "../ui/SpeechManager";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
 import { PUZZLE_DATA } from "../data/puzzlePieces";
+import { moveCharacterToTile } from "../utils/pathfinding";
 
 export default class MainScene extends Phaser.Scene {
   private player?: Player;
@@ -227,28 +228,6 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
-    this.events.on("readyForLevel2", () => {
-      if (this.player) {
-        this.player.findPathTo(3, 3, (path) => {
-          if (path && path.length > 0) {
-            this.player!.followPath(path, () => {
-              this.scene.pause();
-
-              if (!this.levelUpShown) {
-                this.levelUpShown = true;
-                this.openBookOnResume = true;
-                this.events.emit("level1Completed");
-                this.scene.launch("LevelUpScene", {
-                  parentScene: this.scene.key,
-                });
-                return;
-              }
-            });
-          }
-        });
-      }
-    });
-
     this.bookIcon.on("pointerdown", () => {
       this.bookManager?.openWithMissionCheck();
     });
@@ -398,20 +377,14 @@ export default class MainScene extends Phaser.Scene {
                               this.bookManager.showUnlockAnimation = true;
                             }
                             if (this.player) {
-                              this.player.findPathTo(3, 3, (path) => {
-                                if (path && path.length > 0) {
-                                  this.player!.followPath(path, () => {
-                                    this.scene.pause();
-
-                                    if (!this.levelUpShown) {
-                                      this.levelUpShown = true;
-                                      this.openBookOnResume = true;
-                                      this.events.emit("level1Completed");
-                                      this.scene.launch("LevelUpScene", {
-                                        parentScene: this.scene.key,
-                                      });
-                                      return;
-                                    }
+                              moveCharacterToTile(this.player, 3, 3, () => {
+                                this.scene.pause();
+                                if (!this.levelUpShown) {
+                                  this.levelUpShown = true;
+                                  this.openBookOnResume = true;
+                                  this.events.emit("level1Completed");
+                                  this.scene.launch("LevelUpScene", {
+                                    parentScene: this.scene.key,
                                   });
                                 }
                               });
