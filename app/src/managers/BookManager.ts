@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { GameOverScene } from "../scenes/GameOverScene";
-import { PuzzlePiece, PUZZLE_DATA } from "../data/puzzlePieces";
-import { BOOK_LEVELS_LAYOUT, BOOK_SCENE_CONFIG } from "../constants/book";
+import { GameOverScene } from "../game/scenes/GameOverScene";
+import { PuzzlePiece, PUZZLE_DATA } from "../game/data/puzzlePieces";
+import { BOOK_LEVELS_LAYOUT, BOOK_SCENE_CONFIG } from "../game/constants/book";
 
 interface MainScene extends Phaser.Scene {
   player?: { getHealth(): number; getMaxHealth(): number };

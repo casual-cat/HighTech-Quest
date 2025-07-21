@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import { BookManager } from "../ui/BookManager";
+import { BookManager } from "../../managers/BookManager";
 import { PuzzlePiece, PUZZLE_DATA } from "../data/puzzlePieces";
 import { ANIMATION_CONFIG } from "../constants/puzzle";
-import { HealthBar } from "../ui/HealthBar";
+import { MotivationBar } from "../../managers/MotivationBarManager";
 import { THEME } from "../constants/game";
 
 interface MainScene extends Phaser.Scene {
@@ -15,7 +15,7 @@ interface MainScene extends Phaser.Scene {
 export class PuzzleScene extends Phaser.Scene {
   private hoverTweens: Phaser.Tweens.Tween[] = [];
   private readonly puzzleData = PUZZLE_DATA;
-  private healthBar?: HealthBar;
+  private motivationBar?: MotivationBar;
   private pieceIds: number[] = [];
 
   constructor() {
@@ -43,14 +43,14 @@ export class PuzzleScene extends Phaser.Scene {
   create() {
     this.createBackground();
     this.createPuzzleBackground();
-    this.createHealthBar();
+    this.createMotivationBar();
 
     const mainScene = this.scene.get("MainScene") as MainScene;
-    mainScene.events.on("playerDamaged", this.updateHealthBar, this);
+    mainScene.events.on("playerDamaged", this.updateMotivationBar, this);
     mainScene.events.on("gameOver", this.closeScene, this);
 
     this.events.on("shutdown", () => {
-      mainScene.events.off("playerDamaged", this.updateHealthBar, this);
+      mainScene.events.off("playerDamaged", this.updateMotivationBar, this);
       mainScene.events.off("gameOver", this.closeScene, this);
     });
   }
@@ -268,24 +268,24 @@ export class PuzzleScene extends Phaser.Scene {
     return [];
   }
 
-  private createHealthBar() {
+  private createMotivationBar() {
     const mainScene = this.scene.get("MainScene") as MainScene;
     if (!mainScene.player) return;
 
-    this.healthBar = new HealthBar(
+    this.motivationBar = new MotivationBar(
       this,
       1100,
       16,
       mainScene.player.getMaxHealth(),
       160
     );
-    this.healthBar.setHealth(mainScene.player.getHealth());
+    this.motivationBar.setHealth(mainScene.player.getHealth());
   }
 
-  private updateHealthBar() {
+  private updateMotivationBar() {
     const mainScene = this.scene.get("MainScene") as MainScene;
-    if (this.healthBar && mainScene.player) {
-      this.healthBar.setHealth(mainScene.player.getHealth());
+    if (this.motivationBar && mainScene.player) {
+      this.motivationBar.setHealth(mainScene.player.getHealth());
     }
   }
 

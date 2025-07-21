@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { UI, THEME } from "../constants/game";
+import { UI, THEME } from "../game/constants/game";
 
-export class HealthBar {
+export class MotivationBar {
   private scene: Phaser.Scene;
   private x: number;
   private y: number;
@@ -65,7 +65,7 @@ export class HealthBar {
       .setScrollFactor(0);
   }
 
-  setHealth(hp: number): HealthBar {
+  setHealth(hp: number): MotivationBar {
     this.currentHp = Phaser.Math.Clamp(hp, 0, this.maxHp);
 
     const healthPercentage = this.currentHp / this.maxHp;
@@ -127,13 +127,13 @@ export class HealthBar {
     this.text.setText(`${Math.floor(this.currentHp)}/${this.maxHp}`);
   }
 
-  decrease(amount: number): HealthBar {
+  decrease(amount: number): MotivationBar {
     this.setHealth(this.currentHp - amount);
     this.animateFill(0.7);
     return this;
   }
 
-  increase(amount: number): HealthBar {
+  increase(amount: number): MotivationBar {
     this.setHealth(this.currentHp + amount);
     this.animateFill(1.2);
     return this;
@@ -156,7 +156,7 @@ export class HealthBar {
     return this.maxHp;
   }
 
-  setPosition(x: number, y: number): HealthBar {
+  setPosition(x: number, y: number): MotivationBar {
     const xDiff = x - this.x;
     const yDiff = y - this.y;
 
@@ -176,7 +176,7 @@ export class HealthBar {
     this.text.y += yDiff;
   }
 
-  setVisible(visible: boolean): HealthBar {
+  setVisible(visible: boolean): MotivationBar {
     this.bar.setVisible(visible);
     this.fill.setVisible(visible);
     this.icon.setVisible(visible);

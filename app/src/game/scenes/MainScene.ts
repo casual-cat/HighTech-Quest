@@ -1,16 +1,16 @@
 import Phaser from "phaser";
 import { WORLD, CHARACTER } from "../constants/game";
 import { Player } from "../entities/Player";
-import { HealthBar } from "../ui/HealthBar";
-import { BookManager } from "../ui/BookManager";
-import { SpeechManager } from "../ui/SpeechManager";
+import { MotivationBar } from "../../managers/MotivationBarManager";
+import { BookManager } from "../../managers/BookManager";
+import { SpeechManager } from "../../managers/SpeechManager";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
 import { PUZZLE_DATA } from "../data/puzzlePieces";
 import { moveCharacterToTile } from "../utils/pathfinding";
 
 export default class MainScene extends Phaser.Scene {
   private player?: Player;
-  private healthBar?: HealthBar;
+  private motivationBar?: MotivationBar;
   private career?: CareerKey;
   private bookManager?: BookManager;
   private speechManager?: SpeechManager;
@@ -166,14 +166,14 @@ export default class MainScene extends Phaser.Scene {
   private createHUD() {
     if (!this.player) return;
 
-    this.healthBar = new HealthBar(
+    this.motivationBar = new MotivationBar(
       this,
       1100,
       16,
       this.player.getMaxHealth(),
       160
     );
-    this.healthBar.setHealth(this.player.getHealth());
+    this.motivationBar.setHealth(this.player.getHealth());
 
     this.add
       .image(16, 16, "avatarBackground")
@@ -433,9 +433,9 @@ export default class MainScene extends Phaser.Scene {
   }
 
   damagePlayer(amount: number) {
-    if (!this.player || !this.healthBar) return;
+    if (!this.player || !this.motivationBar) return;
     const newHealth = this.player.damage(amount);
-    this.healthBar.decrease(amount);
+    this.motivationBar.decrease(amount);
     this.events.emit("playerDamaged");
 
     if (newHealth <= 0) {
@@ -458,12 +458,12 @@ export default class MainScene extends Phaser.Scene {
 
   healPlayer(amount: number) {
     this.player?.heal(amount);
-    this.healthBar?.increase(amount);
+    this.motivationBar?.increase(amount);
   }
 
   shutdown() {
     this.player?.destroy();
-    this.healthBar?.destroy();
+    this.motivationBar?.destroy();
     this.bookManager?.destroy?.();
     this.speechManager?.destroy();
     if (this.bookIcon) {

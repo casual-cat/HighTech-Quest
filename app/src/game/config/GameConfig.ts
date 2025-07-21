@@ -5,7 +5,7 @@ import CareerMenu from "../scenes/CareerMenu";
 import IntroScene from "../scenes/IntroScene";
 import MainMenu from "../scenes/MainMenu";
 import MainScene from "../scenes/MainScene";
-import { BookScene } from "../ui/BookManager";
+import { BookScene } from "../../managers/BookManager";
 import { PuzzleScene } from "../scenes/PuzzleScene";
 import { GameOverScene } from "../scenes/GameOverScene";
 import LevelUpScene from "../scenes/LevelUpScene";
