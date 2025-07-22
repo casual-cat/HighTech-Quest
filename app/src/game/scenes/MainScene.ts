@@ -6,12 +6,13 @@ import { BookManager } from "../../managers/BookManager";
 import { SpeechManager } from "../../managers/SpeechManager";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
 import { PUZZLE_DATA } from "../data/puzzlePieces";
+import { EKeyIndicator } from "../../managers/EKeyIndicatorManager";
 import { moveCharacterToTile } from "../utils/pathfinding";
 
 export default class MainScene extends Phaser.Scene {
   private player?: Player;
-  private motivationBar?: MotivationBar;
   private career?: CareerKey;
+  private motivationBar?: MotivationBar;
   private bookManager?: BookManager;
   private speechManager?: SpeechManager;
   private isGameOver = false;
@@ -21,11 +22,7 @@ export default class MainScene extends Phaser.Scene {
   private computerObjectData?: { x: number; y: number; id: number };
   private computerInteractable = false;
   private eKey?: Phaser.Input.Keyboard.Key;
-  private eKeyIndicator?: Phaser.GameObjects.Image;
-  private eKeyTargetObject?: Phaser.GameObjects.Sprite;
-  private eKeyTween?: Phaser.Tweens.Tween;
-  private lastEKeyObject?: Phaser.Physics.Arcade.Sprite;
-  private lastEKeyY?: number;
+  private eKeyIndicator!: EKeyIndicator;
   private levelUpShown = false;
   private openBookOnResume = false;
   private bookIcon?: Phaser.GameObjects.Image;
@@ -174,6 +171,18 @@ export default class MainScene extends Phaser.Scene {
         }
       }
     });
+
+    if (this.player && this.interactableObjects) {
+      this.eKeyIndicator = new EKeyIndicator(
+        this,
+        this.player,
+        this.interactableObjects
+      );
+    } else {
+      console.warn(
+        "Could not initialize EKeyIndicator — player or interactables missing"
+      );
+    }
   }
 
   update() {
@@ -182,7 +191,7 @@ export default class MainScene extends Phaser.Scene {
     this.speechManager?.update();
 
     this.checkForInteractions();
-    this.updateEKeyIndicator();
+    this.eKeyIndicator?.update();
   }
 
   private createHUD() {
@@ -272,16 +281,18 @@ export default class MainScene extends Phaser.Scene {
 
     if (objectLayer) {
       this.interactableObjects = this.physics.add.staticGroup();
+
       objectLayer.objects.forEach((obj) => {
-        const properties = obj.properties;
-        if (properties && properties.some((p: any) => p.name === "pieceIds")) {
-          const sprite = this.interactableObjects?.create(obj.x!, obj.y!);
-          if (sprite) {
-            sprite.setOrigin(0, 1);
-            sprite.setData("properties", properties);
-            sprite.setVisible(false);
-            sprite.refreshBody();
+        const sprite = this.interactableObjects!.create(obj.x!, obj.y!);
+
+        if (sprite) {
+          sprite.setOrigin(0, 1);
+          sprite.setVisible(false);
+          sprite.refreshBody();
+          if (obj.properties) {
+            sprite.setData("properties", obj.properties);
           }
+          sprite.setData("id", obj.id);
         }
 
         if (obj.id === 6) {
@@ -408,10 +419,6 @@ export default class MainScene extends Phaser.Scene {
         .map((id: string) => parseInt(id.trim(), 10));
       this.scene.launch("PuzzleScene", { pieceIds, sourceObject: obj });
       this.scene.pause();
-      if (this.eKeyIndicator) {
-        this.eKeyIndicator.setVisible(false);
-        this.eKeyTargetObject = undefined;
-      }
       return;
     }
   }
@@ -456,68 +463,5 @@ export default class MainScene extends Phaser.Scene {
     }
     this.events.off("bookStateChanged");
     this.events.off("allPiecesCollected");
-  }
-
-  private updateEKeyIndicator() {
-    if (!this.player || !this.interactableObjects) return;
-
-    let closestObject: Phaser.Physics.Arcade.Sprite | null = null;
-    let minDistance = 64;
-
-    this.interactableObjects.children.each((obj) => {
-      const sprite = obj as Phaser.Physics.Arcade.Sprite;
-      const distance = Phaser.Math.Distance.Between(
-        this.player!.x,
-        this.player!.y,
-        sprite.x,
-        sprite.y
-      );
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestObject = sprite;
-      }
-      return true;
-    });
-
-    if (closestObject !== null) {
-      const obj = closestObject as Phaser.Physics.Arcade.Sprite;
-      const topY = obj.y;
-
-      if (this.lastEKeyObject !== obj || this.lastEKeyY !== topY) {
-        if (!this.eKeyIndicator) {
-          this.eKeyIndicator = this.add.image(0, 0, "eKey").setOrigin(0, 1);
-          this.eKeyIndicator.setDepth(10);
-        }
-        this.eKeyIndicator.setVisible(true);
-        this.eKeyIndicator.setPosition(obj.x, topY);
-
-        if (this.eKeyTween) {
-          this.eKeyTween.stop();
-        }
-        this.eKeyTween = this.tweens.add({
-          targets: this.eKeyIndicator,
-          y: { from: topY, to: topY - 8 },
-          duration: 500,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut",
-        });
-
-        this.lastEKeyObject = obj;
-        this.lastEKeyY = topY;
-      }
-      this.eKeyTargetObject = closestObject;
-    } else {
-      if (this.eKeyIndicator) {
-        this.eKeyIndicator.setVisible(false);
-        this.eKeyTargetObject = undefined;
-      }
-      if (this.eKeyTween) {
-        this.eKeyTween.stop();
-        this.eKeyTween = undefined;
-      }
-      this.lastEKeyObject = undefined;
-      this.lastEKeyY = undefined;
-    }
   }
 }
