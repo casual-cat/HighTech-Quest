@@ -8,6 +8,7 @@ import { CareerKey, CareerStore } from "../../stores/CareerStore";
 import { PUZZLE_DATA } from "../data/puzzlePieces";
 import { EKeyIndicator } from "../../managers/EKeyIndicatorManager";
 import { moveCharacterToTile } from "../utils/pathfinding";
+import { BookStore } from "../../stores/BookStore";
 
 export default class MainScene extends Phaser.Scene {
   private player?: Player;
@@ -158,7 +159,12 @@ export default class MainScene extends Phaser.Scene {
                     if (!this.levelUpShown) {
                       this.levelUpShown = true;
                       this.openBookOnResume = true;
-                      this.events.emit("level1Completed");
+                      this.bookManager?.setLevel1Completed();
+
+                      const playerData = {
+                        motivation: this.motivationBar?.getCurrentHealth(),
+                      };
+                      this.registry.set("playerData", playerData);
                       this.scene.launch("LevelUpScene", {
                         parentScene: this.scene.key,
                       });
@@ -228,6 +234,7 @@ export default class MainScene extends Phaser.Scene {
       .setScrollFactor(0);
 
     this.bookManager = new BookManager(this);
+    BookStore.set(this.bookManager);
 
     this.events.on("bookStateChanged", (data: { hasNewPieces: boolean }) => {
       if (this.bookIcon && this.bookIcon.scene) {

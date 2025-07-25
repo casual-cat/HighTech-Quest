@@ -1,13 +1,12 @@
 import Phaser from "phaser";
 import { PuzzlePiece, PUZZLE_DATA } from "../game/data/puzzlePieces";
 
-interface MainScene extends Phaser.Scene {
+interface GameScene extends Phaser.Scene {
   player?: { getHealth(): number; getMaxHealth(): number };
 }
 
 export class BookManager {
-  private scene: Phaser.Scene;
-  private mainScene: MainScene;
+  private currentScene!: Phaser.Scene;
   private keyHandler!: (event: KeyboardEvent) => void;
   private puzzlePieces: PuzzlePiece[] = PUZZLE_DATA;
   public showUnlockAnimation = false;
@@ -15,18 +14,13 @@ export class BookManager {
   private level1Completed = false;
 
   constructor(scene: Phaser.Scene) {
-    this.scene = scene;
-    this.mainScene = scene as MainScene;
     this.setupKeyHandler();
-    this.scene.events.on("level1Completed", () => {
-      this.level1Completed = true;
-    });
   }
 
   private setupKeyHandler(): void {
     this.keyHandler = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === "q") {
-        if (this.scene.scene.isActive("BookScene")) {
+      if (event.key.toLowerCase() === "q" && this.currentScene) {
+        if (this.currentScene.scene.isActive("BookScene")) {
           this.close();
         } else {
           this.open();
@@ -58,33 +52,35 @@ export class BookManager {
   }
 
   private updateBookIcon(): void {
-    this.scene.events.emit("bookStateChanged", {
+    this.currentScene.events.emit("bookStateChanged", {
       hasNewPieces: this.hasUnviewedPieces(),
     });
   }
 
   public open(initialTab?: "Tasks" | "Levels" | "Elements"): void {
-    if (this.scene.scene.isActive("BookScene")) return;
+    if (this.currentScene.scene.isActive("BookScene")) return;
 
-    this.scene.scene.pause();
-    this.scene.scene.launch("BookScene", {
+    this.currentScene.scene.pause();
+    this.currentScene.scene.launch("BookScene", {
       puzzlePieces: this.puzzlePieces,
       initialTab: initialTab || "Tasks",
       showUnlockAnimation: this.showUnlockAnimation,
       level1Completed: this.level1Completed,
     });
-    this.scene.input.setDefaultCursor("default");
+
+    this.currentScene.scene.bringToTop("BookScene");
+    this.currentScene.input.setDefaultCursor("default");
 
     this.markPiecesAsViewed();
   }
 
   public close(): void {
-    if (!this.scene.scene.isActive("BookScene")) return;
+    if (!this.currentScene.scene.isActive("BookScene")) return;
 
-    this.scene.scene.stop("BookScene");
-    this.scene.scene.resume();
+    this.currentScene.scene.stop("BookScene");
+    this.currentScene.scene.resume();
 
-    const bookScene = this.scene.scene.get("BookScene") as any;
+    const bookScene = this.currentScene.scene.get("BookScene") as any;
     if (bookScene) {
       bookScene.resetTab && bookScene.resetTab();
     }
@@ -92,8 +88,16 @@ export class BookManager {
 
   public destroy(): void {
     window.removeEventListener("keydown", this.keyHandler);
-    if (this.scene.scene.isActive("BookScene")) {
-      this.scene.scene.stop("BookScene");
+    if (this.currentScene.scene.isActive("BookScene")) {
+      this.currentScene.scene.stop("BookScene");
     }
+  }
+
+  public setLevel1Completed() {
+    this.level1Completed = true;
+  }
+
+  public setCurrentScene(scene: Phaser.Scene): void {
+    this.currentScene = scene;
   }
 }

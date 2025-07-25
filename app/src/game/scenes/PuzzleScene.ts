@@ -4,6 +4,7 @@ import { PuzzlePiece, PUZZLE_DATA } from "../data/puzzlePieces";
 import { ANIMATION_CONFIG } from "../constants/puzzle";
 import { MotivationBar } from "../../managers/MotivationBarManager";
 import { THEME } from "../constants/game";
+import { BookStore } from "../../stores/BookStore";
 
 interface MainScene extends Phaser.Scene {
   bookManager?: BookManager;
@@ -216,12 +217,16 @@ export class PuzzleScene extends Phaser.Scene {
       );
     }
 
-    mainScene.bookManager?.addPuzzlePiece({
-      id: pieceData.id,
-      label: pieceData.label,
-      isCorrect: pieceData.isCorrect,
-      image: pieceData.image,
-    });
+    const bookManager = BookStore.get();
+    if (bookManager) {
+      bookManager.setCurrentScene(this);
+      bookManager.addPuzzlePiece({
+        id: pieceData.id,
+        label: pieceData.label,
+        isCorrect: pieceData.isCorrect,
+        image: pieceData.image,
+      });
+    }
 
     const remainingCorrectPieces = this.puzzleData.filter(
       (piece) => piece.isCorrect && !piece.collected

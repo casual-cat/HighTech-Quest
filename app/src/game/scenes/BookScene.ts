@@ -59,6 +59,7 @@ export class BookScene extends Phaser.Scene {
     this.load.image("book-elements", "/assets/ui/book/book-elements.png");
     this.load.image("checkbox", "/assets/ui/book/checkbox.png");
     this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
+    this.load.image("playBtn", "/assets/ui/book/play.png");
   }
 
   create(): void {
@@ -200,6 +201,11 @@ export class BookScene extends Phaser.Scene {
       this.tabContentGroup.add(star);
     }
 
+    const level2PlayBtn = this.add
+      .image(rightPageX + 490, pageY + 570, "playBtn")
+      .setOrigin();
+    this.tabContentGroup.add(level2PlayBtn);
+
     if (!this.level1Completed || this.showUnlockAnimation) {
       const darkenOverlay = this.add.image(rightPageX, pageY, "darken-right");
       darkenOverlay.setOrigin(0);
@@ -236,6 +242,12 @@ export class BookScene extends Phaser.Scene {
               if (bookManager) {
                 bookManager.showUnlockAnimation = false;
               }
+              level2PlayBtn.setInteractive();
+              level2PlayBtn.setInteractive().on("pointerdown", () => {
+                this.scene.stop("MainScene");
+                this.scene.start("Level2Scene");
+                this.scene.stop();
+              });
             },
           });
         });
