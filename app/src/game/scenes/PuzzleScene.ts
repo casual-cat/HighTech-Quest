@@ -219,7 +219,6 @@ export class PuzzleScene extends Phaser.Scene {
 
     const bookManager = BookStore.get();
     if (bookManager) {
-      bookManager.setCurrentScene(this);
       bookManager.addPuzzlePiece({
         id: pieceData.id,
         label: pieceData.label,

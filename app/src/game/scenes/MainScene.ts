@@ -124,6 +124,8 @@ export default class MainScene extends Phaser.Scene {
 
     this.eKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
+    this.bookManager?.setCurrentScene(this);
+
     this.speechManager = new SpeechManager(this);
 
     this.time.delayedCall(1000, () => {
@@ -237,6 +239,7 @@ export default class MainScene extends Phaser.Scene {
     BookStore.set(this.bookManager);
 
     this.events.on("bookStateChanged", (data: { hasNewPieces: boolean }) => {
+      console.log("MainScene recognized bookStateChanged");
       if (this.bookIcon && this.bookIcon.scene) {
         this.bookIcon.setTexture(data.hasNewPieces ? "book-badge" : "book");
       }
