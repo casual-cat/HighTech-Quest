@@ -10,7 +10,7 @@ import { EKeyIndicator } from "../../managers/EKeyIndicatorManager";
 import { moveCharacterToTile } from "../utils/pathfinding";
 import { BookStore } from "../../stores/BookStore";
 
-export default class MainScene extends Phaser.Scene {
+export default class Level1Scene extends Phaser.Scene {
   private player?: Player;
   private career?: CareerKey;
   private motivationBar?: MotivationBar;
@@ -31,7 +31,7 @@ export default class MainScene extends Phaser.Scene {
   private threeDaysLaterComplete = false;
 
   constructor() {
-    super({ key: "MainScene" });
+    super({ key: "Level1Scene" });
   }
 
   init() {

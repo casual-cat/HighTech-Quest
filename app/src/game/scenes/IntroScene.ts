@@ -18,16 +18,16 @@ export default class IntroScene extends Phaser.Scene {
 
     video.play();
 
-    const goToMainScene = () => {
+    const goToLevel1Scene = () => {
       if (!this.scene.isActive("IntroScene")) return;
 
       this.cameras.main.fadeOut(1000);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("MainMenu");
+        this.scene.start("Level1Scene");
       });
     };
 
-    video.on("complete", goToMainScene);
-    this.input.once("pointerdown", goToMainScene);
+    video.on("complete", goToLevel1Scene);
+    this.input.once("pointerdown", goToLevel1Scene);
   }
 }

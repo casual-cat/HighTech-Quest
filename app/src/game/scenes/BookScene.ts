@@ -3,7 +3,7 @@ import { GameOverScene } from "../scenes/GameOverScene";
 import { PuzzlePiece } from "../data/puzzlePieces";
 import { BOOK_LEVELS_LAYOUT, BOOK_SCENE_CONFIG } from "../constants/book";
 
-interface MainScene extends Phaser.Scene {
+interface Level1Scene extends Phaser.Scene {
   player?: { getHealth(): number; getMaxHealth(): number };
 }
 
@@ -210,7 +210,7 @@ export class BookScene extends Phaser.Scene {
       level2PlayBtn
         .setInteractive({ cursor: "pointer" })
         .on("pointerdown", () => {
-          this.scene.stop("MainScene");
+          this.scene.stop("Level1Scene");
           this.scene.start("Level2Scene");
           this.scene.stop();
         });
@@ -237,7 +237,7 @@ export class BookScene extends Phaser.Scene {
       this.tabContentGroup.add(lock);
 
       if (this.showUnlockAnimation) {
-        const bookManager = (this.scene.get("MainScene") as any)?.bookManager;
+        const bookManager = (this.scene.get("Level1Scene") as any)?.bookManager;
         lock.anims.play("lock-unlock");
         lock.on("animationcomplete", () => {
           lock.destroy();
@@ -321,7 +321,7 @@ export class BookScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: false })
       .on("pointerdown", () => {
         this.scene.stop();
-        this.scene.resume("MainScene");
+        this.scene.resume("Level1Scene");
       });
   }
 
@@ -360,8 +360,8 @@ export class BookScene extends Phaser.Scene {
   }
 
   private checkGameOver(): void {
-    const mainScene = this.scene.get("MainScene") as MainScene;
-    const playerHealth = mainScene.player?.getHealth();
+    const level1Scene = this.scene.get("Level1Scene") as Level1Scene;
+    const playerHealth = level1Scene.player?.getHealth();
     if (playerHealth !== undefined && playerHealth <= 0) {
       GameOverScene.handleGameOver(this);
     }

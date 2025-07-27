@@ -6,7 +6,7 @@ import { MotivationBar } from "../../managers/MotivationBarManager";
 import { THEME } from "../constants/game";
 import { BookStore } from "../../stores/BookStore";
 
-interface MainScene extends Phaser.Scene {
+interface Level1Scene extends Phaser.Scene {
   bookManager?: BookManager;
   damagePlayer(amount: number): void;
   player?: { getHealth(): number; getMaxHealth(): number };
@@ -46,13 +46,13 @@ export class PuzzleScene extends Phaser.Scene {
     this.createPuzzleBackground();
     this.createMotivationBar();
 
-    const mainScene = this.scene.get("MainScene") as MainScene;
-    mainScene.events.on("playerDamaged", this.updateMotivationBar, this);
-    mainScene.events.on("gameOver", this.closeScene, this);
+    const level1Scene = this.scene.get("Level1Scene") as Level1Scene;
+    level1Scene.events.on("playerDamaged", this.updateMotivationBar, this);
+    level1Scene.events.on("gameOver", this.closeScene, this);
 
     this.events.on("shutdown", () => {
-      mainScene.events.off("playerDamaged", this.updateMotivationBar, this);
-      mainScene.events.off("gameOver", this.closeScene, this);
+      level1Scene.events.off("playerDamaged", this.updateMotivationBar, this);
+      level1Scene.events.off("gameOver", this.closeScene, this);
     });
   }
 
@@ -207,10 +207,10 @@ export class PuzzleScene extends Phaser.Scene {
   }
 
   private handlePieceCollection(pieceData: PuzzlePiece) {
-    const mainScene = this.scene.get("MainScene") as MainScene;
+    const level1Scene = this.scene.get("Level1Scene") as Level1Scene;
 
-    if ((this as any).sourceObject && mainScene.interactableObjects) {
-      mainScene.interactableObjects.remove(
+    if ((this as any).sourceObject && level1Scene.interactableObjects) {
+      level1Scene.interactableObjects.remove(
         (this as any).sourceObject,
         true,
         true
@@ -232,16 +232,16 @@ export class PuzzleScene extends Phaser.Scene {
     );
 
     if (remainingCorrectPieces.length === 0) {
-      mainScene.scene.get("MainScene") as MainScene;
-      mainScene.events.emit("allPiecesCollected");
+      level1Scene.scene.get("Level1Scene") as Level1Scene;
+      level1Scene.events.emit("allPiecesCollected");
     }
 
     this.closeScene();
   }
 
   private handleIncorrectPiece(piece: Phaser.GameObjects.Image) {
-    const mainScene = this.scene.get("MainScene") as MainScene;
-    mainScene.damagePlayer(33);
+    const level1Scene = this.scene.get("Level1Scene") as Level1Scene;
+    level1Scene.damagePlayer(33);
     this.shakePiece(piece);
   }
 
@@ -273,29 +273,29 @@ export class PuzzleScene extends Phaser.Scene {
   }
 
   private createMotivationBar() {
-    const mainScene = this.scene.get("MainScene") as MainScene;
-    if (!mainScene.player) return;
+    const level1Scene = this.scene.get("Level1Scene") as Level1Scene;
+    if (!level1Scene.player) return;
 
     this.motivationBar = new MotivationBar(
       this,
       1100,
       16,
-      mainScene.player.getMaxHealth(),
+      level1Scene.player.getMaxHealth(),
       160
     );
-    this.motivationBar.setHealth(mainScene.player.getHealth());
+    this.motivationBar.setHealth(level1Scene.player.getHealth());
   }
 
   private updateMotivationBar() {
-    const mainScene = this.scene.get("MainScene") as MainScene;
-    if (this.motivationBar && mainScene.player) {
-      this.motivationBar.setHealth(mainScene.player.getHealth());
+    const level1Scene = this.scene.get("Level1Scene") as Level1Scene;
+    if (this.motivationBar && level1Scene.player) {
+      this.motivationBar.setHealth(level1Scene.player.getHealth());
     }
   }
 
   private closeScene() {
     this.scene.stop();
-    this.scene.resume("MainScene");
+    this.scene.resume("Level1Scene");
   }
 
   shutdown() {

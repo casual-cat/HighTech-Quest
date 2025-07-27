@@ -15,7 +15,7 @@ export class GameOverScene extends Phaser.Scene {
     );
 
     scene.cameras.main.once("camerafadeoutcomplete", () => {
-      scene.scene.stop("MainScene");
+      scene.scene.stop("Level1Scene");
       scene.scene.start("GameOverScene");
     });
   }
@@ -55,7 +55,7 @@ export class GameOverScene extends Phaser.Scene {
       );
 
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("MainScene");
+        this.scene.start("Level1Scene");
       });
     });
   }

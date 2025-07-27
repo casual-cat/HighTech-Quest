@@ -4,7 +4,7 @@ import InfoScene from "../scenes/InfoScene";
 import CareerMenu from "../scenes/CareerMenu";
 import IntroScene from "../scenes/IntroScene";
 import MainMenu from "../scenes/MainMenu";
-import MainScene from "../scenes/MainScene";
+import Level1Scene from "../scenes/Level1Scene";
 import { BookScene } from "../scenes/BookScene";
 import { PuzzleScene } from "../scenes/PuzzleScene";
 import { GameOverScene } from "../scenes/GameOverScene";
@@ -25,7 +25,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     CareerMenu,
     IntroScene,
     MainMenu,
-    MainScene,
+    Level1Scene,
     BookScene,
     PuzzleScene,
     GameOverScene,
