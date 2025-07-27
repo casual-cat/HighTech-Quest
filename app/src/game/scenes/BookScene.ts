@@ -206,6 +206,16 @@ export class BookScene extends Phaser.Scene {
       .setOrigin();
     this.tabContentGroup.add(level2PlayBtn);
 
+    if (this.level1Completed && !this.showUnlockAnimation) {
+      level2PlayBtn
+        .setInteractive({ cursor: "pointer" })
+        .on("pointerdown", () => {
+          this.scene.stop("MainScene");
+          this.scene.start("Level2Scene");
+          this.scene.stop();
+        });
+    }
+
     if (!this.level1Completed || this.showUnlockAnimation) {
       const darkenOverlay = this.add.image(rightPageX, pageY, "darken-right");
       darkenOverlay.setOrigin(0);
@@ -242,12 +252,6 @@ export class BookScene extends Phaser.Scene {
               if (bookManager) {
                 bookManager.showUnlockAnimation = false;
               }
-              level2PlayBtn.setInteractive();
-              level2PlayBtn.setInteractive().on("pointerdown", () => {
-                this.scene.stop("MainScene");
-                this.scene.start("Level2Scene");
-                this.scene.stop();
-              });
             },
           });
         });
