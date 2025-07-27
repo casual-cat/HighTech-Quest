@@ -239,7 +239,6 @@ export default class MainScene extends Phaser.Scene {
     BookStore.set(this.bookManager);
 
     this.events.on("bookStateChanged", (data: { hasNewPieces: boolean }) => {
-      console.log("MainScene recognized bookStateChanged");
       if (this.bookIcon && this.bookIcon.scene) {
         this.bookIcon.setTexture(data.hasNewPieces ? "book-badge" : "book");
       }
