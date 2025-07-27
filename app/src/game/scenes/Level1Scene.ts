@@ -389,6 +389,7 @@ export default class Level1Scene extends Phaser.Scene {
 
       if (closestComputer) {
         if (this.player && this.speechManager) {
+          this.computerInteractable = false;
           this.speechManager.showSpeech(
             ["I have submitted my CV! Now it's time to wait..."],
             {
