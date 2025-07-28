@@ -3,8 +3,9 @@ import { GameOverScene } from "../scenes/GameOverScene";
 import { PuzzlePiece } from "../data/puzzlePieces";
 import { BOOK_LEVELS_LAYOUT, BOOK_SCENE_CONFIG } from "../constants/book";
 
-interface Level1Scene extends Phaser.Scene {
+interface LevelScene extends Phaser.Scene {
   player?: { getHealth(): number; getMaxHealth(): number };
+  key: string;
 }
 
 export class BookScene extends Phaser.Scene {
@@ -359,9 +360,17 @@ export class BookScene extends Phaser.Scene {
     this.bookImage.setTexture(textureKey);
   }
 
+  private getCurrentLevelScene(): LevelScene | undefined {
+    const scenes = this.scene.manager.getScenes(true);
+    return scenes.find((scene) => /^Level\d+Scene$/.test(scene.scene.key)) as
+      | LevelScene
+      | undefined;
+  }
+
   private checkGameOver(): void {
-    const level1Scene = this.scene.get("Level1Scene") as Level1Scene;
-    const playerHealth = level1Scene.player?.getHealth();
+    const currentLevel = this.getCurrentLevelScene();
+    const playerHealth = currentLevel?.player?.getHealth();
+
     if (playerHealth !== undefined && playerHealth <= 0) {
       GameOverScene.handleGameOver(this);
     }
