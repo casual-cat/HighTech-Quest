@@ -136,6 +136,8 @@ export default class Level2Scene extends Phaser.Scene {
     if (!this.bookManager) {
       console.warn("BookManager is not available");
     }
+
+    this.bookManager?.setCurrentScene(this);
   }
 
   shutdown() {
