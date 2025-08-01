@@ -23,6 +23,7 @@ export default class Level2Scene extends Phaser.Scene {
   private eKey?: Phaser.Input.Keyboard.Key;
   private eKeyIndicator!: EKeyIndicator;
   private collidables?: Phaser.Tilemaps.TilemapLayer;
+  private spotlight!: Phaser.GameObjects.Graphics;
 
   constructor() {
     super({ key: "Level2Scene" });
@@ -100,7 +101,18 @@ export default class Level2Scene extends Phaser.Scene {
 
   update() {
     if (this.isGameOver) return;
-    this.player?.update();
+
+    if (this.player) {
+      this.player.update();
+
+      const cam = this.cameras.main;
+      const playerScreenX = this.player.x - cam.scrollX;
+      const playerScreenY = this.player.y - cam.scrollY;
+
+      this.spotlight.clear();
+      this.spotlight.fillStyle(0xffffff);
+      this.spotlight.fillCircle(playerScreenX, playerScreenY, 70);
+    }
   }
 
   private createWorld() {
@@ -121,6 +133,21 @@ export default class Level2Scene extends Phaser.Scene {
       this.collidables.setCollisionByProperty({ collides: true });
       this.collidables.setCollisionBetween(1, 1000);
     }
+
+    const darkness = this.add.graphics();
+    darkness.fillStyle(0x000000, 1);
+    darkness.fillRect(0, 0, WORLD.WIDTH, WORLD.HEIGHT);
+    darkness.setScrollFactor(0);
+    darkness.setDepth(1);
+
+    this.spotlight = this.make.graphics({}, false);
+    this.spotlight.fillStyle(0xffffff);
+    this.spotlight.fillCircle(100, 100, 100);
+
+    const mask = this.spotlight.createGeometryMask();
+    mask.invertAlpha = true;
+
+    darkness.setMask(mask);
   }
 
   private createPlayer() {
@@ -130,7 +157,7 @@ export default class Level2Scene extends Phaser.Scene {
       4 * WORLD.TILE.HEIGHT,
       CHARACTER.HEALTH.MAX,
       `character-${this.career}`
-    ); // Draw the player over the other layers in the game.
+    );
 
     if (this.collidables && this.player) {
       this.physics.add.collider(this.player, this.collidables);
