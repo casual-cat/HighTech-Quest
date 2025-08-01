@@ -16,6 +16,7 @@ export class BookScene extends Phaser.Scene {
   private showUnlockAnimation = false;
   private allPiecesCollected = false;
   private level1Completed = false;
+  private level2PlayBtn?: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: "BookScene" });
@@ -202,13 +203,14 @@ export class BookScene extends Phaser.Scene {
       this.tabContentGroup.add(star);
     }
 
-    const level2PlayBtn = this.add
+    this.level2PlayBtn = this.add
       .image(rightPageX + 490, pageY + 570, "playBtn")
       .setOrigin();
-    this.tabContentGroup.add(level2PlayBtn);
+
+    this.tabContentGroup.add(this.level2PlayBtn);
 
     if (this.level1Completed && !this.showUnlockAnimation) {
-      level2PlayBtn
+      this.level2PlayBtn
         .setInteractive({ cursor: "pointer" })
         .on("pointerdown", () => {
           this.scene.stop("Level1Scene");
@@ -252,6 +254,15 @@ export class BookScene extends Phaser.Scene {
               this.showUnlockAnimation = false;
               if (bookManager) {
                 bookManager.showUnlockAnimation = false;
+              }
+              if (this.level2PlayBtn) {
+                this.level2PlayBtn
+                  .setInteractive({ cursor: "pointer" })
+                  .on("pointerdown", () => {
+                    this.scene.stop("Level1Scene");
+                    this.scene.start("Level2Scene");
+                    this.scene.stop();
+                  });
               }
             },
           });
