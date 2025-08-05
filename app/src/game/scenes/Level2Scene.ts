@@ -24,12 +24,13 @@ export default class Level2Scene extends Phaser.Scene {
   private eKeyIndicator!: EKeyIndicator;
   private collidables?: Phaser.Tilemaps.TilemapLayer;
   private spotlight!: Phaser.GameObjects.Graphics;
+  private recruitersGroup!: Phaser.Physics.Arcade.StaticGroup;
 
   constructor() {
     super({ key: "Level2Scene" });
   }
 
-  init() {}
+  init() { }
 
   preload() {
     const career = CareerStore.getCareer();
@@ -97,6 +98,11 @@ export default class Level2Scene extends Phaser.Scene {
     this.createPlayer();
     this.createObjects();
     this.createHUD();
+
+    this.eKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    if (this.player) {
+      this.eKeyIndicator = new EKeyIndicator(this, this.player, this.recruitersGroup);
+    }
   }
 
   update() {
@@ -104,6 +110,7 @@ export default class Level2Scene extends Phaser.Scene {
 
     if (this.player) {
       this.player.update();
+      this.eKeyIndicator?.update();
 
       const cam = this.cameras.main;
       const playerScreenX = this.player.x - cam.scrollX;
@@ -112,6 +119,14 @@ export default class Level2Scene extends Phaser.Scene {
       this.spotlight.clear();
       this.spotlight.fillStyle(0xffffff);
       this.spotlight.fillCircle(playerScreenX, playerScreenY, 70);
+
+      if (Phaser.Input.Keyboard.JustDown(this.eKey!)) {
+        const target = this.eKeyIndicator.getTarget();
+        if (target) {
+          const recruiterId = target.getData("id");
+          console.log("Interacting with recruiter:", recruiterId);
+        }
+      }
     }
   }
 
@@ -211,6 +226,8 @@ export default class Level2Scene extends Phaser.Scene {
     const objectLayer = this.map?.getObjectLayer("Objects");
     if (!objectLayer || !this.player) return;
 
+    this.recruitersGroup = this.physics.add.staticGroup();
+
     objectLayer.objects.forEach((obj) => {
       const props =
         obj.properties?.reduce((acc: Record<string, any>, p: any) => {
@@ -222,10 +239,13 @@ export default class Level2Scene extends Phaser.Scene {
 
       if (spriteKey) {
         const recruiter = new Recruiter(this, obj.x!, obj.y!, spriteKey);
+        recruiter.setOrigin(0);
+        recruiter.setData("id", spriteKey);
+        recruiter.setData("properties", props);
         this.add.existing(recruiter);
         this.physics.add.existing(recruiter, true);
-        recruiter.setOrigin(0);
-        recruiter.body?.setImmovable(); // Fix typescript error
+        this.recruitersGroup.add(recruiter);
+        recruiter.body!.immovable = true;
 
         if (spriteKey === "shelly" || spriteKey === "noya") {
           recruiter.setFlipX(true);
