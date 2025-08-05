@@ -27,7 +27,7 @@ export class EKeyIndicator {
     if (!this.player || !this.interactableGroup) return;
 
     let closestObject: Phaser.GameObjects.Sprite | null = null;
-    let minDistance = 64;
+    let minDistance = 40;
 
     this.interactableGroup.children.each((obj) => {
       const sprite = obj as Phaser.Physics.Arcade.Sprite;
