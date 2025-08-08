@@ -1,4 +1,6 @@
 import Phaser from "phaser";
+import { Player } from "../game/entities/Player";
+import { RecruiterAnswer, RecruiterQA } from "../game/data/recruiterData";
 
 export class SpeechManager {
   private scene: Phaser.Scene;
@@ -20,6 +22,7 @@ export class SpeechManager {
     options?: {
       onComplete?: () => void;
       target?: Phaser.GameObjects.GameObject | { x: number; y: number };
+      duration?: number;
     }
   ): void {
     this.hideSpeech();
@@ -27,6 +30,8 @@ export class SpeechManager {
     this.currentLine = 0;
     this.onComplete = options?.onComplete;
     this.target = options?.target;
+
+    const duration = options?.duration ?? 5000;
 
     let x = this.scene.scale.width;
     let y = this.scene.scale.height * 0.2;
@@ -44,19 +49,15 @@ export class SpeechManager {
     }
 
     this.bubble = this.scene.add.image(x, y, "speechBubble");
-    this.bubble.setOrigin(0);
+    this.bubble.setOrigin(0, 1);
     this.bubble.setDepth(1000);
 
     if (this.target && "x" in this.target && "y" in this.target) {
-      x = this.target.x;
-      y = this.target.y;
-      if (
-        this.target instanceof Phaser.GameObjects.GameObject &&
-        "height" in this.target
-      ) {
-        const height = (this.target as any).height || 0;
-        y = y - height / 2 - this.bubble.height;
-      }
+      const targetWidth = (this.target as any).width || 0;
+
+      const x = this.target.x + targetWidth;
+      const y = this.target.y;
+
       this.bubble.setPosition(x, y);
     }
 
@@ -83,7 +84,7 @@ export class SpeechManager {
     if (this.bubble && this.text) {
       this.text.setPosition(
         this.bubble.x + this.bubble.width / 2 + 10,
-        this.bubble.y + this.bubble.height / 2 - 4
+        this.bubble.y - this.bubble.height / 2 - 4
       );
     }
 
@@ -93,12 +94,16 @@ export class SpeechManager {
       if (this.currentLine < this.lines.length - 1) {
         this.currentLine++;
         this.showCurrentLine();
-        if (this.autoHideTimer) {
-          this.autoHideTimer.destroy();
+
+        if (duration > 0) {
+          if (this.autoHideTimer) {
+            this.autoHideTimer.destroy();
+          }
+
+          this.autoHideTimer = this.scene.time.delayedCall(duration, () => {
+            this.hideSpeech();
+          });
         }
-        this.autoHideTimer = this.scene.time.delayedCall(5000, () => {
-          this.hideSpeech();
-        });
       } else {
         this.hideSpeech();
       }
@@ -107,16 +112,81 @@ export class SpeechManager {
     this.scene.input.keyboard?.on("keydown-SPACE", this.inputHandler);
     this.scene.input.keyboard?.on("keydown-ENTER", this.inputHandler);
 
-    this.autoHideTimer = this.scene.time.delayedCall(5000, () => {
-      if (this.currentLine < this.lines.length - 1) {
-        this.currentLine++;
-        this.showCurrentLine();
-        this.autoHideTimer = this.scene.time.delayedCall(5000, () => {
+    if (duration > 0) {
+      this.autoHideTimer = this.scene.time.delayedCall(duration, () => {
+        if (this.currentLine < this.lines.length - 1) {
+          this.currentLine++;
+          this.showCurrentLine();
+          this.autoHideTimer = this.scene.time.delayedCall(duration, () => {
+            this.hideSpeech();
+          });
+        } else {
           this.hideSpeech();
-        });
-      } else {
+        }
+      });
+    }
+  }
+
+  startInterview(
+    qa: RecruiterQA,
+    options: {
+      target: Phaser.GameObjects.GameObject | { x: number; y: number };
+      onAnswerSelected: (answer: RecruiterAnswer) => void;
+      player: Player;
+    }
+  ): void {
+    this.hideSpeech();
+
+    this.showSpeech([qa.question], {
+      target: options.target,
+      duration: 0,
+      onComplete: undefined,
+    });
+
+    const bubbleX = this.bubble?.x ?? this.scene.scale.width / 2;
+    const bubbleY = this.bubble?.y ?? this.scene.scale.height / 2;
+    const bubbleWidth = this.bubble?.width ?? 200;
+    const bubbleHeight = this.bubble?.height ?? 100;
+
+    const startX = bubbleX + bubbleWidth / 2;
+    const startY = bubbleY + 30;
+
+    const answerGroup = this.scene.add.group();
+    const spacing = 60;
+
+    qa.answers.forEach((answer, index) => {
+      const optionY = startY + index * spacing;
+
+      const bubble = this.scene.add
+        .image(startX, optionY, "optionBubble")
+        .setOrigin(0.5)
+        .setScale(1, 2)
+        .setDepth(1000)
+        .setInteractive({ useHandCursor: true });
+
+      const answerText = this.scene.add
+        .text(startX, optionY, answer.text, {
+          fontSize: "14px",
+          color: "#222",
+          align: "center",
+          wordWrap: { width: bubble.width - 20 },
+        })
+        .setOrigin(0.5)
+        .setDepth(1001)
+        .setInteractive({ useHandCursor: true });
+
+      const select = () => {
         this.hideSpeech();
-      }
+        bubble.destroy();
+        answerText.destroy();
+        answerGroup.clear(true, true);
+        options.onAnswerSelected(answer);
+      };
+
+      bubble.on("pointerdown", select);
+      answerText.on("pointerdown", select);
+
+      answerGroup.addMultiple([bubble, answerText]);
     });
   }
 
@@ -157,7 +227,7 @@ export class SpeechManager {
       if (this.text) {
         this.text.setPosition(
           this.bubble.x + this.bubble.width / 2 + 10,
-          this.bubble.y + this.bubble.height / 2 - 4
+          this.bubble.y - this.bubble.height / 2 - 4
         );
       }
     }
