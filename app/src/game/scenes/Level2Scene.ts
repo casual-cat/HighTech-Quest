@@ -8,6 +8,7 @@ import { EKeyIndicator } from "../../managers/EKeyIndicatorManager";
 import { CHARACTER, WORLD } from "../constants/game";
 import { BookStore } from "../../stores/BookStore";
 import { Recruiter } from "../entities/Recruiter";
+import { RECRUITER_QUESTIONS, RecruiterQA } from "../data/recruiterData";
 
 export default class Level2Scene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap | null = null;
@@ -30,7 +31,7 @@ export default class Level2Scene extends Phaser.Scene {
     super({ key: "Level2Scene" });
   }
 
-  init() { }
+  init() {}
 
   preload() {
     const career = CareerStore.getCareer();
@@ -58,7 +59,9 @@ export default class Level2Scene extends Phaser.Scene {
     // this.load.image("qKey", "/assets/ui/keys/qKey.png"); // For development
     // this.load.image("eKey", "/assets/ui/keys/eKey.png"); // For development
     // this.load.image(`${career}-avatar`, `/assets/game/${career}-avatar.png`); // For development
+    // this.load.image("speechBubble", "/assets/characters/speechBubble.png"); // For development
 
+    this.load.image("optionBubble", "/assets/characters/optionBubble.png");
     this.load.image("level2-tileset", "/assets/maps/level2/level2-tileset.png");
     this.load.tilemapTiledJSON("level2-map", "/assets/maps/level2/level2.tmj");
     this.load.spritesheet(
@@ -99,9 +102,15 @@ export default class Level2Scene extends Phaser.Scene {
     this.createObjects();
     this.createHUD();
 
+    this.speechManager = new SpeechManager(this);
+
     this.eKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     if (this.player) {
-      this.eKeyIndicator = new EKeyIndicator(this, this.player, this.recruitersGroup);
+      this.eKeyIndicator = new EKeyIndicator(
+        this,
+        this.player,
+        this.recruitersGroup
+      );
     }
   }
 
@@ -123,8 +132,7 @@ export default class Level2Scene extends Phaser.Scene {
       if (Phaser.Input.Keyboard.JustDown(this.eKey!)) {
         const target = this.eKeyIndicator.getTarget();
         if (target) {
-          const recruiterId = target.getData("id");
-          console.log("Interacting with recruiter:", recruiterId);
+          this.handleRecruiterInteraction(target);
         }
       }
     }
@@ -190,27 +198,32 @@ export default class Level2Scene extends Phaser.Scene {
       160
     );
     this.motivationBar.setHealth(this.playerData.motivation);
+    this.motivationBar.setDepth(2);
 
     this.add
       .image(16, 16, "avatarBackground")
       .setOrigin(0, 0)
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setDepth(2);
 
     this.add
       .image(16, 16, `${this.career}-avatar`)
       .setOrigin(0)
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setDepth(2);
 
     this.bookIcon = this.add
       .image(16 * 6, 16, "book")
       .setOrigin(0)
       .setScrollFactor(0)
-      .setInteractive({ useHandCursor: true });
+      .setInteractive({ useHandCursor: true })
+      .setDepth(2);
 
     this.add
       .image(16 * 7, 16 * 5, "qKey")
       .setOrigin(0)
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setDepth(2);
 
     this.bookManager = BookStore.get();
     // this.bookManager = new BookManager(this); // For development
@@ -254,6 +267,27 @@ export default class Level2Scene extends Phaser.Scene {
         this.physics.add.collider(this.player!, recruiter);
       }
     });
+  }
+
+  private handleRecruiterInteraction(recruiter: Phaser.GameObjects.Sprite) {
+    const recruiterId = recruiter.getData("id");
+    const recruiterData: RecruiterQA = RECRUITER_QUESTIONS[recruiterId];
+    if (recruiterData && this.player) {
+      this.eKeyIndicator.setEnabled(false);
+      this.player?.disableMovement();
+      this.speechManager?.startInterview(recruiterData, {
+        target: recruiter,
+        player: this.player,
+        onAnswerSelected: (selectedAnswer) => {
+          console.log(
+            "Chosen:",
+            selectedAnswer.text,
+            "Score:",
+            selectedAnswer.score
+          );
+        },
+      });
+    }
   }
 
   shutdown() {
