@@ -23,7 +23,7 @@ export default class IntroScene extends Phaser.Scene {
 
       this.cameras.main.fadeOut(1000);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("Level1Scene");
+        this.scene.start("MainMenu");
       });
     };
 
