@@ -5,6 +5,7 @@ export class EKeyIndicator {
   private scene: Phaser.Scene;
   private player: Player;
   private interactableGroup: Phaser.Physics.Arcade.StaticGroup;
+  private isEnabled = true;
 
   private eKeyIndicator?: Phaser.GameObjects.Image;
   private eKeyTween?: Phaser.Tweens.Tween;
@@ -24,7 +25,7 @@ export class EKeyIndicator {
   }
 
   update() {
-    if (!this.player || !this.interactableGroup) return;
+    if (!this.isEnabled || !this.player || !this.interactableGroup) return;
 
     let closestObject: Phaser.GameObjects.Sprite | null = null;
     let minDistance = 40;
@@ -86,6 +87,15 @@ export class EKeyIndicator {
       this.lastObject = undefined;
       this.lastY = undefined;
       this.targetObject = undefined;
+    }
+  }
+
+  setEnabled(enabled: boolean) {
+    this.isEnabled = enabled;
+
+    if (!enabled && this.eKeyIndicator) {
+      this.eKeyIndicator.setVisible(false);
+      this.eKeyTween?.stop();
     }
   }
 
