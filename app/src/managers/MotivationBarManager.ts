@@ -184,6 +184,14 @@ export class MotivationBar {
     return this;
   }
 
+  setDepth(depth: number): MotivationBar {
+    this.bar.setDepth(depth);
+    this.fill.setDepth(depth);
+    this.icon.setDepth(depth);
+    this.text.setDepth(depth);
+    return this;
+  }
+
   destroy(): void {
     this.bar.destroy();
     this.fill.destroy();
