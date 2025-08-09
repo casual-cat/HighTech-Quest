@@ -54,9 +54,10 @@ export class SpeechManager {
 
     if (this.target && "x" in this.target && "y" in this.target) {
       const targetWidth = (this.target as any).width || 0;
+      const targetHeight = (this.target as any).height || 0;
 
-      const x = this.target.x + targetWidth;
-      const y = this.target.y;
+      const x = this.target.x + targetWidth / 2;
+      const y = this.target.y - targetHeight / 2;
 
       this.bubble.setPosition(x, y);
     }
@@ -203,24 +204,20 @@ export class SpeechManager {
       "x" in this.target &&
       "y" in this.target
     ) {
-      let x = this.target.x;
-      let y = this.target.y;
+      const targetWidth = (this.target as any).width || 0;
+      const targetHeight = (this.target as any).height || 0;
 
-      if (
-        this.target instanceof Phaser.GameObjects.GameObject &&
-        "height" in this.target
-      ) {
-        const height = (this.target as any).height || 0;
-        y = y - height / 2 - this.bubble.height;
-      }
+      const x = this.target.x + targetWidth / 2;
+      let y = this.target.y - targetHeight / 2;
 
       this.bubble.setPosition(x, y);
+
       if (this.bubble) {
         if (this.bubble.x + this.bubble.width > this.scene.scale.width) {
           this.bubble.x = this.scene.scale.width - this.bubble.width;
         }
-        if (this.bubble.y < 0) {
-          this.bubble.y = 0;
+        if (this.bubble.y - this.bubble.height < 0) {
+          this.bubble.y = this.bubble.height;
         }
       }
 
