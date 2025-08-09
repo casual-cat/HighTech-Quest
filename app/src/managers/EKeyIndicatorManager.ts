@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { Player } from "../game/entities/Player";
+import { CHARACTER } from "../game/constants/game";
 
 export class EKeyIndicator {
   private scene: Phaser.Scene;
@@ -28,7 +29,7 @@ export class EKeyIndicator {
     if (!this.isEnabled || !this.player || !this.interactableGroup) return;
 
     let closestObject: Phaser.GameObjects.Sprite | null = null;
-    let minDistance = 40;
+    let minDistance: number = CHARACTER.INTERACTION_DISTANCE;
 
     this.interactableGroup.children.each((obj) => {
       const sprite = obj as Phaser.Physics.Arcade.Sprite;

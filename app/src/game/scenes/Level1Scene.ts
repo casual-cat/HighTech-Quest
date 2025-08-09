@@ -292,10 +292,13 @@ export default class Level1Scene extends Phaser.Scene {
       this.interactableObjects = this.physics.add.staticGroup();
 
       objectLayer.objects.forEach((obj) => {
-        const sprite = this.interactableObjects!.create(obj.x!, obj.y!);
+        const centerX = obj.x! + obj.width! / 2;
+        const centerY = obj.y! + obj.height! / 2;
+
+        const sprite = this.interactableObjects!.create(centerX, centerY);
 
         if (sprite) {
-          sprite.setOrigin(0, 1);
+          sprite.setOrigin(0.5);
           sprite.setVisible(false);
           sprite.refreshBody();
           if (obj.properties) {
@@ -306,8 +309,8 @@ export default class Level1Scene extends Phaser.Scene {
 
         if (obj.id === 6) {
           this.computerObjectData = {
-            x: obj.x!,
-            y: obj.y!,
+            x: obj.x! + obj.width! / 2,
+            y: obj.y! + obj.height! / 2,
             id: obj.id,
           };
         }
@@ -351,7 +354,7 @@ export default class Level1Scene extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(this.eKey)) {
       let closestObject: Phaser.Physics.Arcade.Sprite | null = null;
       let closestComputer = false;
-      let minDistance = 64;
+      let minDistance: number = CHARACTER.INTERACTION_DISTANCE;
 
       if (this.interactableObjects) {
         this.interactableObjects.children.each((obj) => {
@@ -363,7 +366,7 @@ export default class Level1Scene extends Phaser.Scene {
             sprite.y
           );
 
-          if (distance < minDistance) {
+          if (distance <= minDistance) {
             minDistance = distance;
             closestObject = sprite;
             closestComputer = false;
@@ -380,7 +383,7 @@ export default class Level1Scene extends Phaser.Scene {
           this.computerObjectData.y
         );
 
-        if (distance < minDistance) {
+        if (distance <= minDistance) {
           minDistance = distance;
           closestObject = null;
           closestComputer = true;
