@@ -251,8 +251,10 @@ export default class Level2Scene extends Phaser.Scene {
       const spriteKey = props.id;
 
       if (spriteKey) {
-        const recruiter = new Recruiter(this, obj.x!, obj.y!, spriteKey);
-        recruiter.setOrigin(0);
+        const centerX = obj.x! + obj.width! / 2;
+        const centerY = obj.y! + obj.height! / 2;
+
+        const recruiter = new Recruiter(this, centerX, centerY, spriteKey);
         recruiter.setData("id", spriteKey);
         recruiter.setData("properties", props);
         this.add.existing(recruiter);
