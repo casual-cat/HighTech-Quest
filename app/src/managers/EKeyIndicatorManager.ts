@@ -47,7 +47,8 @@ export class EKeyIndicator {
 
     if (closestObject) {
       const obj = closestObject as Phaser.Physics.Arcade.Sprite;
-      const topY = obj.y;
+      const centerX = obj.x - obj.width / 2;
+      const topY = obj.y - obj.displayHeight / 2;
 
       if (this.lastObject !== obj || this.lastY !== topY) {
         if (!this.eKeyIndicator) {
@@ -58,7 +59,7 @@ export class EKeyIndicator {
         }
 
         this.eKeyIndicator.setVisible(true);
-        this.eKeyIndicator.setPosition(obj.x, topY);
+        this.eKeyIndicator.setPosition(centerX, topY);
 
         if (this.eKeyTween) this.eKeyTween.stop();
 
