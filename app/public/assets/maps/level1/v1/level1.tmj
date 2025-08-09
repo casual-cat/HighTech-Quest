@@ -156,10 +156,15 @@
          "name":"Objects",
          "objects":[
                 {
-                 "height":64,
+                 "height":32,
                  "id":3,
                  "name":"",
                  "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"cvPieces"
+                        }, 
                         {
                          "name":"pieceIds",
                          "type":"string",
@@ -170,30 +175,35 @@
                  "visible":true,
                  "width":32,
                  "x":960,
-                 "y":64
+                 "y":96
                 }, 
                 {
-                 "height":96,
+                 "height":32,
                  "id":6,
                  "name":"",
                  "properties":[
                         {
-                         "name":"pieceIds",
+                         "name":"id",
                          "type":"string",
-                         "value":"2, 19, 20"
+                         "value":"computer"
                         }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
                  "x":704,
-                 "y":64.0851063829787
+                 "y":96
                 }, 
                 {
                  "height":32,
                  "id":7,
                  "name":"",
                  "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"cvPieces"
+                        }, 
                         {
                          "name":"pieceIds",
                          "type":"string",
@@ -212,6 +222,11 @@
                  "name":"",
                  "properties":[
                         {
+                         "name":"id",
+                         "type":"string",
+                         "value":"cvPieces"
+                        }, 
+                        {
                          "name":"pieceIds",
                          "type":"string",
                          "value":"4, 15, 16"
@@ -219,7 +234,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":64,
+                 "width":32,
                  "x":480,
                  "y":608
                 }, 
@@ -228,6 +243,11 @@
                  "id":9,
                  "name":"",
                  "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"cvPieces"
+                        }, 
                         {
                          "name":"pieceIds",
                          "type":"string",
@@ -246,6 +266,11 @@
                  "name":"",
                  "properties":[
                         {
+                         "name":"id",
+                         "type":"string",
+                         "value":"cvPieces"
+                        }, 
+                        {
                          "name":"pieceIds",
                          "type":"string",
                          "value":"6, 11, 12"
@@ -258,10 +283,15 @@
                  "y":192
                 }, 
                 {
-                 "height":64,
+                 "height":32,
                  "id":11,
                  "name":"",
                  "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"cvPieces"
+                        }, 
                         {
                          "name":"pieceIds",
                          "type":"string",
@@ -270,11 +300,39 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":64,
+                 "width":32,
                  "x":832,
                  "y":256
+                }, 
+                {
+                 "height":32,
+                 "id":13,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"cvPieces"
+                        }, 
+                        {
+                         "name":"pieceIds",
+                         "type":"string",
+                         "value":"2, 19, 20"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1152,
+                 "y":128
                 }],
          "opacity":1,
+         "properties":[
+                {
+                 "name":"interactable",
+                 "type":"bool",
+                 "value":true
+                }],
          "type":"objectgroup",
          "visible":true,
          "x":0,
@@ -315,7 +373,7 @@
          "y":0
         }],
  "nextlayerid":12,
- "nextobjectid":12,
+ "nextobjectid":14,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
