@@ -42,7 +42,7 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
       },
     ],
     rejection:
-      "That's... a journey. Let me know how that crystal thing works out. I've tried everything else.",
+      "That's... a journey. Let me know how that crystal thing works out.",
     interacted: false,
   },
   dor: {
@@ -65,13 +65,13 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
       {
         text: "Living in Bali, automating everything while surfing.",
         recruiterResponse: {
-          text: "Sounds like a dream — let's bring you back to tech though.",
+          text: "Sounds like a dream - let's bring you back to tech though.",
           score: 0,
         },
       },
     ],
     rejection:
-      "Nice ambition… but this is for a junior QA internship. Let's circle back in five years, maybe.",
+      "Unfourtunatly, this is for a junior QA internship. Let's circle back in five years.",
 
     interacted: false,
   },
@@ -131,7 +131,7 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
       },
     ],
     rejection:
-      "Thank you for your transparency. We've logged your emotional journey... and moved on.",
+      "Thank you, we've logged your emotional journey... and moved on.",
     interacted: false,
   },
   noya: {
@@ -160,7 +160,7 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
       },
     ],
     rejection:
-      "Nice ambition… but this is for a junior QA internship. Let's circle back in five years, maybe.",
+      "Unfourtunatly, this is for a junior QA internship. Let's circle back in five years.",
     interacted: false,
   },
 };
