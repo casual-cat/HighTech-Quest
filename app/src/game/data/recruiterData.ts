@@ -3,9 +3,16 @@ export type RecruiterAnswer = {
   score: number;
 };
 
+export type UserAnswer = {
+  text: string;
+  recruiterResponse: RecruiterAnswer;
+};
+
 export type RecruiterQA = {
   question: string;
-  answers: RecruiterAnswer[];
+  answers: UserAnswer[];
+  rejection: string;
+  interacted?: boolean;
 };
 
 export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
@@ -14,31 +21,59 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
     answers: [
       {
         text: "I'll build a solid portfolio and keep improving.",
-        score: 50,
+        recruiterResponse: {
+          text: "That's a solid approach. Consistency is key!",
+          score: 50,
+        },
       },
       {
-        text: "I'll just copy someone else’s GitHub and change the name.",
-        score: 25,
+        text: "I'll just copy someone else's GitHub and change the name.",
+        recruiterResponse: {
+          text: "Hmm, originality matters. Let's rethink that.",
+          score: 25,
+        },
       },
       {
         text: "I'll manifest a job offer using crystals and good vibes.",
-        score: 0,
+        recruiterResponse: {
+          text: "Positive vibes are great, but skills pay the bills!",
+          score: 0,
+        },
       },
     ],
+    rejection:
+      "That's... a journey. Let me know how that crystal thing works out. I've tried everything else.",
+    interacted: false,
   },
   dor: {
     question: "Where do you see yourself in five years?",
     answers: [
       {
         text: "In a mid-level role, still learning and contributing.",
-        score: 50,
+        recruiterResponse: {
+          text: "Nice, growth mindset always impresses.",
+          score: 50,
+        },
       },
-      { text: "Running this company. Better watch out.", score: 25 },
+      {
+        text: "Running this company. Better watch out.",
+        recruiterResponse: {
+          text: "Ambitious, I like it!",
+          score: 25,
+        },
+      },
       {
         text: "Living in Bali, automating everything while surfing.",
-        score: 0,
+        recruiterResponse: {
+          text: "Sounds like a dream — let's bring you back to tech though.",
+          score: 0,
+        },
       },
     ],
+    rejection:
+      "Nice ambition… but this is for a junior QA internship. Let's circle back in five years, maybe.",
+
+    interacted: false,
   },
   adi: {
     question:
@@ -46,47 +81,86 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
     answers: [
       {
         text: "I've experimented with it in side projects and some tutorials.",
-        score: 50,
+        recruiterResponse: {
+          text: "Great! Hands-on experience really counts.",
+          score: 50,
+        },
       },
       {
         text: "I put it on my resume. That counts, right?",
-        score: 25,
+        recruiterResponse: {
+          text: "Honesty is key. Let's aim to build real skills next.",
+          score: 25,
+        },
       },
       {
         text: "No idea, but I can Google it real fast!",
-        score: 0,
+        recruiterResponse: {
+          text: "Quick learning is good, but understanding deeply is better.",
+          score: 0,
+        },
       },
     ],
+    rejection:
+      "We were looking for someone who was born using AI-powered blockchain. Sad.",
+    interacted: false,
   },
   daniel: {
     question: "Please explain your employment gap in 2023.",
     answers: [
       {
         text: "I used the time to study and build side projects.",
-        score: 50,
+        recruiterResponse: {
+          text: "That's a productive way to stay sharp!",
+          score: 50,
+        },
       },
       {
         text: "I was busy refreshing LinkedIn and crying into my keyboard.",
-        score: 25,
+        recruiterResponse: {
+          text: "It happens! But let's focus on moving forward.",
+          score: 25,
+        },
       },
       {
         text: "I got stuck in Elden Ring. It was a tough year.",
-        score: 0,
+        recruiterResponse: {
+          text: "Gaming can be a great break, but don't forget your goals!",
+          score: 0,
+        },
       },
     ],
+    rejection:
+      "Thank you for your transparency. We've logged your emotional journey... and moved on.",
+    interacted: false,
   },
   noya: {
     question: "Where do you see yourself in five years?",
     answers: [
       {
         text: "In a mid-level role, still learning and contributing.",
-        score: 50,
+        recruiterResponse: {
+          text: "Nice, growth mindset always impresses.",
+          score: 50,
+        },
       },
-      { text: "Running this company. Better watch out.", score: 25 },
+      {
+        text: "Running this company. Better watch out.",
+        recruiterResponse: {
+          text: "Ambitious, I like it!",
+          score: 25,
+        },
+      },
       {
         text: "Living in Bali, automating everything while surfing.",
-        score: 0,
+        recruiterResponse: {
+          text: "Sounds like a dream - let's bring you back to tech though.",
+          score: 0,
+        },
       },
     ],
+    rejection:
+      "Nice ambition… but this is for a junior QA internship. Let's circle back in five years, maybe.",
+    interacted: false,
   },
 };
