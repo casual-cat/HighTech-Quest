@@ -135,32 +135,32 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
     interacted: false,
   },
   noya: {
-    question: "Where do you see yourself in five years?",
+    question: "What's the most important thing when designing a new app?",
     answers: [
       {
-        text: "In a mid-level role, still learning and contributing.",
+        text: "Making sure it's easy and intuitive for users.",
         recruiterResponse: {
-          text: "Nice, growth mindset always impresses.",
+          text: "Exactly! User experience is king.",
           score: 50,
         },
       },
       {
-        text: "Running this company. Better watch out.",
+        text: "Adding as many features and buttons as possible so it looks advanced.",
         recruiterResponse: {
-          text: "Ambitious, I like it!",
+          text: "Features are great, but simplicity wins hearts.",
           score: 25,
         },
       },
       {
-        text: "Living in Bali, automating everything while surfing.",
+        text: "Just copy the design from three different apps and mash it together.",
         recruiterResponse: {
-          text: "Sounds like a dream - let's bring you back to tech though.",
+          text: "Bold. But unless our users are puzzle enthusiasts, maybe we skip the mash-up.",
           score: 0,
         },
       },
     ],
     rejection:
-      "Unfourtunatly, this is for a junior QA internship. Let's circle back in five years.",
+      "After careful consideration, I'm afraid we won't be moving forward at this time.",
     interacted: false,
   },
 };
