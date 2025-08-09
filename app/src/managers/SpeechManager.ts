@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { Player } from "../game/entities/Player";
-import { RecruiterAnswer, RecruiterQA } from "../game/data/recruiterData";
+import { RecruiterQA, UserAnswer } from "../game/data/recruiterData";
 
 export class SpeechManager {
   private scene: Phaser.Scene;
@@ -132,7 +132,7 @@ export class SpeechManager {
     qa: RecruiterQA,
     options: {
       target: Phaser.GameObjects.GameObject | { x: number; y: number };
-      onAnswerSelected: (answer: RecruiterAnswer) => void;
+      onAnswerSelected: (answer: UserAnswer) => void;
       player: Player;
     }
   ): void {

@@ -8,7 +8,11 @@ import { EKeyIndicator } from "../../managers/EKeyIndicatorManager";
 import { CHARACTER, WORLD } from "../constants/game";
 import { BookStore } from "../../stores/BookStore";
 import { Recruiter } from "../entities/Recruiter";
-import { RECRUITER_QUESTIONS, RecruiterQA } from "../data/recruiterData";
+import {
+  RECRUITER_QUESTIONS,
+  RecruiterQA,
+  UserAnswer,
+} from "../data/recruiterData";
 
 export default class Level2Scene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap | null = null;
@@ -262,7 +266,7 @@ export default class Level2Scene extends Phaser.Scene {
         this.recruitersGroup.add(recruiter);
         recruiter.body!.immovable = true;
 
-        if (spriteKey === "shelly" || spriteKey === "noya") {
+        if (spriteKey === "shelly" || spriteKey === "noya" || spriteKey === "dor") {
           recruiter.setFlipX(true);
         }
 
@@ -275,18 +279,32 @@ export default class Level2Scene extends Phaser.Scene {
     const recruiterId = recruiter.getData("id");
     const recruiterData: RecruiterQA = RECRUITER_QUESTIONS[recruiterId];
     if (recruiterData && this.player) {
+      if (recruiterData.interacted) {
+        this.speechManager?.showSpeech([recruiterData.rejection], {
+          target: recruiter,
+        });
+        return;
+      }
+
+      recruiterData.interacted = true;
       this.eKeyIndicator.setEnabled(false);
       this.player?.disableMovement();
+
       this.speechManager?.startInterview(recruiterData, {
         target: recruiter,
         player: this.player,
-        onAnswerSelected: (selectedAnswer) => {
+        onAnswerSelected: (selectedAnswer: UserAnswer) => {
           console.log(
-            "Chosen:",
+            "Chosen answer:",
             selectedAnswer.text,
+            "Recruiter response:",
+            selectedAnswer.recruiterResponse.text,
             "Score:",
-            selectedAnswer.score
+            selectedAnswer.recruiterResponse.score
           );
+
+          this.player?.enableMovement();
+          this.eKeyIndicator.setEnabled(true);
         },
       });
     }
