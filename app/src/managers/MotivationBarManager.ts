@@ -148,7 +148,7 @@ export class MotivationBar {
     });
   }
 
-  getCurrentHealth(): number {
+  getCurrentMotivation(): number {
     return this.currentHp;
   }
 

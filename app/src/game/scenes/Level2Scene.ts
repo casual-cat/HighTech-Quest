@@ -35,13 +35,19 @@ export default class Level2Scene extends Phaser.Scene {
     super({ key: "Level2Scene" });
   }
 
-  init() {}
+  init() {
+    this.isGameOver = false;
+
+    Object.values(RECRUITER_QUESTIONS).forEach((recruiter) => {
+      recruiter.interacted = false;
+    });
+  }
 
   preload() {
     const career = CareerStore.getCareer();
     this.playerData = this.registry.get("playerData");
     // const career = CareerStore.getCareer() || "fullstack"; // For development
-    // this.playerData = this.registry.get("playerData") || { motivation: 99 }; // For development
+    // this.playerData = this.registry.get("playerData") || { motivation: 100 }; // For development
 
     if (!career) {
       console.warn("No career selected");
@@ -307,6 +313,7 @@ export default class Level2Scene extends Phaser.Scene {
             this.player?.enableMovement();
             this.eKeyIndicator.setEnabled(true);
           }, 100);
+
           selectedAnswer.recruiterResponse.score === 50
             ? this.motivationBar?.decrease(10)
             : selectedAnswer.recruiterResponse.score === 25
@@ -315,9 +322,24 @@ export default class Level2Scene extends Phaser.Scene {
 
           this.player?.enableMovement();
           this.eKeyIndicator.setEnabled(true);
+
+          if ((this.motivationBar?.getCurrentMotivation() ?? 0) <= 0) {
+            this.handleGameOver();
+          }
         },
       });
     }
+  }
+
+  private handleGameOver() {
+    this.isGameOver = true;
+
+    this.cameras.main.fadeOut(1000, 0, 0, 0);
+
+    this.cameras.main.once("camerafadeoutcomplete", () => {
+      this.scene.stop();
+      this.scene.start("GameOverScene", { returnScene: this.scene.key });
+    });
   }
 
   shutdown() {

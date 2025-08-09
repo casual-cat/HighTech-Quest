@@ -2,8 +2,14 @@ import Phaser from "phaser";
 import { GAME_OVER_CONFIG } from "../constants/gameOver";
 
 export class GameOverScene extends Phaser.Scene {
+  private returnSceneKey?: string;
+
   constructor() {
     super({ key: "GameOverScene" });
+  }
+
+  init(data: { returnScene?: string }) {
+    this.returnSceneKey = data.returnScene;
   }
 
   static handleGameOver(scene: Phaser.Scene): void {
@@ -55,7 +61,9 @@ export class GameOverScene extends Phaser.Scene {
       );
 
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("Level1Scene");
+        if (this.returnSceneKey) {
+          this.scene.start(this.returnSceneKey);
+        }
       });
     });
   }
