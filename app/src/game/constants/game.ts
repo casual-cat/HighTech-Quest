@@ -14,6 +14,7 @@ export const CHARACTER = {
   HEALTH: {
     MAX: 100,
   },
+  INTERACTION_DISTANCE: 48,
 } as const;
 
 // UI Configuration
