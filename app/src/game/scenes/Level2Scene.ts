@@ -157,11 +157,11 @@ export default class Level2Scene extends Phaser.Scene {
       this.collidables.setCollisionBetween(1, 1000);
     }
 
-    const darkness = this.add.graphics();
-    darkness.fillStyle(0x000000, 1);
-    darkness.fillRect(0, 0, WORLD.WIDTH, WORLD.HEIGHT);
-    darkness.setScrollFactor(0);
-    darkness.setDepth(1);
+    const darkness = this.add.graphics(); // highlight on development
+    darkness.fillStyle(0x000000, 1); // highlight on development
+    darkness.fillRect(0, 0, WORLD.WIDTH, WORLD.HEIGHT); // highlight on development
+    darkness.setScrollFactor(0); // highlight on development
+    darkness.setDepth(1); // highlight on development
 
     this.spotlight = this.make.graphics({}, false);
     this.spotlight.fillStyle(0xffffff);
@@ -170,7 +170,7 @@ export default class Level2Scene extends Phaser.Scene {
     const mask = this.spotlight.createGeometryMask();
     mask.invertAlpha = true;
 
-    darkness.setMask(mask);
+    darkness.setMask(mask); // highlight on development
   }
 
   private createPlayer() {
