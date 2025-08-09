@@ -41,7 +41,7 @@ export default class Level2Scene extends Phaser.Scene {
     const career = CareerStore.getCareer();
     this.playerData = this.registry.get("playerData");
     // const career = CareerStore.getCareer() || "fullstack"; // For development
-    // this.playerData = this.registry.get("playerData") || { motivation: 50 }; // For development
+    // this.playerData = this.registry.get("playerData") || { motivation: 99 }; // For development
 
     if (!career) {
       console.warn("No career selected");
@@ -266,7 +266,11 @@ export default class Level2Scene extends Phaser.Scene {
         this.recruitersGroup.add(recruiter);
         recruiter.body!.immovable = true;
 
-        if (spriteKey === "shelly" || spriteKey === "noya" || spriteKey === "dor") {
+        if (
+          spriteKey === "shelly" ||
+          spriteKey === "noya" ||
+          spriteKey === "dor"
+        ) {
           recruiter.setFlipX(true);
         }
 
@@ -294,14 +298,20 @@ export default class Level2Scene extends Phaser.Scene {
         target: recruiter,
         player: this.player,
         onAnswerSelected: (selectedAnswer: UserAnswer) => {
-          console.log(
-            "Chosen answer:",
-            selectedAnswer.text,
-            "Recruiter response:",
-            selectedAnswer.recruiterResponse.text,
-            "Score:",
-            selectedAnswer.recruiterResponse.score
-          );
+          setTimeout(() => {
+            this.speechManager?.showSpeech(
+              [selectedAnswer.recruiterResponse.text],
+              { target: recruiter }
+            );
+
+            this.player?.enableMovement();
+            this.eKeyIndicator.setEnabled(true);
+          }, 100);
+          selectedAnswer.recruiterResponse.score === 50
+            ? this.motivationBar?.decrease(10)
+            : selectedAnswer.recruiterResponse.score === 25
+            ? this.motivationBar?.decrease(30)
+            : this.motivationBar?.decrease(100);
 
           this.player?.enableMovement();
           this.eKeyIndicator.setEnabled(true);
