@@ -151,8 +151,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":864,
-                 "y":96
+                 "x":608,
+                 "y":128
                 }, 
                 {
                  "height":64,
@@ -186,7 +186,7 @@
                  "visible":true,
                  "width":32,
                  "x":1024,
-                 "y":320
+                 "y":224
                 }],
          "opacity":1,
          "properties":[
