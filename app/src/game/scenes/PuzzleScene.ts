@@ -5,6 +5,7 @@ import { ANIMATION_CONFIG } from "../constants/puzzle";
 import { MotivationBar } from "../../managers/MotivationBarManager";
 import { THEME } from "../constants/game";
 import { BookStore } from "../../stores/BookStore";
+import { ObjectiveManager } from "../../managers/ObjectiveManager";
 
 interface Level1Scene extends Phaser.Scene {
   bookManager?: BookManager;
@@ -172,6 +173,9 @@ export class PuzzleScene extends Phaser.Scene {
     if (pieceData.isCorrect) {
       piece.disableInteractive();
       pieceData.collected = true;
+      if (pieceData.id) {
+        ObjectiveManager.completeTask(1, pieceData.id.toString());
+      }
       this.handleCorrectPiece(piece, pieceData);
     } else {
       this.handleIncorrectPiece(piece);
