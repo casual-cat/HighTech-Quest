@@ -32,7 +32,7 @@ export const LEVELS_DATA: Record<number, LevelData> = {
         hideSubtasks: true,
         complete: false,
       },
-      { task: "Submit CV", complete: false },
+      { id: "submitCV", task: "Submit your CV using the computer", complete: false },
     ],
     stars: 0,
   },
