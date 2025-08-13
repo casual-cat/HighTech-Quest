@@ -122,18 +122,32 @@ export class BookScene extends Phaser.Scene {
     const baseY = height * 0.28;
 
     const levelData = LEVELS_DATA[GameState.currentLevel];
-    const mainTask = levelData.objectives[0];
 
-    const objective = this.add
-      .text(width * 0.6, baseY - 50, mainTask.task, {
+    const nextObjective = levelData.objectives.find((obj) => !obj.complete);
+
+    if (!nextObjective) {
+      this.tabContentGroup.add(
+        this.add
+          .text(width * 0.6, baseY, "All objectives are complete", {
+            ...BOOK_SCENE_CONFIG.TEXT.STYLE,
+            color: "#000",
+            fontSize: "18px",
+          })
+          .setOrigin(0, 0.5)
+      );
+      return;
+    }
+
+    const mainObjectiveText = this.add
+      .text(width * 0.6, baseY - 50, nextObjective.task, {
         ...BOOK_SCENE_CONFIG.TEXT.STYLE,
         color: "#000",
         fontSize: "18px",
       })
       .setOrigin(0, 0.5);
-    this.tabContentGroup.add(objective);
+    this.tabContentGroup.add(mainObjectiveText);
 
-    mainTask.subtasks?.forEach((subTask, i) => {
+    nextObjective.subtasks?.forEach((subTask, i) => {
       const y = baseY + i * BOOK_SCENE_CONFIG.TEXT.SPACING;
 
       const checkboxTexture = subTask.complete
@@ -144,7 +158,7 @@ export class BookScene extends Phaser.Scene {
         .setOrigin(0, 0.5);
       this.tabContentGroup.add(checkbox);
 
-      const displayText = mainTask.hideSubtasks
+      const displayText = nextObjective.hideSubtasks
         ? subTask.complete
           ? subTask.task
           : "?"
