@@ -1,5 +1,7 @@
 import Phaser from "phaser";
 import { GameOverScene } from "../scenes/GameOverScene";
+import { GameState } from "../../stores/GameState";
+import { LEVELS_DATA } from "../data/levelData";
 import { PuzzlePiece } from "../data/puzzlePieces";
 import { BOOK_LEVELS_LAYOUT, BOOK_SCENE_CONFIG } from "../constants/book";
 
@@ -119,38 +121,42 @@ export class BookScene extends Phaser.Scene {
     const { width, height } = this.scale;
     const baseY = height * 0.28;
 
-    const cvPieces = this.puzzlePieces.filter((piece) => piece.isCorrect);
+    const levelData = LEVELS_DATA[GameState.currentLevel];
+    const mainTask = levelData.objectives[0];
 
-    const titleText = this.allPiecesCollected
-      ? "Submit your CV using the computer"
-      : "Find all CV pieces in the room";
-
-    const title = this.add
-      .text(width * 0.6, baseY - 50, titleText, {
+    const objective = this.add
+      .text(width * 0.6, baseY - 50, mainTask.task, {
         ...BOOK_SCENE_CONFIG.TEXT.STYLE,
         color: "#000",
         fontSize: "18px",
       })
       .setOrigin(0, 0.5);
-    this.tabContentGroup.add(title);
+    this.tabContentGroup.add(objective);
 
-    cvPieces.forEach((piece, idx) => {
-      const y = baseY + idx * BOOK_SCENE_CONFIG.TEXT.SPACING;
-      const displayText = piece.collected ? piece.label : "?";
+    mainTask.subtasks?.forEach((subTask, i) => {
+      const y = baseY + i * BOOK_SCENE_CONFIG.TEXT.SPACING;
 
-      const checkboxTexture = piece.collected ? "checkbox-checked" : "checkbox";
+      const checkboxTexture = subTask.complete
+        ? "checkbox-checked"
+        : "checkbox";
       const checkbox = this.add
         .image(width * 0.55, y, checkboxTexture)
         .setOrigin(0, 0.5);
       this.tabContentGroup.add(checkbox);
 
-      const text = this.add
+      const displayText = mainTask.hideSubtasks
+        ? subTask.complete
+          ? subTask.task
+          : "?"
+        : subTask.task;
+
+      const subTaskText = this.add
         .text(width * 0.6, y, displayText, {
           ...BOOK_SCENE_CONFIG.TEXT.STYLE,
           color: BOOK_SCENE_CONFIG.TEXT.COLORS.VIEWED,
         })
         .setOrigin(0, 0.5);
-      this.tabContentGroup.add(text);
+      this.tabContentGroup.add(subTaskText);
     });
   }
 
