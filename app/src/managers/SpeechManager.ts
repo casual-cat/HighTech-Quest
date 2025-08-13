@@ -91,41 +91,49 @@ export class SpeechManager {
 
     this.showCurrentLine();
 
-    this.inputHandler = () => {
+    const scheduleNext = () => {
       if (this.currentLine < this.lines.length - 1) {
         this.currentLine++;
         this.showCurrentLine();
-
         if (duration > 0) {
           if (this.autoHideTimer) {
-            this.autoHideTimer.destroy();
+            this.autoHideTimer.remove(false);
           }
-
-          this.autoHideTimer = this.scene.time.delayedCall(duration, () => {
-            this.hideSpeech();
-          });
+          this.autoHideTimer = this.scene.time.delayedCall(
+            duration,
+            scheduleNext
+          );
         }
       } else {
         this.hideSpeech();
       }
     };
+
+    if (duration > 0) {
+      this.autoHideTimer = this.scene.time.delayedCall(duration, scheduleNext);
+    }
+
+    this.inputHandler = () => {
+      if (this.currentLine < this.lines.length - 1) {
+        this.currentLine++;
+        this.showCurrentLine();
+        if (duration > 0) {
+          if (this.autoHideTimer) {
+            this.autoHideTimer.remove(false);
+          }
+          this.autoHideTimer = this.scene.time.delayedCall(
+            duration,
+            scheduleNext
+          );
+        }
+      } else {
+        this.hideSpeech();
+      }
+    };
+
     this.scene.input.on("pointerdown", this.inputHandler);
     this.scene.input.keyboard?.on("keydown-SPACE", this.inputHandler);
     this.scene.input.keyboard?.on("keydown-ENTER", this.inputHandler);
-
-    if (duration > 0) {
-      this.autoHideTimer = this.scene.time.delayedCall(duration, () => {
-        if (this.currentLine < this.lines.length - 1) {
-          this.currentLine++;
-          this.showCurrentLine();
-          this.autoHideTimer = this.scene.time.delayedCall(duration, () => {
-            this.hideSpeech();
-          });
-        } else {
-          this.hideSpeech();
-        }
-      });
-    }
   }
 
   startInterview(
