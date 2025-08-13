@@ -32,7 +32,11 @@ export const LEVELS_DATA: Record<number, LevelData> = {
         hideSubtasks: true,
         complete: false,
       },
-      { id: "submitCV", task: "Submit your CV using the computer", complete: false },
+      {
+        id: "submitCV",
+        task: "Submit your CV using the computer",
+        complete: false,
+      },
     ],
     stars: 0,
   },
@@ -49,6 +53,24 @@ export const LEVELS_DATA: Record<number, LevelData> = {
           { id: "daniel", task: "Speak with Daniel", complete: false },
           { id: "noya", task: "Speak with Noya", complete: false },
           { id: "dor", task: "Speak with Dor", complete: false },
+        ],
+        complete: false,
+      },
+    ],
+    stars: 0,
+  },
+  3: {
+    titleKey: "level3-title",
+    imageKey: "level3-image",
+    objectives: [
+      {
+        task: "Level 3 Task",
+        subtasks: [
+          { task: "Subtask 1", complete: false },
+          { task: "Subtask 2", complete: false },
+          { task: "Subtask 3", complete: false },
+          { task: "Subtask 4", complete: false },
+          { task: "Subtask 5", complete: false },
         ],
         complete: false,
       },
