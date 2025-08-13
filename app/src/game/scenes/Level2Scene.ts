@@ -8,11 +8,13 @@ import { EKeyIndicator } from "../../managers/EKeyIndicatorManager";
 import { CHARACTER, WORLD } from "../constants/game";
 import { BookStore } from "../../stores/BookStore";
 import { Recruiter } from "../entities/Recruiter";
+import { GameState } from "../../stores/GameState";
 import {
   RECRUITER_QUESTIONS,
   RecruiterQA,
   UserAnswer,
 } from "../data/recruiterData";
+import { ObjectiveManager } from "../../managers/ObjectiveManager";
 
 export default class Level2Scene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap | null = null;
@@ -37,10 +39,12 @@ export default class Level2Scene extends Phaser.Scene {
 
   init() {
     this.isGameOver = false;
+    GameState.currentLevel = 2;
 
     Object.values(RECRUITER_QUESTIONS).forEach((recruiter) => {
       recruiter.interacted = false;
     });
+    ObjectiveManager.resetTasks(2);
   }
 
   preload() {
@@ -297,6 +301,7 @@ export default class Level2Scene extends Phaser.Scene {
       }
 
       recruiterData.interacted = true;
+      ObjectiveManager.completeTask(2, recruiterData.taskId);
       this.eKeyIndicator.setEnabled(false);
       this.player?.disableMovement();
 
