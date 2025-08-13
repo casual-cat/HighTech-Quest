@@ -9,6 +9,7 @@ export type UserAnswer = {
 };
 
 export type RecruiterQA = {
+  taskId: string;
   question: string;
   answers: UserAnswer[];
   rejection: string;
@@ -17,6 +18,7 @@ export type RecruiterQA = {
 
 export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
   shelly: {
+    taskId: "shelly",
     question: "How do you plan to stand out in the competitive tech world?",
     answers: [
       {
@@ -46,6 +48,7 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
     interacted: false,
   },
   dor: {
+    taskId: "dor",
     question: "Where do you see yourself in five years?",
     answers: [
       {
@@ -76,6 +79,7 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
     interacted: false,
   },
   adi: {
+    taskId: "adi",
     question:
       "How many years have you worked with AI-powered blockchain serverless microservices?",
     answers: [
@@ -106,6 +110,7 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
     interacted: false,
   },
   daniel: {
+    taskId: "daniel",
     question: "Please explain your employment gap in 2023.",
     answers: [
       {
@@ -135,6 +140,7 @@ export const RECRUITER_QUESTIONS: Record<string, RecruiterQA> = {
     interacted: false,
   },
   noya: {
+    taskId: "noya",
     question: "What's the most important thing when designing a new app?",
     answers: [
       {
