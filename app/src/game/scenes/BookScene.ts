@@ -17,23 +17,20 @@ export class BookScene extends Phaser.Scene {
   private bookImage!: Phaser.GameObjects.Image;
   private showUnlockAnimation = false;
   private allPiecesCollected = false;
-  private level1Completed = false;
-  private level2PlayBtn?: Phaser.GameObjects.Image;
+  private nextLvlPlayBtn?: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: "BookScene" });
   }
 
   init(data: {
-    puzzlePieces: PuzzlePiece[];
+    puzzlePieces?: PuzzlePiece[];
     initialTab?: "Tasks" | "Levels" | "Elements";
     showUnlockAnimation?: boolean;
-    level1Completed?: boolean;
   }): void {
-    this.puzzlePieces = data.puzzlePieces;
+    this.puzzlePieces = data.puzzlePieces || [];
     this.currentTab = data.initialTab || "Tasks";
     this.showUnlockAnimation = !!data.showUnlockAnimation;
-    this.level1Completed = !!data.level1Completed;
     this.allPiecesCollected = this.puzzlePieces
       .filter((p) => p.isCorrect)
       .every((p) => p.collected);
@@ -189,57 +186,73 @@ export class BookScene extends Phaser.Scene {
       lockYOffset,
     } = BOOK_LEVELS_LAYOUT;
 
-    const level1Title = this.add
-      .image(leftPageX + titleXOffset, pageY + titleYOffset, "level1-title")
-      .setOrigin(0);
-    this.tabContentGroup.add(level1Title);
+    const currentLevel = GameState.currentLevel;
+    const nextLevel = currentLevel + 1;
 
-    const level1Image = this.add
-      .image(leftPageX + 50, pageY + 90, "level1-image")
-      .setOrigin(0);
-    this.tabContentGroup.add(level1Image);
-
-    for (let i = 0; i < 5; i++) {
-      const star = this.add
-        .image(leftStarsX + i * starSpacing, starsY, "star-empty")
+    const currentLevelData = LEVELS_DATA[currentLevel];
+    if (currentLevelData) {
+      const currentTitle = this.add
+        .image(
+          leftPageX + titleXOffset,
+          pageY + titleYOffset,
+          currentLevelData.titleKey
+        )
         .setOrigin(0);
-      this.tabContentGroup.add(star);
+      this.tabContentGroup.add(currentTitle);
+
+      const currentImage = this.add
+        .image(leftPageX + 50, pageY + 90, currentLevelData.imageKey)
+        .setOrigin(0);
+      this.tabContentGroup.add(currentImage);
+
+      for (let i = 0; i < 5; i++) {
+        const star = this.add
+          .image(leftStarsX + i * starSpacing, starsY, "star-empty")
+          .setOrigin(0);
+        this.tabContentGroup.add(star);
+      }
     }
 
-    const level2Title = this.add
-      .image(rightPageX + titleXOffset, pageY + titleYOffset, "level2-title")
-      .setOrigin(0);
-    this.tabContentGroup.add(level2Title);
-
-    const level2Image = this.add
-      .image(rightPageX + 60, pageY + 90, "level2-image")
-      .setOrigin(0);
-    this.tabContentGroup.add(level2Image);
-
-    for (let i = 0; i < 5; i++) {
-      const star = this.add
-        .image(rightStarsX + i * starSpacing, starsY, "star-empty")
+    const nextLevelData = LEVELS_DATA[nextLevel];
+    if (nextLevelData) {
+      const nextTitle = this.add
+        .image(
+          rightPageX + titleXOffset,
+          pageY + titleYOffset,
+          nextLevelData.titleKey
+        )
         .setOrigin(0);
-      this.tabContentGroup.add(star);
+      this.tabContentGroup.add(nextTitle);
+
+      const nextImage = this.add
+        .image(rightPageX + 60, pageY + 90, nextLevelData.imageKey)
+        .setOrigin(0);
+      this.tabContentGroup.add(nextImage);
+
+      for (let i = 0; i < 5; i++) {
+        const star = this.add
+          .image(rightStarsX + i * starSpacing, starsY, "star-empty")
+          .setOrigin(0);
+        this.tabContentGroup.add(star);
+      }
     }
 
-    this.level2PlayBtn = this.add
+    this.nextLvlPlayBtn = this.add
       .image(rightPageX + 490, pageY + 570, "playBtn")
       .setOrigin();
+    this.tabContentGroup.add(this.nextLvlPlayBtn);
 
-    this.tabContentGroup.add(this.level2PlayBtn);
+    const unlocked = GameState.completedLevels?.includes(currentLevel);
 
-    if (this.level1Completed && !this.showUnlockAnimation) {
-      this.level2PlayBtn
+    if (unlocked && !this.showUnlockAnimation) {
+      this.nextLvlPlayBtn
         .setInteractive({ cursor: "pointer" })
         .on("pointerdown", () => {
-          this.scene.stop("Level1Scene");
-          this.scene.start("Level2Scene");
+          this.scene.stop(`Level${currentLevel}Scene`);
+          this.scene.start(`Level${nextLevel}Scene`);
           this.scene.stop();
         });
-    }
-
-    if (!this.level1Completed || this.showUnlockAnimation) {
+    } else {
       const darkenOverlay = this.add.image(rightPageX, pageY, "darken-right");
       darkenOverlay.setOrigin(0);
       darkenOverlay.setAlpha(0.5);
@@ -260,7 +273,6 @@ export class BookScene extends Phaser.Scene {
       this.tabContentGroup.add(lock);
 
       if (this.showUnlockAnimation) {
-        const bookManager = (this.scene.get("Level1Scene") as any)?.bookManager;
         lock.anims.play("lock-unlock");
         lock.on("animationcomplete", () => {
           lock.destroy();
@@ -272,15 +284,13 @@ export class BookScene extends Phaser.Scene {
             onComplete: () => {
               darkenOverlay.destroy();
               this.showUnlockAnimation = false;
-              if (bookManager) {
-                bookManager.showUnlockAnimation = false;
-              }
-              if (this.level2PlayBtn) {
-                this.level2PlayBtn
-                  .setInteractive({ cursor: "pointer" })
+
+              if (this.nextLvlPlayBtn) {
+                this.nextLvlPlayBtn
+                  .setInteractive({ cursor: "pointer " })
                   .on("pointerdown", () => {
-                    this.scene.stop("Level1Scene");
-                    this.scene.start("Level2Scene");
+                    this.scene.stop(`Level${currentLevel}Scene`);
+                    this.scene.start(`Level${nextLevel}Scene`);
                     this.scene.stop();
                   });
               }
