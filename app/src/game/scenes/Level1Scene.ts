@@ -9,6 +9,7 @@ import { PUZZLE_DATA } from "../data/puzzlePieces";
 import { EKeyIndicator } from "../../managers/EKeyIndicatorManager";
 import { moveCharacterToTile } from "../utils/pathfinding";
 import { BookStore } from "../../stores/BookStore";
+import { ObjectiveManager } from "../../managers/ObjectiveManager";
 
 export default class Level1Scene extends Phaser.Scene {
   private player?: Player;
@@ -393,6 +394,7 @@ export default class Level1Scene extends Phaser.Scene {
       if (closestComputer) {
         if (this.player && this.speechManager) {
           this.computerInteractable = false;
+          ObjectiveManager.completeTask(1, "submitCV");
           this.speechManager.showSpeech(
             ["I have submitted my CV! Now it's time to wait..."],
             {
