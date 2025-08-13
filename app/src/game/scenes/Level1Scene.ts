@@ -10,6 +10,7 @@ import { EKeyIndicator } from "../../managers/EKeyIndicatorManager";
 import { moveCharacterToTile } from "../utils/pathfinding";
 import { BookStore } from "../../stores/BookStore";
 import { ObjectiveManager } from "../../managers/ObjectiveManager";
+import { GameState } from "../../stores/GameState";
 
 export default class Level1Scene extends Phaser.Scene {
   private player?: Player;
@@ -163,6 +164,7 @@ export default class Level1Scene extends Phaser.Scene {
                       this.levelUpShown = true;
                       this.openBookOnResume = true;
                       this.bookManager?.setLevel1Completed();
+                      GameState.markLevelCompleted(GameState.currentLevel);
 
                       const playerData = {
                         motivation: this.motivationBar?.getCurrentMotivation(),
