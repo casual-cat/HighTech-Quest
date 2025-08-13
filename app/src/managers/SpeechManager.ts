@@ -12,6 +12,7 @@ export class SpeechManager {
   private target?: Phaser.GameObjects.GameObject | { x: number; y: number };
   private inputHandler?: () => void;
   private autoHideTimer?: Phaser.Time.TimerEvent;
+  private isActive: boolean = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -25,7 +26,8 @@ export class SpeechManager {
       duration?: number;
     }
   ): void {
-    this.hideSpeech();
+    if (this.isActive) return;
+    this.isActive = true;
     this.lines = lines;
     this.currentLine = 0;
     this.onComplete = options?.onComplete;
@@ -263,6 +265,8 @@ export class SpeechManager {
     this.currentLine = 0;
     this.onComplete = undefined;
     this.target = undefined;
+
+    this.isActive = false;
 
     if (callback) {
       callback();
