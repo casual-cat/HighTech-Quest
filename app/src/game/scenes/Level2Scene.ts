@@ -133,6 +133,7 @@ export default class Level2Scene extends Phaser.Scene {
 
     if (this.player) {
       this.player.update();
+      this.speechManager?.update();
       this.eKeyIndicator?.update();
 
       const cam = this.cameras.main;
@@ -296,12 +297,14 @@ export default class Level2Scene extends Phaser.Scene {
       if (recruiterData.interacted) {
         this.speechManager?.showSpeech([recruiterData.rejection], {
           target: recruiter,
+          duration: 3000,
         });
         return;
       }
 
       recruiterData.interacted = true;
       ObjectiveManager.completeTask(2, recruiterData.taskId);
+
       this.eKeyIndicator.setEnabled(false);
       this.player?.disableMovement();
 
@@ -309,14 +312,42 @@ export default class Level2Scene extends Phaser.Scene {
         target: recruiter,
         player: this.player,
         onAnswerSelected: (selectedAnswer: UserAnswer) => {
+          const allRecruitersDone = Object.values(RECRUITER_QUESTIONS).every(
+            (r) => r.interacted
+          );
+
           setTimeout(() => {
             this.speechManager?.showSpeech(
               [selectedAnswer.recruiterResponse.text],
-              { target: recruiter }
-            );
+              {
+                target: recruiter,
+                duration: 3000,
+                onComplete: () => {
+                  if (allRecruitersDone) {
+                    GameState.markLevelCompleted(GameState.currentLevel);
 
-            this.player?.enableMovement();
-            this.eKeyIndicator.setEnabled(true);
+                    this.speechManager?.showSpeech(
+                      [
+                        "It seems like I didn't impress any of the recruiters...",
+                        "I'm not ready to pass interviews yet",
+                        "I have to go back and work on my skills",
+                      ],
+                      {
+                        target: this.player,
+                        duration: 3000,
+                        onComplete: () => {
+                          this.scene.launch("BookScene", {
+                            puzzlePieces: [],
+                            initialTab: "Levels",
+                            showUnlockAnimation: true,
+                          });
+                        },
+                      }
+                    );
+                  }
+                },
+              }
+            );
           }, 100);
 
           selectedAnswer.recruiterResponse.score === 50
