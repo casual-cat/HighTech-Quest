@@ -390,7 +390,16 @@ export class BookScene extends Phaser.Scene {
 
     const settingsIconX = 112;
     const settingsIconY = 40;
-    this.add.image(settingsIconX, settingsIconY, "settings").setScale(0.6);
+    const settingBtn = this.add
+      .image(settingsIconX, settingsIconY, "settings")
+      .setScale(0.6)
+      .setInteractive({ useHandCursor: true });
+
+    settingBtn.on("pointerdown", () => {
+      this.scene.launch("ControlsScene");
+      this.scene.bringToTop("ControlsScene");
+      this.scene.pause();
+    });
 
     const closeBtnX = 1176;
     const closeBtnY = 40;
