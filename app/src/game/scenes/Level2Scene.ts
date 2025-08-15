@@ -242,10 +242,15 @@ export default class Level2Scene extends Phaser.Scene {
 
     this.bookManager = BookStore.get();
     // this.bookManager = new BookManager(this); // For development
+    // BookStore.set(this.bookManager); // For development
 
     if (!this.bookManager) {
       console.warn("BookManager is not available");
     }
+
+    this.bookIcon.on("pointerdown", () => {
+      this.bookManager?.open();
+    });
 
     this.bookManager?.setCurrentScene(this);
   }
@@ -297,7 +302,7 @@ export default class Level2Scene extends Phaser.Scene {
       if (recruiterData.interacted) {
         this.speechManager?.showSpeech([recruiterData.rejection], {
           target: recruiter,
-          duration: 3000,
+          duration: 4500,
         });
         return;
       }
@@ -321,7 +326,7 @@ export default class Level2Scene extends Phaser.Scene {
               [selectedAnswer.recruiterResponse.text],
               {
                 target: recruiter,
-                duration: 3000,
+                duration: 4000,
                 onComplete: () => {
                   if (allRecruitersDone) {
                     GameState.markLevelCompleted(GameState.currentLevel);
