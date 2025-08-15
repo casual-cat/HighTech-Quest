@@ -304,47 +304,49 @@ export class BookScene extends Phaser.Scene {
   private displayElements(): void {
     const { width, height } = this.scale;
 
-    const title = this.add.image(width * 0.27, height * 0.13, "myCV");
-    const cvImageKey = this.allPiecesCollected ? "cv" : "cv-locked";
-    const cv = this.add.image(width * 0.27, height * 0.52, cvImageKey);
-    this.tabContentGroup.add(title);
-    this.tabContentGroup.add(cv);
+    if (GameState.currentLevel === 1) {
+      const title = this.add.image(width * 0.27, height * 0.13, "myCV");
+      const cvImageKey = this.allPiecesCollected ? "cv" : "cv-locked";
+      const cv = this.add.image(width * 0.27, height * 0.52, cvImageKey);
+      this.tabContentGroup.add(title);
+      this.tabContentGroup.add(cv);
 
-    const correctPieces = this.puzzlePieces.filter((p) => p.isCorrect);
-    const cols = 2;
-    const spacingX = 200;
-    const spacingY = 140;
-    const gridStartX = width * 0.72 - spacingX / 2;
-    const gridStartY = height * 0.18;
+      const correctPieces = this.puzzlePieces.filter((p) => p.isCorrect);
+      const cols = 2;
+      const spacingX = 200;
+      const spacingY = 140;
+      const gridStartX = width * 0.72 - spacingX / 2;
+      const gridStartY = height * 0.18;
 
-    correctPieces.forEach((piece, idx) => {
-      const col = idx % cols;
-      const row = Math.floor(idx / cols);
-      const x = gridStartX + col * spacingX;
-      const y = gridStartY + row * spacingY;
-      const imageKey = piece.collected ? piece.image : "lock";
-      const img = this.add.image(x, y, imageKey).setOrigin(0.5).setScale(0.7);
-      this.tabContentGroup.add(img);
-      if (piece.collected) {
-        const label = this.add
-          .text(x, y + 35, piece.label, {
-            fontSize: "14px",
-            color: "#333",
-            fontStyle: "bold",
-          })
-          .setOrigin(0.5, 0);
-        const description = this.add
-          .text(x, y + 50, piece.description!, {
-            fontSize: "13px",
-            color: "#333",
-            wordWrap: { width: 170 },
-            align: "center",
-          })
-          .setOrigin(0.5, 0);
-        this.tabContentGroup.add(label);
-        this.tabContentGroup.add(description);
-      }
-    });
+      correctPieces.forEach((piece, idx) => {
+        const col = idx % cols;
+        const row = Math.floor(idx / cols);
+        const x = gridStartX + col * spacingX;
+        const y = gridStartY + row * spacingY;
+        const imageKey = piece.collected ? piece.image : "lock";
+        const img = this.add.image(x, y, imageKey).setOrigin(0.5).setScale(0.7);
+        this.tabContentGroup.add(img);
+        if (piece.collected) {
+          const label = this.add
+            .text(x, y + 35, piece.label, {
+              fontSize: "14px",
+              color: "#333",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5, 0);
+          const description = this.add
+            .text(x, y + 50, piece.description!, {
+              fontSize: "13px",
+              color: "#333",
+              wordWrap: { width: 170 },
+              align: "center",
+            })
+            .setOrigin(0.5, 0);
+          this.tabContentGroup.add(label);
+          this.tabContentGroup.add(description);
+        }
+      });
+    }
   }
 
   private setupOverlay(): void {
