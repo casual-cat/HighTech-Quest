@@ -4,6 +4,8 @@ import { GameState } from "../../stores/GameState";
 import { LEVELS_DATA } from "../data/levelData";
 import { PuzzlePiece } from "../data/puzzlePieces";
 import { BOOK_LEVELS_LAYOUT, BOOK_SCENE_CONFIG } from "../constants/book";
+import { BookManager } from "../../managers/BookManager";
+import { BookStore } from "../../stores/BookStore";
 
 interface LevelScene extends Phaser.Scene {
   player?: { getHealth(): number; getMaxHealth(): number };
@@ -11,6 +13,7 @@ interface LevelScene extends Phaser.Scene {
 }
 
 export class BookScene extends Phaser.Scene {
+  private bookManager?: BookManager;
   private puzzlePieces: PuzzlePiece[] = [];
   private currentTab: "Tasks" | "Levels" | "Elements" = "Tasks";
   private tabContentGroup!: Phaser.GameObjects.Group;
@@ -61,9 +64,13 @@ export class BookScene extends Phaser.Scene {
     this.load.image("checkbox", "/assets/ui/book/checkbox.png");
     this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
     this.load.image("playBtn", "/assets/ui/book/play.png");
+    this.load.image("close", "/assets/ui/book/button-x.png");
+    this.load.image("settings", "/assets/ui/book/settings.png");
   }
 
   create(): void {
+    this.bookManager = BookStore.get();
+
     this.setupOverlay();
     this.createBook();
     this.createTabs();
@@ -380,9 +387,24 @@ export class BookScene extends Phaser.Scene {
     this.bookImage.on("pointerdown", () => false);
 
     const bookBounds = this.bookImage.getBounds();
+
+    const settingsIconX = 112;
+    const settingsIconY = 40;
+    this.add.image(settingsIconX, settingsIconY, "settings").setScale(0.6);
+
+    const closeBtnX = 1176;
+    const closeBtnY = 40;
+    const closeBtn = this.add
+      .image(closeBtnX, closeBtnY, "close")
+      .setScale(0.7)
+      .setInteractive({ useHandCursor: true });
+
+    closeBtn.on("pointerdown", () => {
+      this.bookManager?.close();
+    });
+
     const qKeyX = bookBounds.centerX - 340;
     const qKeyY = bookBounds.bottom - 70;
-
     this.add.image(qKeyX - 45, qKeyY, "qKey").setOrigin(0.5);
 
     this.add
