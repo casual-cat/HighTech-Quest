@@ -395,13 +395,13 @@ export default class Level1Scene extends Phaser.Scene {
 
       if (closestComputer) {
         if (this.player && this.speechManager) {
-          this.computerInteractable = false;
-          ObjectiveManager.completeTask(1, "submitCV");
           this.speechManager.showSpeech(
             ["I have submitted my CV! Now it's time to wait..."],
             {
               target: this.player,
               onComplete: () => {
+                this.computerInteractable = false;
+                ObjectiveManager.completeTask(1, "submitCV");
                 this.threeDaysLaterComplete = true;
                 this.scene.launch("ThreeDaysLaterScene", {
                   parentScene: this.scene.key,
