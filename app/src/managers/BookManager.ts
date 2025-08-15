@@ -60,7 +60,10 @@ export class BookManager {
   public open(initialTab?: "Tasks" | "Levels" | "Elements"): void {
     if (this.currentScene.scene.isActive("BookScene")) return;
 
-    this.currentScene.scene.pause();
+    if (this.currentScene.scene.isActive()) {
+      this.currentScene.scene.pause();
+    }
+
     this.currentScene.scene.launch("BookScene", {
       puzzlePieces: this.puzzlePieces,
       initialTab: initialTab || "Tasks",
