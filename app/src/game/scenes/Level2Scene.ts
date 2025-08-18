@@ -244,7 +244,9 @@ export default class Level2Scene extends Phaser.Scene {
     // this.bookManager = new BookManager(this); // For development
     // BookStore.set(this.bookManager); // For development
 
-    if (!this.bookManager) {
+    if (this.bookManager) {
+      this.bookManager.showUnlockAnimation = false;
+    } else {
       console.warn("BookManager is not available");
     }
 
