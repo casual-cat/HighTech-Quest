@@ -51,7 +51,7 @@ export default class Level2Scene extends Phaser.Scene {
     const career = CareerStore.getCareer();
     this.playerData = this.registry.get("playerData");
     // const career = CareerStore.getCareer() || "fullstack"; // For development
-    // this.playerData = this.registry.get("playerData") || { motivation: 100 }; // For development
+    // this.playerData = this.registry.get("playerData") || { motivation: 50 }; // For development
 
     if (!career) {
       console.warn("No career selected");
@@ -379,7 +379,10 @@ export default class Level2Scene extends Phaser.Scene {
 
     this.cameras.main.once("camerafadeoutcomplete", () => {
       this.scene.stop();
-      this.scene.start("GameOverScene", { returnScene: this.scene.key });
+      this.scene.start("GameOverScene", {
+        returnScene: this.scene.key,
+        player: this.player,
+      });
     });
   }
 

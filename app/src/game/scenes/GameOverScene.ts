@@ -1,15 +1,18 @@
 import Phaser from "phaser";
 import { GAME_OVER_CONFIG } from "../constants/gameOver";
+import { Player } from "../entities/Player";
 
 export class GameOverScene extends Phaser.Scene {
   private returnSceneKey?: string;
+  private player?: Player;
 
   constructor() {
     super({ key: "GameOverScene" });
   }
 
-  init(data: { returnScene?: string }) {
+  init(data: { returnScene?: string; player?: Player }) {
     this.returnSceneKey = data.returnScene;
+    this.player = data.player;
   }
 
   static handleGameOver(scene: Phaser.Scene): void {
@@ -61,6 +64,13 @@ export class GameOverScene extends Phaser.Scene {
       );
 
       this.cameras.main.once("camerafadeoutcomplete", () => {
+        if (this.player) {
+          const playerData = {
+            motivation: this.player.getMaxHealth(),
+          };
+          this.registry.set("playerData", playerData);
+        }
+
         if (this.returnSceneKey) {
           this.scene.start(this.returnSceneKey);
         }

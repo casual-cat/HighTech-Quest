@@ -460,7 +460,10 @@ export default class Level1Scene extends Phaser.Scene {
     this.cameras.main.fadeOut(1000, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => {
       this.shutdown();
-      this.scene.start("GameOverScene", { returnScene: this.scene.key });
+      this.scene.start("GameOverScene", {
+        returnScene: this.scene.key,
+        player: this.player,
+      });
     });
   }
 
