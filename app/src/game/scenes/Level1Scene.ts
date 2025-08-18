@@ -11,6 +11,7 @@ import { moveCharacterToTile } from "../utils/pathfinding";
 import { BookStore } from "../../stores/BookStore";
 import { ObjectiveManager } from "../../managers/ObjectiveManager";
 import { GameState } from "../../stores/GameState";
+import { TiledProperty } from "../types/Types";
 
 export default class Level1Scene extends Phaser.Scene {
   private player?: Player;
@@ -22,8 +23,13 @@ export default class Level1Scene extends Phaser.Scene {
   private wallLayer?: Phaser.Tilemaps.TilemapLayer;
   private collidablesLayer?: Phaser.Tilemaps.TilemapLayer;
   private interactableObjects?: Phaser.Physics.Arcade.StaticGroup;
-  private computerObjectData?: { x: number; y: number; id: number };
+  private computerObjectData?: {
+    x: number;
+    y: number;
+    properties: TiledProperty[];
+  };
   private computerInteractable = false;
+  private computerSprite?: Phaser.Physics.Arcade.Sprite;
   private eKey?: Phaser.Input.Keyboard.Key;
   private eKeyIndicator!: EKeyIndicator;
   private levelUpShown = false;
@@ -251,7 +257,21 @@ export default class Level1Scene extends Phaser.Scene {
       if (this.bookIcon && this.bookIcon.scene) {
         this.bookIcon.setTexture("book-star");
       }
+
       this.computerInteractable = true;
+
+      if (this.interactableObjects && this.computerObjectData) {
+        const { x, y, properties } = this.computerObjectData;
+        this.computerSprite = this.interactableObjects.create(
+          x,
+          y
+        ) as Phaser.Physics.Arcade.Sprite;
+        this.computerSprite.setOrigin(0.5);
+        this.computerSprite.setVisible(false);
+        this.computerSprite.refreshBody();
+        this.computerSprite.setData("properties", properties);
+      }
+
       this.time.delayedCall(1000, () => {
         if (this.player && this.speechManager) {
           this.speechManager.showSpeech(
@@ -298,24 +318,30 @@ export default class Level1Scene extends Phaser.Scene {
         const centerX = obj.x! + obj.width! / 2;
         const centerY = obj.y! + obj.height! / 2;
 
-        const sprite = this.interactableObjects!.create(centerX, centerY);
+        if (obj.properties) {
+          const idProperty = obj.properties.find(
+            (p: TiledProperty) => p.name === "id"
+          );
 
-        if (sprite) {
-          sprite.setOrigin(0.5);
-          sprite.setVisible(false);
-          sprite.refreshBody();
-          if (obj.properties) {
-            sprite.setData("properties", obj.properties);
+          if (idProperty.value === "computer") {
+            this.computerObjectData = {
+              x: obj.x! + obj.width! / 2,
+              y: obj.y! + obj.height! / 2,
+              properties: obj.properties,
+            };
+          } else {
+            const sprite = this.interactableObjects!.create(centerX, centerY);
+
+            if (sprite) {
+              sprite.setOrigin(0.5);
+              sprite.setVisible(false);
+              sprite.refreshBody();
+              if (obj.properties) {
+                sprite.setData("properties", obj.properties);
+              }
+              sprite.setData("id", obj.id);
+            }
           }
-          sprite.setData("id", obj.id);
-        }
-
-        if (obj.id === 6) {
-          this.computerObjectData = {
-            x: obj.x! + obj.width! / 2,
-            y: obj.y! + obj.height! / 2,
-            id: obj.id,
-          };
         }
       });
     }
@@ -352,7 +378,7 @@ export default class Level1Scene extends Phaser.Scene {
   }
 
   private checkForInteractions() {
-    if (!this.player || !this.eKey) return;
+    if (!this.player || !this.eKey || !this.interactableObjects) return;
 
     if (Phaser.Input.Keyboard.JustDown(this.eKey)) {
       let closestObject: Phaser.Physics.Arcade.Sprite | null = null;
@@ -399,6 +425,16 @@ export default class Level1Scene extends Phaser.Scene {
             ["I have submitted my CV! Now it's time to wait..."],
             {
               target: this.player,
+              onStart: () => {
+                if (this.computerSprite && this.interactableObjects) {
+                  this.interactableObjects.remove(
+                    this.computerSprite,
+                    true,
+                    true
+                  );
+                  this.computerSprite = undefined;
+                }
+              },
               onComplete: () => {
                 this.computerInteractable = false;
                 ObjectiveManager.completeTask(1, "submitCV");

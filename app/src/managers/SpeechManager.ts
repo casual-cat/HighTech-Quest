@@ -21,6 +21,7 @@ export class SpeechManager {
   showSpeech(
     lines: string[],
     options?: {
+      onStart?: () => void;
       onComplete?: () => void;
       target?: Phaser.GameObjects.GameObject | { x: number; y: number };
       duration?: number;
@@ -32,6 +33,10 @@ export class SpeechManager {
     this.currentLine = 0;
     this.onComplete = options?.onComplete;
     this.target = options?.target;
+
+    if (options?.onStart) {
+      options.onStart();
+    }
 
     const duration = options?.duration ?? 5000;
 
