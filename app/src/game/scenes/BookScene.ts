@@ -51,6 +51,7 @@ export class BookScene extends Phaser.Scene {
     });
     this.load.image("level1-title", "/assets/ui/book/level1-title.png");
     this.load.image("level2-title", "/assets/ui/book/level2-title.png");
+    this.load.image("level3-title", "/assets/ui/book/level3-title.png");
     this.load.image("star-empty", "/assets/ui/book/star-empty.png");
     this.load.image("tasks", "/assets/ui/book/tasks.png");
     this.load.image("levels", "/assets/ui/book/levels.png");
@@ -58,6 +59,7 @@ export class BookScene extends Phaser.Scene {
     this.load.image("darken-right", "/assets/ui/book/darkPage-right.png");
     this.load.image("level1-image", "/assets/ui/book/level1-image.png");
     this.load.image("level2-image", "/assets/ui/book/level2-image.png");
+    this.load.image("level3-image", "/assets/ui/book/level3-image.png");
     this.load.image("book-tasks", "/assets/ui/book/book-tasks.png");
     this.load.image("book-levels", "/assets/ui/book/book-levels.png");
     this.load.image("book-elements", "/assets/ui/book/book-elements.png");
@@ -65,7 +67,7 @@ export class BookScene extends Phaser.Scene {
     this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
     this.load.image("playBtn", "/assets/ui/book/play.png");
     this.load.image("close", "/assets/ui/book/button-x.png");
-    this.load.image("settings", "/assets/ui/book/settings.png");
+    this.load.image("gear", "/assets/ui/book/gear.png");
   }
 
   create(): void {
@@ -391,7 +393,7 @@ export class BookScene extends Phaser.Scene {
     const settingsIconX = 112;
     const settingsIconY = 40;
     const settingBtn = this.add
-      .image(settingsIconX, settingsIconY, "settings")
+      .image(settingsIconX, settingsIconY, "gear")
       .setScale(0.6)
       .setInteractive({ useHandCursor: true });
 
