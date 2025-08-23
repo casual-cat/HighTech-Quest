@@ -15,7 +15,7 @@ interface LevelScene extends Phaser.Scene {
 export class BookScene extends Phaser.Scene {
   private bookManager?: BookManager;
   private puzzlePieces: PuzzlePiece[] = [];
-  private currentTab: "Tasks" | "Levels" | "Elements" = "Tasks";
+  private currentTab: "Tasks" | "Levels" | "Elements" | "Settings" = "Tasks";
   private tabContentGroup!: Phaser.GameObjects.Group;
   private bookImage!: Phaser.GameObjects.Image;
   private showUnlockAnimation = false;
@@ -63,11 +63,13 @@ export class BookScene extends Phaser.Scene {
     this.load.image("book-tasks", "/assets/ui/book/book-tasks.png");
     this.load.image("book-levels", "/assets/ui/book/book-levels.png");
     this.load.image("book-elements", "/assets/ui/book/book-elements.png");
+    this.load.image("book-settings", "/assets/ui/book/book-settings.png");
     this.load.image("checkbox", "/assets/ui/book/checkbox.png");
     this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
     this.load.image("playBtn", "/assets/ui/book/play.png");
     this.load.image("close", "/assets/ui/book/button-x.png");
     this.load.image("gear", "/assets/ui/book/gear.png");
+    this.load.image("controls", "/assets/ui/book/controls.png");
   }
 
   create(): void {
@@ -97,6 +99,12 @@ export class BookScene extends Phaser.Scene {
         x: width * 0.347,
         y: height * 0.0565,
       },
+      {
+        name: "Settings",
+        image: "gear",
+        x: width * 0.086,
+        y: height * 0.0565,
+      },
     ];
 
     tabData.forEach((tab) => {
@@ -120,6 +128,8 @@ export class BookScene extends Phaser.Scene {
       this.displayLevels();
     } else if (this.currentTab === "Elements") {
       this.displayElements();
+    } else if (this.currentTab === "Settings") {
+      this.displaySettings();
     }
   }
 
@@ -358,6 +368,14 @@ export class BookScene extends Phaser.Scene {
     }
   }
 
+  private displaySettings(): void {
+    const { pageY, leftPageX, titleYOffset, titleXOffset } = BOOK_LEVELS_LAYOUT;
+
+    const controlsImage = this.add
+      .image(leftPageX + titleXOffset, pageY + titleYOffset, "controls")
+      .setOrigin(0);
+  }
+
   private setupOverlay(): void {
     const { width, height } = this.scale;
 
@@ -390,19 +408,6 @@ export class BookScene extends Phaser.Scene {
 
     const bookBounds = this.bookImage.getBounds();
 
-    const settingsIconX = 112;
-    const settingsIconY = 40;
-    const settingBtn = this.add
-      .image(settingsIconX, settingsIconY, "gear")
-      .setScale(0.6)
-      .setInteractive({ useHandCursor: true });
-
-    settingBtn.on("pointerdown", () => {
-      this.scene.launch("ControlsScene");
-      this.scene.bringToTop("ControlsScene");
-      this.scene.pause();
-    });
-
     const closeBtnX = 1176;
     const closeBtnY = 40;
     const closeBtn = this.add
@@ -414,16 +419,9 @@ export class BookScene extends Phaser.Scene {
       this.bookManager?.close();
     });
 
-    const qKeyX = bookBounds.centerX - 340;
-    const qKeyY = bookBounds.bottom - 70;
-    this.add.image(qKeyX - 45, qKeyY, "qKey").setOrigin(0.5);
-
-    this.add
-      .text(qKeyX + 45, qKeyY, "Close Notebook", {
-        fontSize: "16px",
-        color: "#333333",
-      })
-      .setOrigin(0.5);
+    const qKeyX = bookBounds.right - 104;
+    const qKeyY = bookBounds.top + 74;
+    this.add.image(qKeyX, qKeyY, "qKey").setOrigin(0.5);
   }
 
   private updateBookImage(): void {
@@ -432,6 +430,8 @@ export class BookScene extends Phaser.Scene {
       textureKey = "book-levels";
     } else if (this.currentTab === "Elements") {
       textureKey = "book-elements";
+    } else if (this.currentTab === "Settings") {
+      textureKey = "book-settings";
     }
     this.bookImage.setTexture(textureKey);
   }
