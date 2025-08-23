@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { Player } from "../game/entities/Player";
 import { RecruiterQA, UserAnswer } from "../game/data/recruiterData";
+import { shuffleArray } from "../game/utils/functions";
 
 export class SpeechManager {
   private scene: Phaser.Scene;
@@ -170,7 +171,9 @@ export class SpeechManager {
     const answerGroup = this.scene.add.group();
     const spacing = 60;
 
-    qa.answers.forEach((answer, index) => {
+    const shuffledAnswers = shuffleArray(qa.answers);
+
+    shuffledAnswers.forEach((answer, index) => {
       const optionY = startY + index * spacing;
 
       const bubble = this.scene.add
