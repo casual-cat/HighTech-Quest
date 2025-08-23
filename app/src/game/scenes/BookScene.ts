@@ -371,9 +371,11 @@ export class BookScene extends Phaser.Scene {
   private displaySettings(): void {
     const { pageY, leftPageX, titleYOffset, titleXOffset } = BOOK_LEVELS_LAYOUT;
 
-    const controlsImage = this.add
+    const controls = this.add
       .image(leftPageX + titleXOffset, pageY + titleYOffset, "controls")
       .setOrigin(0);
+
+    this.tabContentGroup.add(controls);
   }
 
   private setupOverlay(): void {
