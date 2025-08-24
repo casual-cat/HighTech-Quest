@@ -102,7 +102,7 @@ export class BookScene extends Phaser.Scene {
       {
         name: "Settings",
         image: "gear",
-        x: width * 0.086,
+        x: width * 0.0865,
         y: height * 0.0565,
       },
     ];
@@ -410,11 +410,10 @@ export class BookScene extends Phaser.Scene {
 
     const bookBounds = this.bookImage.getBounds();
 
-    const closeBtnX = 1176;
+    const closeBtnX = 1175;
     const closeBtnY = 40;
     const closeBtn = this.add
       .image(closeBtnX, closeBtnY, "close")
-      .setScale(0.7)
       .setInteractive({ useHandCursor: true });
 
     closeBtn.on("pointerdown", () => {
