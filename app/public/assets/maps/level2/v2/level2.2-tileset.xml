@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tileset version="1.10" tiledversion="1.11.2" name="level2-tileset" tilewidth="32" tileheight="32" tilecount="65" columns="13">
+ <image source="level2-tileset.png" width="416" height="160"/>
+</tileset>
