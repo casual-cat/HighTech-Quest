@@ -79,7 +79,7 @@ export default class MainMenu extends Phaser.Scene {
       playBtnBg.setTexture("button");
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("Level1Scene");
+        this.scene.start("ControlsScene");
       });
     });
 
