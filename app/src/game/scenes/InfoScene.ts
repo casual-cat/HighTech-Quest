@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { THEME } from "../constants/game";
 
 export default class InfoScene extends Phaser.Scene {
-  private nextScene: string = "OpeningScene";
+  // private nextScene: string = "OpeningScene";
   constructor() {
     super("InfoScene");
   }
@@ -39,7 +39,7 @@ export default class InfoScene extends Phaser.Scene {
     const handleContinue = () => {
       this.cameras.main.fadeOut(250);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start(this.nextScene);
+        this.scene.start("OpeningScene");
       });
     };
 
