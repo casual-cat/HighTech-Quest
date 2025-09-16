@@ -51,7 +51,7 @@ export default class Level2Scene extends Phaser.Scene {
     const career = CareerStore.getCareer();
     this.playerData = this.registry.get("playerData");
     // const career = CareerStore.getCareer() || "fullstack"; // For development
-    // this.playerData = this.registry.get("playerData") || { motivation: 50 }; // For development
+    // this.playerData = this.registry.get("playerData") || { motivation: 90 }; // For development
 
     if (!career) {
       console.warn("No career selected");
@@ -74,15 +74,15 @@ export default class Level2Scene extends Phaser.Scene {
     // this.load.image("eKey", "/assets/ui/keys/eKey.png"); // For development
     // this.load.image(`${career}-avatar`, `/assets/game/${career}-avatar.png`); // For development
     // this.load.image("speechBubble", "/assets/characters/speechBubble.png"); // For development
+    // this.load.spritesheet(
+    //   "character-fullstack",
+    //   "/assets/characters/fullstack.png",
+    //   { frameWidth: 32, frameHeight: 48 }
+    // ); // For development
 
     this.load.image("optionBubble", "/assets/characters/optionBubble.png");
     this.load.image("level2-tileset", "/assets/maps/level2/level2-tileset.png");
     this.load.tilemapTiledJSON("level2-map", "/assets/maps/level2/level2.tmj");
-    this.load.spritesheet(
-      "character-fullstack",
-      "/assets/characters/fullstack.png",
-      { frameWidth: 32, frameHeight: 48 }
-    );
     this.load.spritesheet("shelly", "/assets/game/level2/shelly.png", {
       frameWidth: 32,
       frameHeight: 48,
