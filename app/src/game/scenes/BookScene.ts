@@ -69,7 +69,7 @@ export class BookScene extends Phaser.Scene {
     this.load.image("playBtn", "/assets/ui/book/play.png");
     this.load.image("close", "/assets/ui/book/button-x.png");
     this.load.image("gear", "/assets/ui/book/gear.png");
-    this.load.image("controls", "/assets/ui/book/controls.png");
+    this.load.image("controls-page", "/assets/ui/book/controls.png");
   }
 
   create(): void {
@@ -372,7 +372,7 @@ export class BookScene extends Phaser.Scene {
     const { pageY, leftPageX, titleYOffset, titleXOffset } = BOOK_LEVELS_LAYOUT;
 
     const controls = this.add
-      .image(leftPageX + titleXOffset, pageY + titleYOffset, "controls")
+      .image(leftPageX + titleXOffset, pageY + titleYOffset, "controls-page")
       .setOrigin(0);
 
     this.tabContentGroup.add(controls);

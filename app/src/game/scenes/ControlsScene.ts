@@ -6,14 +6,14 @@ export class ControlsScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.image("controls", "/assets/backgrounds/controls.png");
+    this.load.image("controls-screen", "/assets/backgrounds/controls.png");
   }
 
   create(): void {
     const { width, height } = this.scale;
 
     this.cameras.main.fadeIn(250);
-    this.add.image(width / 2, height / 2, "controls");
+    this.add.image(width / 2, height / 2, "controls-screen");
 
     this.input.once("pointerdown", () => {
       this.cameras.main.fadeOut(250);
