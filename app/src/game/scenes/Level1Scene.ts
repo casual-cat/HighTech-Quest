@@ -7,7 +7,10 @@ import { SpeechManager } from "../../managers/SpeechManager";
 import { CareerKey, CareerStore } from "../../stores/CareerStore";
 import { PUZZLE_DATA } from "../data/puzzlePieces";
 import { EKeyIndicator } from "../../managers/EKeyIndicatorManager";
-import { moveCharacterToTile, buildPathfindingGrid } from "../utils/pathfinding";
+import {
+  moveCharacterToTile,
+  buildPathfindingGrid,
+} from "../utils/pathfinding";
 import { BookStore } from "../../stores/BookStore";
 import { ObjectiveManager } from "../../managers/ObjectiveManager";
 import { GameState } from "../../stores/GameState";
@@ -358,12 +361,11 @@ export default class Level1Scene extends Phaser.Scene {
 
     if (foregroundLayer) foregroundLayer.setDepth(1);
 
-    this.buildPathfindingGrid();
-  }
-
-  private buildPathfindingGrid() {
-    const map = this.add.tilemap("map");
-    this.pathfindingGrid = buildPathfindingGrid(map, this.wallLayer, this.collidablesLayer);
+    this.pathfindingGrid = buildPathfindingGrid(
+      map,
+      this.wallLayer,
+      this.collidablesLayer
+    );
   }
 
   private checkForInteractions() {

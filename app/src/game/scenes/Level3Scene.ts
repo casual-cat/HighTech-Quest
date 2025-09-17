@@ -10,6 +10,7 @@ import { BookStore } from "../../stores/BookStore";
 import { Ben } from "../entities/Ben";
 import { GameState } from "../../stores/GameState";
 import { ObjectiveManager } from "../../managers/ObjectiveManager";
+import { buildPathfindingGrid } from "../utils/pathfinding";
 
 export default class Level3Scene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap | null = null;
@@ -158,6 +159,14 @@ export default class Level3Scene extends Phaser.Scene {
       this.collidables.setCollisionByProperty({ collides: true });
       this.collidables.setCollisionBetween(1, 1000);
     }
+
+    if (this.map) {
+      this.pathfindingGrid = buildPathfindingGrid(
+        this.map,
+        this.walls,
+        this.collidables
+      );
+    }
   }
 
   private createPlayer() {
@@ -249,6 +258,15 @@ export default class Level3Scene extends Phaser.Scene {
         this.ben = new Ben(this, centerX, centerY);
         this.ben.setData("id", spriteKey);
         this.ben.setData("properties", props);
+
+        if (this.pathfindingGrid && this.ben) {
+          this.ben.setPathfindingGrid(this.pathfindingGrid, [0]);
+        }
+
+        if (this.ben && this.player) {
+          this.player.disableMovement();
+          this.ben.setPlayer(this.player);
+        }
 
         this.physics.add.collider(this.player!, this.ben);
       }
