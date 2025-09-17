@@ -266,8 +266,17 @@ export default class Level3Scene extends Phaser.Scene {
         if (this.ben && this.player) {
           this.player.disableMovement();
           this.ben.moveToPlayer(this.player, () => {
-            if (this.player && "enableMovement" in this.player) {
-              (this.player as any).enableMovement();
+            if (this.ben && this.speechManager) {
+              this.ben.say(this.speechManager, ["Hi! I'm Ben"], {
+                duration: 2000,
+                onStart: () => {
+                  this.player?.setLastDirection("right");
+                  this.player?.anims.play("idle-right", true);
+                },
+                onComplete: () => {
+                  this.player!.enableMovement();
+                },
+              });
             }
           });
         }

@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import EasyStar from "easystarjs";
 import { WORLD, CHARACTER } from "../constants/game";
+import { SpeechManager } from "../../managers/SpeechManager";
 
 export class Character extends Phaser.Physics.Arcade.Sprite {
   private characterSpeed: number = CHARACTER.SPEED;
@@ -237,5 +238,20 @@ export class Character extends Phaser.Physics.Arcade.Sprite {
       });
     };
     moveToNext();
+  }
+
+  public say(
+    speechManager: SpeechManager,
+    lines: string[],
+    options?: {
+      onStart?: () => void;
+      onComplete?: () => void;
+      duration?: number;
+    }
+  ): void {
+    speechManager.showSpeech(lines, {
+      ...options,
+      target: this,
+    });
   }
 }
