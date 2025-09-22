@@ -178,8 +178,13 @@ export default class Level3Scene extends Phaser.Scene {
       `character-${this.career}`
     );
 
-    if (this.collidables && this.player) {
-      this.physics.add.collider(this.player, this.collidables);
+    if (this.player) {
+      if (this.walls) {
+        this.physics.add.collider(this.player, this.walls);
+      }
+      if (this.collidables) {
+        this.physics.add.collider(this.player, this.collidables);
+      }
     }
   }
 
