@@ -25,7 +25,6 @@ export default class Level2Scene extends Phaser.Scene {
   private bookManager?: BookManager;
   private speechManager?: SpeechManager;
   private isGameOver: boolean = false;
-  private pathfindingGrid?: number[][];
   private bookIcon?: Phaser.GameObjects.Image;
   private eKey?: Phaser.Input.Keyboard.Key;
   private eKeyIndicator!: EKeyIndicator;
