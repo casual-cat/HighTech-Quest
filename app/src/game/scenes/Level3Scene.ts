@@ -28,6 +28,8 @@ export default class Level3Scene extends Phaser.Scene {
   private collidables?: Phaser.Tilemaps.TilemapLayer;
   private walls?: Phaser.Tilemaps.TilemapLayer;
   private ben?: Ben;
+  private position?: string;
+  private interactableObjects?: Phaser.Physics.Arcade.StaticGroup;
 
   constructor() {
     super({ key: "Level3Scene" });
@@ -50,6 +52,15 @@ export default class Level3Scene extends Phaser.Scene {
     }
 
     this.career = career;
+    if (this.career === "devops") {
+      this.position = "DevOps Engineer"
+    } else if (this.career === "fullstack") {
+      this.position = "FullStack Developer"
+    } else if (this.career === "projectmanager") {
+      this.position = "Project Manager"
+    } else {
+      this.position = "UX UI Designer"
+    }
 
     // this.load.image("batteryFull", "/assets/ui/motivationBar/battery-full.png"); // For development
     // this.load.image("batteryHalf", "/assets/ui/motivationBar/battery-half.png"); // For development
@@ -77,6 +88,7 @@ export default class Level3Scene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48,
     });
+    // this.load.image("placeholder", "/assets/ui/keys/eKey.png");
   }
 
   create() {
@@ -87,12 +99,25 @@ export default class Level3Scene extends Phaser.Scene {
 
     this.createWorld();
     this.createPlayer();
+    this.createInteractableGroup();
     this.createObjects();
     this.createHUD();
 
     this.speechManager = new SpeechManager(this);
 
     this.eKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+
+    if (this.player && this.interactableObjects) {
+      this.eKeyIndicator = new EKeyIndicator(
+        this,
+        this.player,
+        this.interactableObjects
+      );
+    } else {
+      console.warn(
+        "Could not initialize EKeyIndicator - player or interactables missing"
+      );
+    }
   }
 
   update() {
@@ -102,7 +127,7 @@ export default class Level3Scene extends Phaser.Scene {
       this.player.update();
       this.speechManager?.update();
       this.eKeyIndicator?.update();
-      this.checkForBenInteraction();
+      this.checkForInteraction();
       this.updateDepthSorting();
     }
   }
@@ -119,21 +144,24 @@ export default class Level3Scene extends Phaser.Scene {
     }
   }
 
-  private checkForBenInteraction() {
-    if (!this.player || !this.ben || !this.eKey) return;
+  private checkForInteraction() {
+    if (!this.player || !this.eKey || !this.eKeyIndicator) return;
 
     if (Phaser.Input.Keyboard.JustDown(this.eKey)) {
-      const distance = Phaser.Math.Distance.Between(
-        this.player.x,
-        this.player.y,
-        this.ben.x,
-        this.ben.y
-      );
-
-      if (distance <= CHARACTER.INTERACTION_DISTANCE) {
-        this.handleBenInteraction();
+      const target = this.eKeyIndicator.getTarget();
+      if (target) {
+        const objectId = target.getData("id");
+        if (objectId === "ben") {
+          this.handleBenInteraction();
+        } else if (objectId === "letter") {
+          this.handleLetterInteraction(target);
+        }
       }
     }
+  }
+
+  private handleLetterInteraction(target: Phaser.GameObjects.Sprite) {
+    console.log("Interacting with letter");
   }
 
   private createWorld() {
@@ -148,8 +176,14 @@ export default class Level3Scene extends Phaser.Scene {
     }
 
     const floor = this.map.createLayer("floor", tiles);
+    const background = this.map.createLayer("background", tiles);
+    const foreground = this.map.createLayer("foreground", tiles);
     this.walls = this.map.createLayer("wall", tiles) || undefined;
     this.collidables = this.map.createLayer("collidables", tiles) || undefined;
+
+    if (foreground) {
+      foreground.setDepth(10);
+    }
 
     if (this.walls) {
       this.walls.setCollisionByProperty({ collides: true });
@@ -243,6 +277,10 @@ export default class Level3Scene extends Phaser.Scene {
     this.bookManager?.setCurrentScene(this);
   }
 
+  private createInteractableGroup() {
+    this.interactableObjects = this.physics.add.staticGroup();
+  }
+
   private createObjects() {
     const objectLayer = this.map?.getObjectLayer("Object");
     if (!objectLayer || !this.player) return;
@@ -272,8 +310,17 @@ export default class Level3Scene extends Phaser.Scene {
           this.player.disableMovement();
           this.ben.moveToPlayer(this.player, () => {
             if (this.ben && this.speechManager) {
-              this.ben.say(this.speechManager, ["Hi! I'm Ben"], {
-                duration: 2000,
+              this.ben.say(this.speechManager, [
+                "Hi! I'm Ben",
+                "I hear you're searching for your first position",
+                `Becoming a ${this.position} isn't an easy path`,
+                "But that's exactly what this place is for.",
+                "Here, you'll sharpen your skills and grow stronger",
+                "That way, you'll have the best chance of reaching your goal:",
+                `Becoming a ${this.position}!`,
+                "Take a look around, give it your all…\nand good luck!"
+              ], {
+                duration: 3000,
                 onStart: () => {
                   this.player?.setLastDirection("right");
                   this.player?.anims.play("idle-right", true);
@@ -287,6 +334,21 @@ export default class Level3Scene extends Phaser.Scene {
         }
 
         this.physics.add.collider(this.player!, this.ben);
+        if (this.interactableObjects && this.ben) {
+          this.interactableObjects.add(this.ben);
+        }
+      } else {
+        const centerX = obj.x! + obj.width! / 2;
+        const centerY = obj.y! + obj.height! / 2;
+
+        const sprite = this.add.sprite(centerX, centerY, "placeholder");
+        sprite.setData("id", spriteKey);
+        sprite.setData("properties", props);
+        sprite.setVisible(false);
+
+        if (this.interactableObjects) {
+          this.interactableObjects.add(sprite);
+        }
       }
     });
   }
@@ -317,6 +379,7 @@ export default class Level3Scene extends Phaser.Scene {
     this.bookManager?.destroy?.();
     this.speechManager?.destroy();
     this.ben?.destroy();
+    this.eKeyIndicator?.destroy();
     if (this.bookIcon) {
       this.bookIcon.destroy();
       this.bookIcon = undefined;
