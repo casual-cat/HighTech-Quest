@@ -22,14 +22,7 @@ export class Ben extends Character {
     const playerTileX = Math.floor(player.x / WORLD.TILE.WIDTH);
     const playerTileY = Math.floor(player.y / WORLD.TILE.HEIGHT);
 
-    console.log(
-      "Ben is pathfinding to player at tile:",
-      playerTileX + 1,
-      playerTileY
-    );
-
     moveCharacterToTile(this, playerTileX + 1, playerTileY, () => {
-      console.log("Ben has reached the player");
       if (onComplete) {
         onComplete();
       }
