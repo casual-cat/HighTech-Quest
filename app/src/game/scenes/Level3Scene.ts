@@ -168,7 +168,9 @@ export default class Level3Scene extends Phaser.Scene {
 
   private handleMinigameInteraction(target: Phaser.GameObjects.Sprite) {
     const minigameId = String(target.getData("id") || "");
-    console.log(minigameId, "was triggered");
+
+    this.scene.pause();
+    this.scene.launch("PromptScene");
   }
 
   private createWorld() {
