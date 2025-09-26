@@ -48,14 +48,15 @@ export class EKeyIndicator {
 
     if (closestObject) {
       const obj = closestObject as Phaser.Physics.Arcade.Sprite;
-      const centerX = obj.x - obj.width / 2;
-      const topY = obj.y - obj.displayHeight / 2;
+      const bounds = obj.getBounds();
+      const centerX = bounds.centerX;
+      const topY = bounds.top;
 
       if (this.lastObject !== obj || this.lastY !== topY) {
         if (!this.eKeyIndicator) {
           this.eKeyIndicator = this.scene.add
             .image(0, 0, "eKey")
-            .setOrigin(0, 1);
+            .setOrigin(0.5, 1);
           this.eKeyIndicator.setDepth(10);
         }
 
