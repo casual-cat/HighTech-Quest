@@ -15,6 +15,7 @@ interface LevelScene extends Phaser.Scene {
 export class BookScene extends Phaser.Scene {
   private bookManager?: BookManager;
   private puzzlePieces: PuzzlePiece[] = [];
+  private currentLevel: number | undefined;
   private currentTab: "Tasks" | "Levels" | "Elements" | "Settings" = "Tasks";
   private tabContentGroup!: Phaser.GameObjects.Group;
   private bookImage!: Phaser.GameObjects.Image;
@@ -32,6 +33,7 @@ export class BookScene extends Phaser.Scene {
     showUnlockAnimation?: boolean;
   }): void {
     this.puzzlePieces = data.puzzlePieces || [];
+    this.currentLevel = GameState.currentLevel;
     this.currentTab = data.initialTab || "Tasks";
     this.showUnlockAnimation = !!data.showUnlockAnimation;
     this.allPiecesCollected = this.puzzlePieces
@@ -394,7 +396,7 @@ export class BookScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: false })
       .on("pointerdown", () => {
         this.scene.stop();
-        this.scene.resume("Level1Scene");
+        this.scene.resume(`Level${this.currentLevel}Scene`);
       });
   }
 
