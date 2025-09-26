@@ -206,7 +206,7 @@ export default class Level3Scene extends Phaser.Scene {
   private createPlayer() {
     this.player = new Player(
       this,
-      4.5 * WORLD.TILE.WIDTH,
+      5.5 * WORLD.TILE.WIDTH,
       4.5 * WORLD.TILE.HEIGHT,
       CHARACTER.HEALTH.MAX,
       `character-${this.career}`
@@ -327,6 +327,7 @@ export default class Level3Scene extends Phaser.Scene {
                 },
                 onComplete: () => {
                   this.player!.enableMovement();
+                  if (this.interactableObjects && this.ben) this.interactableObjects.add(this.ben);
                 },
               });
             }
@@ -334,9 +335,6 @@ export default class Level3Scene extends Phaser.Scene {
         }
 
         this.physics.add.collider(this.player!, this.ben);
-        if (this.interactableObjects && this.ben) {
-          this.interactableObjects.add(this.ben);
-        }
       } else {
         const centerX = obj.x! + obj.width! / 2;
         const centerY = obj.y! + obj.height! / 2;
