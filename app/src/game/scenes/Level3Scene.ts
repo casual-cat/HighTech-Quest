@@ -88,7 +88,7 @@ export default class Level3Scene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48,
     });
-    // this.load.image("placeholder", "/assets/ui/keys/eKey.png");
+    this.load.image("letter", "/assets/collectibles/letter.png");
   }
 
   create() {
@@ -155,13 +155,20 @@ export default class Level3Scene extends Phaser.Scene {
           this.handleBenInteraction();
         } else if (objectId === "letter") {
           this.handleLetterInteraction(target);
+        } else if (objectId.includes("minigame")) {
+          this.handleMinigameInteraction(target);
         }
       }
     }
   }
 
   private handleLetterInteraction(target: Phaser.GameObjects.Sprite) {
-    console.log("Interacting with letter");
+    console.log("Letter interaction triggered");
+  }
+
+  private handleMinigameInteraction(target: Phaser.GameObjects.Sprite) {
+    const minigameId = String(target.getData("id") || "");
+    console.log(minigameId, "was triggered");
   }
 
   private createWorld() {
@@ -292,7 +299,8 @@ export default class Level3Scene extends Phaser.Scene {
           return acc;
         }, {} as Record<string, any>) || {};
 
-      const spriteKey = props.id;
+      const spriteKey = String(props.id || "");
+      if (!this.interactableObjects) return;
 
       if (spriteKey === "ben") {
         const centerX = obj.x! + obj.width! / 2;
@@ -335,18 +343,35 @@ export default class Level3Scene extends Phaser.Scene {
         }
 
         this.physics.add.collider(this.player!, this.ben);
-      } else {
+      } else if (spriteKey === "letter") {
         const centerX = obj.x! + obj.width! / 2;
         const centerY = obj.y! + obj.height! / 2;
 
-        const sprite = this.add.sprite(centerX, centerY, "placeholder");
-        sprite.setData("id", spriteKey);
-        sprite.setData("properties", props);
-        sprite.setVisible(false);
+        const letter = this.interactableObjects.create(
+          centerX,
+          centerY,
+          "letter"
+        ) as Phaser.Physics.Arcade.Sprite;
+        letter.setData("id", spriteKey);
+        letter.setData("properties", props);
+        letter.setOrigin(0.5);
+        letter.setScale(0.5);
+      }
+      else if (spriteKey.includes("minigame")) {
+        const centerX = obj.x! + obj.width! / 2;
+        const centerY = obj.y! + obj.height! / 2;
 
-        if (this.interactableObjects) {
-          this.interactableObjects.add(sprite);
-        }
+        const spot = this.interactableObjects.create(
+          centerX,
+          centerY,
+          "letter"
+        ) as Phaser.Physics.Arcade.Sprite;
+        spot.setData("id", spriteKey);
+        spot.setData("properties", props);
+        spot.setOrigin(0.5);
+        spot.setVisible(false);
+        spot.setAlpha(0);
+        spot.setDisplaySize(WORLD.TILE.WIDTH, WORLD.TILE.HEIGHT);
       }
     });
   }
