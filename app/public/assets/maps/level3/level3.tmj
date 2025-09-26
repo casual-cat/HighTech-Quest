@@ -361,7 +361,7 @@
                  "y":96
                 }, 
                 {
-                 "height":34,
+                 "height":32,
                  "id":33,
                  "name":"",
                  "properties":[
@@ -373,12 +373,12 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":65,
-                 "x":255,
-                 "y":414
+                 "width":64,
+                 "x":254,
+                 "y":416
                 }, 
                 {
-                 "height":34,
+                 "height":32,
                  "id":34,
                  "name":"",
                  "properties":[
@@ -390,12 +390,12 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":65,
-                 "x":801.5,
-                 "y":253
+                 "width":64,
+                 "x":800,
+                 "y":256
                 }, 
                 {
-                 "height":34,
+                 "height":32,
                  "id":35,
                  "name":"",
                  "properties":[
@@ -407,12 +407,12 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":65,
-                 "x":768.5,
-                 "y":514
+                 "width":64,
+                 "x":768,
+                 "y":512
                 }, 
                 {
-                 "height":34,
+                 "height":32,
                  "id":36,
                  "name":"",
                  "properties":[
@@ -424,12 +424,12 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":65,
-                 "x":1090.17,
-                 "y":97.6667
+                 "width":64,
+                 "x":1088,
+                 "y":96
                 }, 
                 {
-                 "height":34,
+                 "height":32,
                  "id":37,
                  "name":"",
                  "properties":[
@@ -441,9 +441,9 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":65,
-                 "x":66.1667,
-                 "y":124.333
+                 "width":64,
+                 "x":64,
+                 "y":128
                 }, 
                 {
                  "height":32,
