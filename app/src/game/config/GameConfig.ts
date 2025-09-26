@@ -13,6 +13,7 @@ import { GameOverScene } from "../scenes/GameOverScene";
 import LevelUpScene from "../scenes/LevelUpScene";
 import ThreeDaysLaterScene from "../scenes/ThreeDaysLaterScene";
 import { ControlsScene } from "../scenes/ControlsScene";
+import PromptScene from "../scenes/PropmtScene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -31,6 +32,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     Level1Scene,
     Level2Scene,
     Level3Scene,
+    PromptScene,
     BookScene,
     PuzzleScene,
     GameOverScene,
