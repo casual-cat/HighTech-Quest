@@ -64,13 +64,14 @@ export const LEVELS_DATA: Record<number, LevelData> = {
     imageKey: "level3-image",
     objectives: [
       {
-        task: "Level 3 Task",
+        task: "Improve your skills",
         subtasks: [
-          { task: "Subtask 1", complete: false },
-          { task: "Subtask 2", complete: false },
-          { task: "Subtask 3", complete: false },
-          { task: "Subtask 4", complete: false },
-          { task: "Subtask 5", complete: false },
+          { id: "minigame1", task: "Minigame 1", complete: false },
+          { id: "minigame2", task: "Minigame 2", complete: false },
+          { id: "minigame3", task: "Minigame 3", complete: false },
+          { id: "minigame4", task: "Minigame 4", complete: false },
+          { id: "minigame5", task: "Minigame 5", complete: false },
+          { id: "minigame6", task: "Minigame 6", complete: false },
         ],
         complete: false,
       },
