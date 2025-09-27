@@ -4,17 +4,26 @@ import { GameState } from "../../stores/GameState";
 
 export default class PromptScene extends Phaser.Scene {
     private currentLevel: number | undefined;
+    private objectId: string | undefined;
 
     constructor() {
         super({ key: "PromptScene" });
     }
 
-    init() {
+    init(data: { objectId: string }) {
         this.currentLevel = GameState.currentLevel;
+        this.objectId = data.objectId;
     }
 
     preload(): void {
-        this.load.image("minigame1-prompt", "/assets/game/level3/minigames/hierarchy-tasks/minigame1-prompt.png");
+        this.load.image("button", "/assets/buttons/Button_DarkGreen.png"); // For development
+        this.load.image("buttonPressed", "/assets/buttons/Button_LightGreen.png"); // For development
+
+        if (this.objectId) {
+            const imageKey = `${this.objectId}-prompt`;
+            const imagePath = `/assets/game/level3/minigames/prompt/${this.objectId}-prompt.png`;
+            this.load.image(imageKey, imagePath);
+        }
     }
 
     create(): void {
@@ -34,6 +43,35 @@ export default class PromptScene extends Phaser.Scene {
                 this.scene.resume(`Level${this.currentLevel}Scene`);
             });
 
-        const prompt = this.add.image(width / 2, height / 2, "minigame1-prompt");
+        if (this.objectId) {
+            const imageKey = `${this.objectId}-prompt`;
+            const prompt = this.add.image(width / 2, height / 2, imageKey)
+                .setInteractive({ useHandCursor: false })
+                .on("pointerdown", (pointer: Phaser.Input.Pointer, localX: number, localY: number, event: Phaser.Types.Input.EventData) => {
+                    event.stopPropagation();
+                });
+
+            const buttonY = prompt.y + prompt.displayHeight / 2 - 60;
+            const button = this.add.image(width / 2, buttonY, "button")
+                .setInteractive({ useHandCursor: true })
+                .on("pointerdown", () => {
+                    button.setTexture("buttonPressed");
+                })
+                .on("pointerup", () => {
+                    button.setTexture("button");
+                    // this.scene.stop();
+                    // this.scene.resume(`Level${this.currentLevel}Scene`);
+                })
+                .on("pointerout", () => {
+                    button.setTexture("button");
+                });
+
+            this.add.text(width / 2, buttonY, "Start", {
+                fontSize: "24px",
+                color: "#ffffff"
+            }).setOrigin(0.5);
+        }
+
+
     }
 }
