@@ -170,7 +170,7 @@ export default class Level3Scene extends Phaser.Scene {
     const minigameId = String(target.getData("id") || "");
 
     this.scene.pause();
-    this.scene.launch("PromptScene");
+    this.scene.launch("PromptScene", { objectId: minigameId });
   }
 
   private createWorld() {
