@@ -14,6 +14,7 @@ import LevelUpScene from "../scenes/LevelUpScene";
 import ThreeDaysLaterScene from "../scenes/ThreeDaysLaterScene";
 import { ControlsScene } from "../scenes/ControlsScene";
 import PromptScene from "../scenes/PropmtScene";
+import minigame1Scene from "../scenes/minigame1Scene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -32,12 +33,13 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     Level1Scene,
     Level2Scene,
     Level3Scene,
-    PromptScene,
     BookScene,
     PuzzleScene,
     GameOverScene,
     LevelUpScene,
     ThreeDaysLaterScene,
+    PromptScene,
+    minigame1Scene,
   ],
   pixelArt: true,
   roundPixels: true,
