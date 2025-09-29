@@ -81,6 +81,8 @@ export default class Level3Scene extends Phaser.Scene {
     //   "/assets/characters/fullstack.png",
     //   { frameWidth: 32, frameHeight: 48 }
     // ); // For development
+    // this.load.image("button", "/assets/buttons/Button_DarkGreen.png"); // For development
+    // this.load.image("buttonPressed", "/assets/buttons/Button_LightGreen.png"); // For development
 
     this.load.image("level3-tileset", "/assets/maps/level3/level3-tileset.png");
     this.load.tilemapTiledJSON("level3-map", "/assets/maps/level3/level3.tmj");
