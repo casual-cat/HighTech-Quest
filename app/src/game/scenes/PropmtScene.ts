@@ -16,9 +16,6 @@ export default class PromptScene extends Phaser.Scene {
     }
 
     preload(): void {
-        this.load.image("button", "/assets/buttons/Button_DarkGreen.png"); // For development
-        this.load.image("buttonPressed", "/assets/buttons/Button_LightGreen.png"); // For development
-
         if (this.objectId) {
             const imageKey = `${this.objectId}-prompt`;
             const imagePath = `/assets/game/level3/minigames/prompt/${this.objectId}-prompt.png`;
@@ -59,8 +56,8 @@ export default class PromptScene extends Phaser.Scene {
                 })
                 .on("pointerup", () => {
                     button.setTexture("button");
-                    // this.scene.stop();
-                    // this.scene.resume(`Level${this.currentLevel}Scene`);
+                    this.scene.stop();
+                    this.scene.launch(`${this.objectId}Scene`);
                 })
                 .on("pointerout", () => {
                     button.setTexture("button");
