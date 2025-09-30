@@ -72,7 +72,7 @@ export default class minigame1Scene extends Phaser.Scene {
             })
             .on("pointerup", () => {
                 button.setTexture("button");
-                if (this.checkSolution()) {
+                if (this.isCorrect()) {
                     console.log("Success!");
                 } else {
                     console.log("Try again!");
@@ -322,7 +322,7 @@ export default class minigame1Scene extends Phaser.Scene {
         });
     }
 
-    private checkSolution(): boolean {
+    private isCorrect(): boolean {
         for (const correctColumn of this.correctColumns) {
             const currentColumn = this.columns.find(c => c.name === correctColumn?.name);
             if (!currentColumn) return false;
