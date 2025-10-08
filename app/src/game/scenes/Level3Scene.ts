@@ -53,13 +53,13 @@ export default class Level3Scene extends Phaser.Scene {
 
     this.career = career;
     if (this.career === "devops") {
-      this.position = "DevOps Engineer"
+      this.position = "DevOps Engineer";
     } else if (this.career === "fullstack") {
-      this.position = "FullStack Developer"
+      this.position = "FullStack Developer";
     } else if (this.career === "projectmanager") {
-      this.position = "Project Manager"
+      this.position = "Project Manager";
     } else {
-      this.position = "UX UI Designer"
+      this.position = "UX UI Designer";
     }
 
     // this.load.image("batteryFull", "/assets/ui/motivationBar/battery-full.png"); // For development
@@ -171,8 +171,14 @@ export default class Level3Scene extends Phaser.Scene {
   private handleMinigameInteraction(target: Phaser.GameObjects.Sprite) {
     const minigameId = String(target.getData("id") || "");
 
-    this.scene.pause();
-    this.scene.launch("PromptScene", { objectId: minigameId });
+    if (GameState.isCompleted({ minigame: minigameId })) {
+      this.player?.say(this.speechManager!, [
+        "I have already crushed this practice :)",
+      ]);
+    } else {
+      this.scene.pause();
+      this.scene.launch("PromptScene", { objectId: minigameId });
+    }
   }
 
   private createWorld() {
@@ -322,26 +328,31 @@ export default class Level3Scene extends Phaser.Scene {
           this.player.disableMovement();
           this.ben.moveToPlayer(this.player, () => {
             if (this.ben && this.speechManager) {
-              this.ben.say(this.speechManager, [
-                "Hi! I'm Ben",
-                "I hear you're searching for your first position",
-                `Becoming a ${this.position} isn't an easy path`,
-                "But that's exactly what this place is for.",
-                "Here, you'll sharpen your skills and grow stronger",
-                "That way, you'll have the best chance of reaching your goal:",
-                `Becoming a ${this.position}!`,
-                "Take a look around, give it your all…\nand good luck!"
-              ], {
-                duration: 3000,
-                onStart: () => {
-                  this.player?.setLastDirection("right");
-                  this.player?.anims.play("idle-right", true);
-                },
-                onComplete: () => {
-                  this.player!.enableMovement();
-                  if (this.interactableObjects && this.ben) this.interactableObjects.add(this.ben);
-                },
-              });
+              this.ben.say(
+                this.speechManager,
+                [
+                  "Hi! I'm Ben",
+                  "I hear you're searching for your first position",
+                  `Becoming a ${this.position} isn't an easy path`,
+                  "But that's exactly what this place is for.",
+                  "Here, you'll sharpen your skills and grow stronger",
+                  "That way, you'll have the best chance of reaching your goal:",
+                  `Becoming a ${this.position}!`,
+                  "Take a look around, give it your all…\nand good luck!",
+                ],
+                {
+                  duration: 3000,
+                  onStart: () => {
+                    this.player?.setLastDirection("right");
+                    this.player?.anims.play("idle-right", true);
+                  },
+                  onComplete: () => {
+                    this.player!.enableMovement();
+                    if (this.interactableObjects && this.ben)
+                      this.interactableObjects.add(this.ben);
+                  },
+                }
+              );
             }
           });
         }
@@ -360,8 +371,7 @@ export default class Level3Scene extends Phaser.Scene {
         letter.setData("properties", props);
         letter.setOrigin(0.5);
         letter.setScale(0.5);
-      }
-      else if (spriteKey.includes("minigame")) {
+      } else if (spriteKey.includes("minigame")) {
         const centerX = obj.x! + obj.width! / 2;
         const centerY = obj.y! + obj.height! / 2;
 
