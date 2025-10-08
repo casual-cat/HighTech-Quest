@@ -438,23 +438,15 @@ export default class minigame1Scene extends Phaser.Scene {
   shutdown() {
     this.tasks.forEach((task) => {
       task.sprite.removeAllListeners();
-
       this.input.setDraggable(task.sprite, false);
-
       if (task.sprite.disableInteractive) task.sprite.disableInteractive();
-
       task.sprite.destroy();
     });
 
     this.tweens.killAll();
 
-    this.tasks = [];
-    this.columns = [];
-    this.correctColumns = [];
-
     if (this.button) {
       this.button.removeAllListeners();
-      this.input.setDraggable(this.button, false);
       if (this.button.disableInteractive) this.button.disableInteractive();
       this.button.destroy();
     }
