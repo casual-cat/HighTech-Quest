@@ -1,7 +1,7 @@
 export const GameState = {
   currentLevel: 1,
   completedLevels: [] as number[],
-  completedMinigames: [] as number[],
+  completedMinigames: [] as string[],
 
   markLevelCompleted(level: number) {
     if (!this.completedLevels.includes(level)) {
@@ -9,13 +9,13 @@ export const GameState = {
     }
   },
 
-  markMinigameCompleted(minigame: number) {
+  markMinigameCompleted(minigame: string) {
     if (!this.completedMinigames.includes(minigame)) {
       this.completedMinigames.push(minigame);
     }
   },
 
-  isCompleted({ level, minigame }: { level?: number; minigame?: number }) {
+  isCompleted({ level, minigame }: { level?: number; minigame?: string }) {
     if (level !== undefined && minigame !== undefined) {
       return (
         this.completedLevels.includes(level) &&
