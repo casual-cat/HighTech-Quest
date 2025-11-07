@@ -18,6 +18,7 @@ export default class minigame2Scene extends Phaser.Scene {
   private isCheckingMatch = false;
   private motivationBar?: MotivationBar;
   private parentScene?: ParentLevelScene;
+  private pairSlots: Phaser.GameObjects.Image[] = [];
   private readonly onParentPlayerDamaged = () => {
     this.refreshMotivationBar();
   };
@@ -36,12 +37,30 @@ export default class minigame2Scene extends Phaser.Scene {
       "minigame2-background",
       "/assets/game/level3/minigames/deliverables/minigame2-background.png"
     );
-    this.load.image("card-back", "/assets/game/level3/minigames/deliverables/card-back.png");
+    this.load.image(
+      "card-back",
+      "/assets/game/level3/minigames/deliverables/card-back.png"
+    );
+    this.load.image(
+      "cards-pair-back",
+      "/assets/game/level3/minigames/deliverables/cards-pair-back.png"
+    );
+
+    const pairImages = new Set<string>();
 
     Object.values(DELIVERABLES_CARDS).forEach((card) => {
-      const textureKey = this.getCardTextureKey(card.id);
+      const textureKey = this.getTextureKey(card.image);
       const texturePath = `/assets/game/level3/minigames/deliverables/${textureKey}.png`;
       this.load.image(textureKey, texturePath);
+      pairImages.add(card.pairImage);
+    });
+
+    pairImages.forEach((pairImage) => {
+      const textureKey = this.getTextureKey(pairImage);
+      const texturePath = `/assets/game/level3/minigames/deliverables/${textureKey}.png`;
+      if (!this.textures.exists(textureKey)) {
+        this.load.image(textureKey, texturePath);
+      }
     });
   }
 
@@ -98,10 +117,22 @@ export default class minigame2Scene extends Phaser.Scene {
         cardIndex += 1;
       }
     }
+
+    const pairPaddingX = paddingX * 0.1;
+    const totalPairWidth = columns * cardWidth + (columns - 1) * pairPaddingX;
+    const startPairX = width / 2 - totalPairWidth / 2 + cardWidth / 2;
+    const pairRowY = startY + rows * (cardHeight + paddingY) + cardHeight * 0.1;
+    this.pairSlots = [];
+    for (let col = 0; col < columns; col += 1) {
+      const x = startPairX + col * (cardWidth + pairPaddingX);
+      const slot = this.add.image(x, pairRowY, "cards-pair-back").setDepth(2);
+      slot.setData("filled", false);
+      this.pairSlots.push(slot);
+    }
   }
 
-  private getCardTextureKey(id: number): string {
-    return `${this.career}-card-${id}`;
+  private getTextureKey(image: string): string {
+    return `${this.career}-${image}`;
   }
 
   private handleCardSelection(card: Phaser.GameObjects.Image): void {
@@ -125,7 +156,7 @@ export default class minigame2Scene extends Phaser.Scene {
       return;
     }
 
-    const frontTextureKey = this.getCardTextureKey(cardData.id);
+    const frontTextureKey = this.getTextureKey(cardData.image);
     if (!this.textures.exists(frontTextureKey)) {
       return;
     }
@@ -158,16 +189,25 @@ export default class minigame2Scene extends Phaser.Scene {
     const firstData = DELIVERABLES_CARDS[firstId];
     const secondData = DELIVERABLES_CARDS[secondId];
 
-    const isMatch = firstData && secondData && firstData.pairId === secondData.id;
+    const isMatch =
+      firstData && secondData && firstData.pairId === secondData.id;
 
     if (isMatch) {
-      this.handleMatch(firstCard, secondCard);
+      this.handleMatch(
+        firstCard,
+        secondCard,
+        firstData?.pairImage ?? secondData?.pairImage
+      );
     } else {
       this.handleMismatch(firstCard, secondCard);
     }
   }
 
-  private handleMatch(firstCard: Phaser.GameObjects.Image, secondCard: Phaser.GameObjects.Image): void {
+  private handleMatch(
+    firstCard: Phaser.GameObjects.Image,
+    secondCard: Phaser.GameObjects.Image,
+    pairImage?: string
+  ): void {
     firstCard.setData("matched", true);
     secondCard.setData("matched", true);
     firstCard.disableInteractive();
@@ -182,6 +222,9 @@ export default class minigame2Scene extends Phaser.Scene {
         onComplete: () => {
           firstCard.destroy();
           secondCard.destroy();
+          if (pairImage) {
+            this.revealPairImage(pairImage);
+          }
         },
       });
     });
@@ -189,7 +232,25 @@ export default class minigame2Scene extends Phaser.Scene {
     this.resetFlippedCards();
   }
 
-  private handleMismatch(firstCard: Phaser.GameObjects.Image, secondCard: Phaser.GameObjects.Image): void {
+  private revealPairImage(pairImage: string): void {
+    const slot = this.pairSlots.find((pairSlot) => !pairSlot.getData("filled"));
+    if (!slot) {
+      return;
+    }
+
+    const textureKey = this.getTextureKey(pairImage);
+    if (!this.textures.exists(textureKey)) {
+      return;
+    }
+
+    slot.setTexture(textureKey);
+    slot.setData("filled", true);
+  }
+
+  private handleMismatch(
+    firstCard: Phaser.GameObjects.Image,
+    secondCard: Phaser.GameObjects.Image
+  ): void {
     this.applyMismatchPenalty();
 
     this.time.delayedCall(700, () => {
@@ -224,7 +285,9 @@ export default class minigame2Scene extends Phaser.Scene {
     }
 
     const parentSceneKey = `Level${this.currentLevel}Scene`;
-    const parentScene = this.scene.get(parentSceneKey) as ParentLevelScene | undefined;
+    const parentScene = this.scene.get(parentSceneKey) as
+      | ParentLevelScene
+      | undefined;
     if (parentScene) {
       parentScene.events.on("playerDamaged", this.onParentPlayerDamaged);
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -237,7 +300,9 @@ export default class minigame2Scene extends Phaser.Scene {
 
   private createHUD(): void {
     const hudDepth = 10;
-    const { current, max } = this.parentScene?.getPlayerMotivation?.() ?? this.getMotivationFromRegistry();
+    const { current, max } =
+      this.parentScene?.getPlayerMotivation?.() ??
+      this.getMotivationFromRegistry();
 
     this.add
       .image(16, 16, "avatarBackground")
@@ -261,7 +326,9 @@ export default class minigame2Scene extends Phaser.Scene {
       return;
     }
 
-    const { current } = this.parentScene?.getPlayerMotivation?.() ?? this.getMotivationFromRegistry();
+    const { current } =
+      this.parentScene?.getPlayerMotivation?.() ??
+      this.getMotivationFromRegistry();
     this.motivationBar.setHealth(current);
   }
 
@@ -272,7 +339,8 @@ export default class minigame2Scene extends Phaser.Scene {
       | undefined;
 
     const current = playerData?.motivation ?? defaultMotivation;
-    const max = playerData?.maxMotivation ?? Math.max(current, defaultMotivation);
+    const max =
+      playerData?.maxMotivation ?? Math.max(current, defaultMotivation);
 
     return { current, max };
   }
