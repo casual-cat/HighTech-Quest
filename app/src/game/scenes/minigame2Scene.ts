@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { GameState } from "../../stores/GameState";
+import { ObjectiveManager } from "../../managers/ObjectiveManager";
 import { CareerStore, type CareerKey } from "../../stores/CareerStore";
 import { MotivationBar } from "../../managers/MotivationBarManager";
 import { DELIVERABLES_CARDS } from "../data/deliverablesCards";
@@ -18,7 +19,9 @@ export default class minigame2Scene extends Phaser.Scene {
   private isCheckingMatch = false;
   private motivationBar?: MotivationBar;
   private parentScene?: ParentLevelScene;
+  private parentSceneKey?: string;
   private pairSlots: Phaser.GameObjects.Image[] = [];
+  private isGameComplete = false;
   private readonly onParentPlayerDamaged = () => {
     this.refreshMotivationBar();
   };
@@ -245,6 +248,33 @@ export default class minigame2Scene extends Phaser.Scene {
 
     slot.setTexture(textureKey);
     slot.setData("filled", true);
+
+    if (this.pairSlots.every((pairSlot) => pairSlot.getData("filled"))) {
+      this.finishMinigame();
+    }
+  }
+
+  private finishMinigame(): void {
+    if (this.isGameComplete) {
+      return;
+    }
+
+    this.isGameComplete = true;
+
+    const level = this.currentLevel ?? GameState.currentLevel ?? 3;
+    const minigameId = "minigame2";
+
+    ObjectiveManager.completeTask(level, minigameId);
+    GameState.markMinigameCompleted(minigameId);
+
+    const targetSceneKey = this.parentSceneKey ?? `Level${level}Scene`;
+
+    this.time.delayedCall(50, () => {
+      this.scene.stop();
+      if (targetSceneKey) {
+        this.scene.resume(targetSceneKey);
+      }
+    });
   }
 
   private handleMismatch(
@@ -285,6 +315,7 @@ export default class minigame2Scene extends Phaser.Scene {
     }
 
     const parentSceneKey = `Level${this.currentLevel}Scene`;
+    this.parentSceneKey = parentSceneKey;
     const parentScene = this.scene.get(parentSceneKey) as
       | ParentLevelScene
       | undefined;
