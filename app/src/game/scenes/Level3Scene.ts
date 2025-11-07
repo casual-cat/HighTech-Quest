@@ -43,7 +43,8 @@ export default class Level3Scene extends Phaser.Scene {
   preload() {
     const career = CareerStore.getCareer();
     this.playerData = this.registry.get("playerData");
-    // const career = CareerStore.getCareer() || "fullstack"; // For development
+    // const career = CareerStore.getCareer() || "uxui"; // For development
+    // CareerStore.setCareer(career);  // For development
     // this.playerData = this.registry.get("playerData") || { motivation: 90 }; // For development
 
     if (!career) {
@@ -77,8 +78,8 @@ export default class Level3Scene extends Phaser.Scene {
     // this.load.image(`${career}-avatar`, `/assets/game/${career}-avatar.png`); // For development
     // this.load.image("speechBubble", "/assets/characters/speechBubble.png"); // For development
     // this.load.spritesheet(
-    //   "character-fullstack",
-    //   "/assets/characters/fullstack.png",
+    //   "character-uxui",
+    //   "/assets/characters/uxui.png",
     //   { frameWidth: 32, frameHeight: 48 }
     // ); // For development
     // this.load.image("button", "/assets/buttons/Button_DarkGreen.png"); // For development
@@ -408,6 +409,37 @@ export default class Level3Scene extends Phaser.Scene {
         player: this.player,
       });
     });
+  }
+
+  public getPlayerMotivation() {
+    const current = this.player?.getHealth() ?? this.playerData.motivation;
+    const max = this.player?.getMaxHealth() ?? this.playerData.motivation;
+
+    return { current, max };
+  }
+
+  public damagePlayer(amount: number) {
+    if (this.isGameOver || amount <= 0) {
+      return;
+    }
+
+    if (!this.player) {
+      return;
+    }
+
+    const newHealth = this.player.damage(amount);
+    this.playerData.motivation = newHealth;
+    this.registry.set("playerData", this.playerData);
+
+    if (this.motivationBar) {
+      this.motivationBar.decrease(amount);
+    }
+
+    this.events.emit("playerDamaged");
+
+    if (newHealth <= 0) {
+      this.handleGameOver();
+    }
   }
 
   shutdown() {
