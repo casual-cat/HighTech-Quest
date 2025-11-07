@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { GameState } from "../../stores/GameState";
+import { ObjectiveManager } from "../../managers/ObjectiveManager";
 import { BOOK_SCENE_CONFIG } from "../constants/book";
 
 export default class minigame1Scene extends Phaser.Scene {
@@ -120,10 +121,13 @@ export default class minigame1Scene extends Phaser.Scene {
       .on("pointerup", () => {
         this.button.setTexture("button");
         if (this.isCorrect()) {
+          const level = this.currentLevel ?? GameState.currentLevel ?? 3;
           console.log("Success!");
+          ObjectiveManager.completeTask(level, "minigame1");
           GameState.markMinigameCompleted("minigame1");
+          const targetSceneKey = `Level${level}Scene`;
           this.scene.stop();
-          this.scene.resume(`Level${this.currentLevel}Scene`);
+          this.scene.resume(targetSceneKey);
         } else {
           this.resetBoard();
         }
