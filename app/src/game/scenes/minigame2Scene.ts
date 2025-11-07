@@ -13,6 +13,8 @@ type ParentLevelScene = Phaser.Scene & {
 
 export default class minigame2Scene extends Phaser.Scene {
   private static readonly MISMATCH_DAMAGE = 10;
+  private static readonly TIMER_EXPIRE_DAMAGE = 20;
+  private static readonly COUNTDOWN_DURATION = 120;
   private currentLevel: number | undefined;
   private career: CareerKey = "fullstack";
   private flippedCards: Phaser.GameObjects.Image[] = [];
@@ -22,6 +24,14 @@ export default class minigame2Scene extends Phaser.Scene {
   private parentSceneKey?: string;
   private pairSlots: Phaser.GameObjects.Image[] = [];
   private isGameComplete = false;
+  private timerText!: Phaser.GameObjects.Text;
+  private timerFillGraphics!: Phaser.GameObjects.Graphics;
+  private timerBorderGraphics!: Phaser.GameObjects.Graphics;
+  private timerIcon!: Phaser.GameObjects.Image;
+  private readonly timerBarWidth = 202;
+  private readonly timerBarHeight = 28;
+  private remainingTime = minigame2Scene.COUNTDOWN_DURATION;
+  private countdownEvent?: Phaser.Time.TimerEvent;
   private readonly onParentPlayerDamaged = () => {
     this.refreshMotivationBar();
   };
@@ -33,6 +43,7 @@ export default class minigame2Scene extends Phaser.Scene {
   init(): void {
     this.currentLevel = GameState.currentLevel;
     this.career = CareerStore.getCareer() ?? this.career;
+    this.isGameComplete = false;
   }
 
   preload(): void {
@@ -85,7 +96,11 @@ export default class minigame2Scene extends Phaser.Scene {
       .setDepth(0)
       .setScrollFactor(0);
 
-    this.add.image(width / 2, height / 2, "minigame2-background").setDepth(1);
+    const background = this.add
+      .image(width / 2, height / 2, "minigame2-background")
+      .setDepth(1);
+
+    const backgroundBounds = background.getBounds();
 
     this.createHUD();
 
@@ -101,6 +116,48 @@ export default class minigame2Scene extends Phaser.Scene {
     const totalHeight = rows * cardHeight + (rows - 1) * paddingY;
     const startX = width / 2 - totalWidth / 2 + cardWidth / 2;
     const startY = height / 2 - totalHeight / 2 + cardHeight / 2;
+
+    const firstRowTop = startY - cardHeight / 2;
+    const timerY = Phaser.Math.Linear(backgroundBounds.top, firstRowTop, 0.5);
+
+    const timerContainerCenterX = backgroundBounds.centerX + 16;
+    const timerBarLeft = timerContainerCenterX - this.timerBarWidth / 2;
+
+    this.timerIcon = this.add
+      .image(timerBarLeft - 18, timerY, "timer-icon")
+      .setOrigin(0.5)
+      .setDepth(5);
+    this.timerIcon.setDisplaySize(21, 21);
+
+    this.timerFillGraphics = this.add.graphics({
+      x: timerBarLeft,
+      y: timerY - this.timerBarHeight / 2,
+    });
+    this.timerFillGraphics.setDepth(4);
+
+    this.timerBorderGraphics = this.add.graphics({
+      x: timerBarLeft,
+      y: timerY - this.timerBarHeight / 2,
+    });
+    this.timerBorderGraphics.setDepth(4.1);
+    this.timerBorderGraphics.lineStyle(1, 0xffffff, 1);
+    this.timerBorderGraphics.strokeRoundedRect(
+      0,
+      0,
+      this.timerBarWidth,
+      this.timerBarHeight,
+      15
+    );
+
+    this.timerText = this.add
+      .text(timerContainerCenterX, timerY, "2:00", {
+        fontSize: "14px",
+        color: "#867122",
+      })
+      .setOrigin(0.5)
+      .setDepth(5);
+
+    this.startCountdown();
 
     const cardIds = Phaser.Utils.Array.Shuffle(
       Array.from({ length: columns * rows }, (_, index) => index + 1)
@@ -132,6 +189,114 @@ export default class minigame2Scene extends Phaser.Scene {
       slot.setData("filled", false);
       this.pairSlots.push(slot);
     }
+  }
+
+  private startCountdown(): void {
+    this.remainingTime = minigame2Scene.COUNTDOWN_DURATION;
+    this.updateTimerText();
+    this.updateTimerBarFill();
+
+    if (this.countdownEvent) {
+      this.countdownEvent.remove(false);
+    }
+
+    this.countdownEvent = this.time.addEvent({
+      delay: 1000,
+      callback: this.handleCountdownTick,
+      callbackScope: this,
+      loop: true,
+    });
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.countdownEvent?.remove(false);
+    });
+  }
+
+  private handleCountdownTick(): void {
+    if (this.remainingTime <= 0) {
+      this.countdownEvent?.remove(false);
+      return;
+    }
+
+    this.remainingTime -= 1;
+    this.updateTimerText();
+    this.updateTimerBarFill();
+
+    if (this.remainingTime <= 0) {
+      this.countdownEvent?.remove(false);
+      this.onTimerComplete();
+    }
+  }
+
+  private updateTimerText(): void {
+    const minutes = Math.floor(this.remainingTime / 60);
+    const seconds = this.remainingTime % 60;
+    const paddedSeconds = seconds.toString().padStart(2, "0");
+    this.timerText.setText(`${minutes}:${paddedSeconds}`);
+  }
+
+  private updateTimerBarFill(): void {
+    if (!this.timerFillGraphics) {
+      return;
+    }
+
+    const ratio = Phaser.Math.Clamp(
+      this.remainingTime / minigame2Scene.COUNTDOWN_DURATION,
+      0,
+      1
+    );
+
+    this.timerFillGraphics.clear();
+
+    if (ratio > 0) {
+      this.timerFillGraphics.fillStyle(0xffffff, 0.8);
+      const fillWidth = this.timerBarWidth * ratio;
+      const maxCornerRadius = Math.min(
+        15,
+        fillWidth / 2,
+        this.timerBarHeight / 2
+      );
+      this.timerFillGraphics.fillRoundedRect(
+        0,
+        0,
+        fillWidth,
+        this.timerBarHeight,
+        maxCornerRadius
+      );
+    }
+  }
+
+  private onTimerComplete(): void {
+    this.timerText.setText("0:00");
+    this.remainingTime = 0;
+    this.updateTimerBarFill();
+    this.failMinigame();
+  }
+
+  private failMinigame(): void {
+    if (this.isGameComplete) {
+      return;
+    }
+
+    this.isGameComplete = true;
+
+    this.countdownEvent?.remove(false);
+
+    if (!this.parentScene) {
+      this.parentScene = this.getParentLevelScene();
+    }
+
+    this.parentScene?.damagePlayer?.(minigame2Scene.TIMER_EXPIRE_DAMAGE);
+
+    const level = this.currentLevel ?? GameState.currentLevel ?? 3;
+    const targetSceneKey = this.parentSceneKey ?? `Level${level}Scene`;
+
+    this.time.delayedCall(50, () => {
+      this.scene.stop();
+      if (targetSceneKey) {
+        this.scene.resume(targetSceneKey);
+      }
+    });
   }
 
   private getTextureKey(image: string): string {
@@ -260,6 +425,8 @@ export default class minigame2Scene extends Phaser.Scene {
     }
 
     this.isGameComplete = true;
+
+    this.countdownEvent?.remove(false);
 
     const level = this.currentLevel ?? GameState.currentLevel ?? 3;
     const minigameId = "minigame2";
