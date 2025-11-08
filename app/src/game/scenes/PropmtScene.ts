@@ -16,6 +16,10 @@ export default class PromptScene extends Phaser.Scene {
   }
 
   preload(): void {
+    if (!this.textures.exists("close")) {
+      this.load.image("close", "/assets/ui/icons/button-x.png");
+    }
+
     if (this.objectId) {
       const imageKey = `${this.objectId}-prompt`;
       const imagePath = `/assets/game/level3/minigames/prompt/${this.objectId}-prompt.png`;
@@ -56,6 +60,27 @@ export default class PromptScene extends Phaser.Scene {
             event: Phaser.Types.Input.EventData
           ) => {
             event.stopPropagation();
+          }
+        );
+
+      const closeButton = this.add
+        .image(
+          prompt.x + prompt.displayWidth / 2 - 30,
+          prompt.y - prompt.displayHeight / 2 + 30,
+          "close"
+        )
+        .setInteractive({ useHandCursor: true })
+        .on(
+          "pointerdown",
+          (
+            pointer: Phaser.Input.Pointer,
+            localX: number,
+            localY: number,
+            event: Phaser.Types.Input.EventData
+          ) => {
+            event.stopPropagation();
+            this.scene.stop();
+            this.scene.resume(`Level${this.currentLevel}Scene`);
           }
         );
 
