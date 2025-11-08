@@ -170,8 +170,6 @@ export class Character extends Phaser.Physics.Arcade.Sprite {
     onComplete: (path: { x: number; y: number }[] | null) => void
   ) {
     if (!this.easyStar || !this.pathfindingGrid) {
-      console.log("this.easyStar:", this.easyStar);
-      console.log("this.pathfindingGrid:", this.pathfindingGrid);
       console.warn("Pathfinding grid not set for character");
       onComplete(null);
       return;
