@@ -44,7 +44,7 @@ export default class Level3Scene extends Phaser.Scene {
     const career = CareerStore.getCareer();
     this.playerData = this.registry.get("playerData");
     // const career = CareerStore.getCareer() || "uxui"; // For development
-    // CareerStore.setCareer(career);  // For development
+    // CareerStore.setCareer(career); // For development
     // this.playerData = this.registry.get("playerData") || { motivation: 90 }; // For development
 
     if (!career) {
@@ -77,11 +77,10 @@ export default class Level3Scene extends Phaser.Scene {
     // this.load.image("eKey", "/assets/ui/keys/eKey.png"); // For development
     // this.load.image(`${career}-avatar`, `/assets/game/${career}-avatar.png`); // For development
     // this.load.image("speechBubble", "/assets/characters/speechBubble.png"); // For development
-    // this.load.spritesheet(
-    //   "character-uxui",
-    //   "/assets/characters/uxui.png",
-    //   { frameWidth: 32, frameHeight: 48 }
-    // ); // For development
+    // this.load.spritesheet("character-uxui", "/assets/characters/uxui.png", {
+    //   frameWidth: 32,
+    //   frameHeight: 48,
+    // }); // For development
     // this.load.image("button", "/assets/buttons/Button_DarkGreen.png"); // For development
     // this.load.image("buttonPressed", "/assets/buttons/Button_LightGreen.png"); // For development
 
@@ -92,6 +91,10 @@ export default class Level3Scene extends Phaser.Scene {
       frameHeight: 48,
     });
     this.load.image("letter", "/assets/collectibles/letter.png");
+    this.load.image(
+      "timer-icon",
+      "/assets/game/level3/minigames/timer-icon.png"
+    );
   }
 
   create() {
