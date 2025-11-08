@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { BOOK_SCENE_CONFIG } from "../constants/book";
+import { getMinigameInfo } from "../data/minigames";
 import { GameState } from "../../stores/GameState";
 
 export default class PromptScene extends Phaser.Scene {
@@ -18,6 +19,10 @@ export default class PromptScene extends Phaser.Scene {
   preload(): void {
     if (!this.textures.exists("close")) {
       this.load.image("close", "/assets/ui/icons/button-x.png");
+    }
+
+    if (!this.textures.exists("info")) {
+      this.load.image("info", "/assets/ui/icons/info.png");
     }
 
     if (this.objectId) {
@@ -83,6 +88,40 @@ export default class PromptScene extends Phaser.Scene {
             this.scene.resume(`Level${this.currentLevel}Scene`);
           }
         );
+
+      const infoIcon = this.add
+        .image(
+          prompt.x - prompt.displayWidth / 2 + 30,
+          prompt.y - prompt.displayHeight / 2 + 32,
+          "info"
+        )
+        .setInteractive({ useHandCursor: true })
+        .on(
+          "pointerdown",
+          (
+            pointer: Phaser.Input.Pointer,
+            localX: number,
+            localY: number,
+            event: Phaser.Types.Input.EventData
+          ) => {
+            event.stopPropagation();
+            const info = this.objectId
+              ? getMinigameInfo(this.objectId)
+              : undefined;
+            if (info) {
+              console.log(`[${info.title}]`, {
+                summary: info.summary,
+                objective: info.objective,
+                instructions: info.instructions,
+                controls: info.controls,
+                tips: info.tips,
+              });
+            } else {
+              console.log(`Prompt info clicked for ${this.objectId}`);
+            }
+          }
+        );
+      infoIcon.setScale(0.9);
 
       const buttonY = prompt.y + prompt.displayHeight / 2 - 60;
       const button = this.add
