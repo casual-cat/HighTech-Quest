@@ -368,7 +368,7 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"letter"
+                         "value":"letter-1"
                         }],
                  "rotation":0,
                  "type":"",
@@ -385,7 +385,7 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"letter"
+                         "value":"letter-2"
                         }],
                  "rotation":0,
                  "type":"",
@@ -402,7 +402,7 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"letter"
+                         "value":"letter-3"
                         }],
                  "rotation":0,
                  "type":"",
@@ -419,7 +419,7 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"letter"
+                         "value":"letter-4"
                         }],
                  "rotation":0,
                  "type":"",
@@ -436,7 +436,7 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"letter"
+                         "value":"letter-5"
                         }],
                  "rotation":0,
                  "type":"",
