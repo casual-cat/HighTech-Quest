@@ -11,6 +11,7 @@ import { Ben } from "../entities/Ben";
 import { GameState } from "../../stores/GameState";
 import { ObjectiveManager } from "../../managers/ObjectiveManager";
 import { buildPathfindingGrid } from "../utils/pathfinding";
+import { getLetterContent } from "../data/letters";
 
 export default class Level3Scene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap | null = null;
@@ -95,6 +96,11 @@ export default class Level3Scene extends Phaser.Scene {
       "timer-icon",
       "/assets/game/level3/minigames/timer-icon.png"
     );
+    this.load.image("info", "/assets/ui/icons/info.png");
+    this.load.image(
+      "letter-background",
+      "/assets/game/level3/letter-background.png"
+    );
   }
 
   create() {
@@ -156,10 +162,10 @@ export default class Level3Scene extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(this.eKey)) {
       const target = this.eKeyIndicator.getTarget();
       if (target) {
-        const objectId = target.getData("id");
+        const objectId = String(target.getData("id") || "");
         if (objectId === "ben") {
           this.handleBenInteraction();
-        } else if (objectId === "letter") {
+        } else if (objectId.startsWith("letter")) {
           this.handleLetterInteraction(target);
         } else if (objectId.includes("minigame")) {
           this.handleMinigameInteraction(target);
@@ -169,7 +175,23 @@ export default class Level3Scene extends Phaser.Scene {
   }
 
   private handleLetterInteraction(target: Phaser.GameObjects.Sprite) {
-    console.log("Letter interaction triggered");
+    const letterId = String(target.getData("id") || "");
+    const letterContent = getLetterContent(letterId);
+
+    if (!letterContent) {
+      console.warn(`No content configured for letter id: ${letterId}`);
+      return;
+    }
+
+    if (this.scene.isActive("LetterScene")) {
+      return;
+    }
+
+    this.scene.pause(this.scene.key);
+    this.scene.launch("LetterScene", {
+      parentSceneKey: this.scene.key,
+      letter: letterContent,
+    });
   }
 
   private handleMinigameInteraction(target: Phaser.GameObjects.Sprite) {
@@ -362,7 +384,7 @@ export default class Level3Scene extends Phaser.Scene {
         }
 
         this.physics.add.collider(this.player!, this.ben);
-      } else if (spriteKey === "letter") {
+      } else if (spriteKey === "letter" || spriteKey.startsWith("letter-")) {
         const centerX = obj.x! + obj.width! / 2;
         const centerY = obj.y! + obj.height! / 2;
 
@@ -371,7 +393,7 @@ export default class Level3Scene extends Phaser.Scene {
           centerY,
           "letter"
         ) as Phaser.Physics.Arcade.Sprite;
-        letter.setData("id", spriteKey);
+        letter.setData("id", spriteKey || "letter");
         letter.setData("properties", props);
         letter.setOrigin(0.5);
         letter.setScale(0.5);
