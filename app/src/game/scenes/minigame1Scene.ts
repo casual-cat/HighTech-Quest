@@ -214,7 +214,6 @@ export default class minigame1Scene extends Phaser.Scene {
           this.isGameComplete = true;
           this.countdownEvent?.remove(false);
           const level = this.currentLevel ?? GameState.currentLevel ?? 3;
-          console.log("Success!");
           ObjectiveManager.completeTask(level, "minigame1");
           GameState.markMinigameCompleted("minigame1");
           const targetSceneKey = `Level${level}Scene`;
