@@ -17,37 +17,31 @@ export type LetterContent = {
 export const LETTER_CONTENT: Record<LetterId, LetterContent> = {
   "letter-1": {
     id: "letter-1",
-    headline: "Day One Notes",
-    body:
-      "The labs are busier than expected. I need to remember to check the notice board before heading out again.",
+    headline: "Show Potential",
+    body: "Your first job doesn't depend on how many programming languages you know, but on your ability to demonstrate how you think and solve challenges.",
   },
   "letter-2": {
     id: "letter-2",
-    headline: "Unexpected Challenge",
-    body:
-      "Ben mentioned a surprise assessment is coming up. I should review the last sprint's retro tonight.",
+    headline: "Turn a small project into a big story",
+    body: "Explain why you chose the project, how you solved problems, and what value it provides. This shows system-level thinking, not just coding skills.",
   },
   "letter-3": {
     id: "letter-3",
-    headline: "Mentor Reminder",
-    body:
-      "A new mentor session is unlocked for tomorrow. Bring thoughtful questions and recent learnings.",
+    headline: "Demonstrate hunger and initiative",
+    body: "Did you learn something new because you got stuck? Found a way to improve performance or user experience? Share it - it shows you push forward.",
   },
   "letter-4": {
     id: "letter-4",
-    headline: "Collaborator's Tip",
-    body:
-      "Pairing with Maya boosted my confidence. Maybe we can co-lead the next stand-up rehearsal.",
+    headline: "Show value (not just job-seeking)",
+    body: "Instead of focusing only on “I'm looking for a job“, emphasize “This is the value I bring”. That's what makes recruiters notice you.",
   },
   "letter-5": {
     id: "letter-5",
-    headline: "Final Encouragement",
-    body:
-      "You're closer than you think. Take a breath, prepare carefully, and remember why you started.",
+    headline: "Letter 5",
+    body: "Letter 5 content.",
   },
 };
 
 export function getLetterContent(id: string): LetterContent | undefined {
   return LETTER_CONTENT[id as LetterId];
 }
-
