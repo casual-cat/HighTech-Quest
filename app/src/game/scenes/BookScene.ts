@@ -69,7 +69,7 @@ export class BookScene extends Phaser.Scene {
     this.load.image("checkbox", "/assets/ui/book/checkbox.png");
     this.load.image("checkbox-checked", "/assets/ui/book/checkbox-checked.png");
     this.load.image("playBtn", "/assets/ui/book/play.png");
-    this.load.image("close", "/assets/ui/book/button-x.png");
+    this.load.image("close", "/assets/ui/icons/button-x.png");
     this.load.image("gear", "/assets/ui/book/gear.png");
     this.load.image("controls-page", "/assets/ui/book/controls.png");
   }
