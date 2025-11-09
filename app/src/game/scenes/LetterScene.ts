@@ -49,31 +49,7 @@ export default class LetterScene extends Phaser.Scene {
       bodyBaseline,
     };
 
-    if (this.letter) {
-      this.add
-        .text(width / 2, contentBounds.headlineBaseline, this.letter.headline)
-        .setOrigin(0.5, 1)
-        .setDepth(2)
-        .setScrollFactor(0)
-        .setStyle({
-          fontSize: "20px",
-          color: "#998845",
-        });
-
-      this.add
-        .text(width / 2, contentBounds.bodyBaseline, this.letter.body)
-        .setOrigin(0.5, 1)
-        .setDepth(2)
-        .setScrollFactor(0)
-        .setStyle({
-          fontSize: "16px",
-          color: "#998845",
-          wordWrap: { width: contentBounds.width },
-          align: "center",
-        });
-    }
-
-    this.add
+    const closeHintText = this.add
       .text(
         width / 2,
         height / 2 + displayHeight * 0.35,
@@ -86,6 +62,34 @@ export default class LetterScene extends Phaser.Scene {
         fontSize: "14px",
         color: "#998845",
       });
+
+    if (this.letter) {
+      const headlineText = this.add
+        .text(width / 2, contentBounds.headlineBaseline, this.letter.headline)
+        .setOrigin(0.5, 1)
+        .setDepth(2)
+        .setScrollFactor(0)
+        .setStyle({
+          fontSize: "20px",
+          color: "#998845",
+        });
+
+      const headlineBottom = headlineText.getBounds().bottom;
+      const closeHintTop = closeHintText.getBounds().top;
+      const bodyCenterY = Phaser.Math.Linear(headlineBottom, closeHintTop, 0.5);
+
+      this.add
+        .text(width / 2, bodyCenterY, this.letter.body)
+        .setOrigin(0.5)
+        .setDepth(2)
+        .setScrollFactor(0)
+        .setStyle({
+          fontSize: "16px",
+          color: "#998845",
+          wordWrap: { width: contentBounds.width },
+          align: "center",
+        });
+    }
 
     this.time.delayedCall(150, () => {
       this.enableClose();
