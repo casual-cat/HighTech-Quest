@@ -41,10 +41,10 @@ export default class LetterScene extends Phaser.Scene {
 
     const bodyBaseline =
       height / 2 + displayHeight * 0.5 - displayHeight * 0.25;
-    const headlineBaseline = bodyBaseline - displayHeight * 0.2;
+    const headlineBaseline = bodyBaseline - displayHeight * 0.25;
 
     const contentBounds = {
-      width: displayWidth * 0.75,
+      width: displayWidth * 0.8,
       headlineBaseline,
       bodyBaseline,
     };
@@ -52,7 +52,7 @@ export default class LetterScene extends Phaser.Scene {
     const closeHintText = this.add
       .text(
         width / 2,
-        height / 2 + displayHeight * 0.35,
+        height / 2 + displayHeight * 0.45,
         "Press SPACE or click to close"
       )
       .setOrigin(0.5)
@@ -70,8 +70,10 @@ export default class LetterScene extends Phaser.Scene {
         .setDepth(2)
         .setScrollFactor(0)
         .setStyle({
-          fontSize: "20px",
+          fontSize: "18px",
           color: "#998845",
+          wordWrap: { width: contentBounds.width },
+          align: "center",
         });
 
       const headlineBottom = headlineText.getBounds().bottom;
