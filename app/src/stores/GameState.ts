@@ -1,3 +1,10 @@
+import Phaser from "phaser";
+
+type ParentLevelScene = Phaser.Scene & {
+  damagePlayer?: (amount: number) => void;
+  getPlayerMotivation?: () => { current: number; max: number };
+};
+
 export const GameState = {
   currentLevel: 1,
   completedLevels: [] as number[],
@@ -32,5 +39,16 @@ export const GameState = {
     }
 
     return false;
+  },
+
+  getParentLevelScene(
+    scene: Phaser.Scene,
+    level?: number
+  ): ParentLevelScene | undefined {
+    const targetLevel = level ?? this.currentLevel;
+    if (!targetLevel) return undefined;
+
+    const parentSceneKey = `Level${targetLevel}Scene`;
+    return scene.scene.get(parentSceneKey) as ParentLevelScene | undefined;
   },
 };
