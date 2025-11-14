@@ -17,6 +17,7 @@ import { ControlsScene } from "../scenes/ControlsScene";
 import PromptScene from "../scenes/PropmtScene";
 import minigame1Scene from "../scenes/minigame1Scene";
 import minigame2Scene from "../scenes/minigame2Scene";
+import minigame3Scene from "../scenes/minigame3Scene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -44,6 +45,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     PromptScene,
     minigame1Scene,
     minigame2Scene,
+    minigame3Scene,
   ],
   pixelArt: true,
   roundPixels: true,
