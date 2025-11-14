@@ -4,6 +4,19 @@ import { CareerStore, type CareerKey } from "../../stores/CareerStore";
 import { ObjectiveManager } from "../../managers/ObjectiveManager";
 import { BOOK_SCENE_CONFIG } from "../constants/book";
 import { Timer } from "../entities/Timer";
+import { MotivationBar } from "../../managers/MotivationBarManager";
+
+type MemoryCard = Phaser.GameObjects.Image & {
+  cardId?: number;
+  cardValue?: number;
+  isFlipped?: boolean;
+  isMatched?: boolean;
+};
+
+type ParentLevelScene = Phaser.Scene & {
+  damagePlayer?: (amount: number) => void;
+  getPlayerMotivation?: () => { current: number; max: number };
+};
 
 export default class minigame3Scene extends Phaser.Scene {
   private static readonly MISMATCH_DAMAGE = 10;
@@ -14,6 +27,11 @@ export default class minigame3Scene extends Phaser.Scene {
   private timer?: Timer;
   private isGameComplete = false;
   private parentSceneKey?: string;
+  private memoryCards: MemoryCard[] = [];
+  private flippedCards: MemoryCard[] = [];
+  private isCheckingMatch = false;
+  private matchedPairs = 0;
+  private parentScene?: ParentLevelScene;
 
   constructor() {
     super({ key: "minigame3Scene" });
@@ -42,6 +60,8 @@ export default class minigame3Scene extends Phaser.Scene {
 
   create(): void {
     const { width, height } = this.scale;
+
+    this.parentScene = this.getParentLevelScene();
 
     this.add
       .rectangle(
@@ -103,13 +123,28 @@ export default class minigame3Scene extends Phaser.Scene {
     const centerX = backgroundBounds.centerX;
     const centerY = backgroundBounds.centerY;
 
+    const cardValues = [1, 2, 3, 4, 1, 2, 3, 4];
+    const shuffledValues = Phaser.Utils.Array.Shuffle(cardValues);
+
+    let cardIndex = 0;
+
     const row1Width = 3 * cardWidth + 2 * horizontalPadding;
     const row1StartX = centerX - row1Width / 2 + cardWidth / 2;
     const row1Y = centerY - cardHeight - verticalPadding;
 
     for (let i = 0; i < 3; i++) {
       const x = row1StartX + i * (cardWidth + horizontalPadding);
-      this.add.image(x, row1Y, "card-wide-back").setDepth(2);
+      const card = this.add
+        .image(x, row1Y, "card-wide-back")
+        .setDepth(2) as MemoryCard;
+      card.setInteractive({ useHandCursor: true });
+      card.cardId = cardIndex;
+      card.cardValue = shuffledValues[cardIndex];
+      card.isFlipped = false;
+      card.isMatched = false;
+      card.on("pointerup", () => this.handleCardClick(card));
+      this.memoryCards.push(card);
+      cardIndex += 1;
     }
 
     const row2Width = 2 * cardWidth + horizontalPadding;
@@ -118,7 +153,17 @@ export default class minigame3Scene extends Phaser.Scene {
 
     for (let i = 0; i < 2; i++) {
       const x = row2StartX + i * (cardWidth + horizontalPadding);
-      this.add.image(x, row2Y, "card-wide-back").setDepth(2);
+      const card = this.add
+        .image(x, row2Y, "card-wide-back")
+        .setDepth(2) as MemoryCard;
+      card.setInteractive({ useHandCursor: true });
+      card.cardId = cardIndex;
+      card.cardValue = shuffledValues[cardIndex];
+      card.isFlipped = false;
+      card.isMatched = false;
+      card.on("pointerup", () => this.handleCardClick(card));
+      this.memoryCards.push(card);
+      cardIndex += 1;
     }
 
     const row3Width = 3 * cardWidth + 2 * horizontalPadding;
@@ -127,8 +172,96 @@ export default class minigame3Scene extends Phaser.Scene {
 
     for (let i = 0; i < 3; i++) {
       const x = row3StartX + i * (cardWidth + horizontalPadding);
-      this.add.image(x, row3Y, "card-wide-back").setDepth(2);
+      const card = this.add
+        .image(x, row3Y, "card-wide-back")
+        .setDepth(2) as MemoryCard;
+      card.setInteractive({ useHandCursor: true });
+      card.cardId = cardIndex;
+      card.cardValue = shuffledValues[cardIndex];
+      card.isFlipped = false;
+      card.isMatched = false;
+      card.on("pointerup", () => this.handleCardClick(card));
+      this.memoryCards.push(card);
+      cardIndex += 1;
     }
+  }
+
+  private handleCardClick(card: MemoryCard): void {
+    if (
+      this.isCheckingMatch ||
+      card.isFlipped ||
+      card.isMatched ||
+      this.isGameComplete
+    ) {
+      return;
+    }
+
+    this.flipCard(card);
+    this.flippedCards.push(card);
+
+    if (this.flippedCards.length === 2) {
+      this.checkMatch();
+    }
+  }
+
+  private flipCard(card: MemoryCard): void {
+    card.isFlipped = true;
+    const cardValue = card.cardValue!;
+    const textureKey = `${this.career}-card-wide-${cardValue}`;
+    card.setTexture(textureKey);
+  }
+
+  private checkMatch(): void {
+    this.isCheckingMatch = true;
+    const [card1, card2] = this.flippedCards;
+
+    if (card1.cardValue === card2.cardValue) {
+      card1.isMatched = true;
+      card2.isMatched = true;
+      this.matchedPairs += 1;
+      this.flippedCards = [];
+      this.isCheckingMatch = false;
+
+      if (this.matchedPairs === 4) {
+        this.winMinigame();
+      }
+    } else {
+      this.time.delayedCall(1000, () => {
+        this.unflipCard(card1);
+        this.unflipCard(card2);
+        this.flippedCards = [];
+        this.isCheckingMatch = false;
+
+        const parentScene = GameState.getParentLevelScene(this);
+        parentScene?.damagePlayer?.(minigame3Scene.MISMATCH_DAMAGE);
+      });
+    }
+  }
+
+  private unflipCard(card: MemoryCard): void {
+    card.isFlipped = false;
+    card.setTexture("card-wide-back");
+  }
+
+  private winMinigame(): void {
+    if (this.isGameComplete) {
+      return;
+    }
+
+    this.isGameComplete = true;
+    this.timer?.stop();
+
+    const level = this.currentLevel ?? GameState.currentLevel ?? 3;
+    const minigameId = "minigame3";
+
+    ObjectiveManager.completeTask(level, minigameId);
+    GameState.markMinigameCompleted(minigameId);
+
+    this.time.delayedCall(500, () => {
+      this.scene.stop();
+      const targetSceneKey = `Level${level}Scene`;
+      this.scene.resume(targetSceneKey);
+    });
   }
 
   private failMinigame(): void {
@@ -150,6 +283,19 @@ export default class minigame3Scene extends Phaser.Scene {
         this.scene.resume(targetSceneKey);
       }
     });
+  }
+
+  private getParentLevelScene(): ParentLevelScene | undefined {
+    if (!this.currentLevel) {
+      return undefined;
+    }
+
+    const parentSceneKey = `Level${this.currentLevel}Scene`;
+    const parentScene = this.scene.get(parentSceneKey) as
+      | ParentLevelScene
+      | undefined;
+
+    return parentScene;
   }
 
   shutdown() {
