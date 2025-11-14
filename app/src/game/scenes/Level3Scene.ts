@@ -93,6 +93,10 @@ export default class Level3Scene extends Phaser.Scene {
     });
     this.load.image("letter", "/assets/collectibles/letter.png");
     this.load.image(
+      "minigame-basic-background",
+      "/assets/game/level3/minigames/hierarchy-tasks/minigame1-background.png"
+    );
+    this.load.image(
       "timer-icon",
       "/assets/game/level3/minigames/timer-icon.png"
     );
