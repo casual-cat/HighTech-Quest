@@ -113,7 +113,6 @@ export default class minigame1Scene extends Phaser.Scene {
     const timerY = Phaser.Math.Linear(backgroundBounds.top, columnTop, 0.5);
     const timerContainerCenterX = backgroundBounds.centerX + 16;
 
-    // Setup timer
     this.timer = new Timer(this, {
       duration: minigame1Scene.COUNTDOWN_DURATION,
       expireDamage: minigame1Scene.TIMER_EXPIRE_DAMAGE,
