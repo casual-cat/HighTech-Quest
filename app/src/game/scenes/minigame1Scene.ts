@@ -55,10 +55,6 @@ export default class minigame1Scene extends Phaser.Scene {
 
   preload(): void {
     this.load.image(
-      "minigame1-background",
-      "/assets/game/level3/minigames/hierarchy-tasks/minigame1-background.png"
-    );
-    this.load.image(
       "todo",
       "/assets/game/level3/minigames/hierarchy-tasks/toDo.png"
     );
@@ -129,7 +125,7 @@ export default class minigame1Scene extends Phaser.Scene {
     const background = this.add.image(
       width / 2,
       height / 2,
-      "minigame1-background"
+      "minigame-basic-background"
     );
 
     const backgroundBounds = background.getBounds();
