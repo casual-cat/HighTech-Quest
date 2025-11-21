@@ -71,15 +71,14 @@ export default class PromptScene extends Phaser.Scene {
       this.add
         .image(
           prompt.x +
-            prompt.displayWidth / 2 +
-            PROMPT_SCENE_CONFIG.UI_POSITIONS.CLOSE_BUTTON.offsetX,
+          prompt.displayWidth / 2 +
+          PROMPT_SCENE_CONFIG.UI_POSITIONS.CLOSE_BUTTON.offsetX,
           prompt.y -
-            prompt.displayHeight / 2 +
-            PROMPT_SCENE_CONFIG.UI_POSITIONS.CLOSE_BUTTON.offsetY,
+          prompt.displayHeight / 2 +
+          PROMPT_SCENE_CONFIG.UI_POSITIONS.CLOSE_BUTTON.offsetY,
           "close"
         )
         .setInteractive({ useHandCursor: true })
-        .setDepth(PROMPT_SCENE_CONFIG.ANIMATION.BUTTON_DEPTH)
         .on("pointerdown", () => this.returnToLevel());
 
       const infoIcon = this.add
@@ -189,7 +188,7 @@ export default class PromptScene extends Phaser.Scene {
       Math.sqrt(
         (prompt.displayWidth / 2) ** 2 + (prompt.displayHeight / 2) ** 2
       ) *
-        3.5 +
+      3.5 +
       this.cornerRadius * 1.5;
     this.squareSize = squareSize;
 
